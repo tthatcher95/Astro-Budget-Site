@@ -1,3 +1,6 @@
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
 CREATE TABLE people (
   peopleid SERIAL Primary Key,
   name VARCHAR(128),
@@ -6,6 +9,7 @@ CREATE TABLE people (
 
 CREATE TABLE salaries (
   salaryid SERIAL Primary Key,
+  peopleid INTEGER,
   effectivedate TIMESTAMP,
   payplan VARCHAR(32),
   title VARCHAR(128),
@@ -14,7 +18,8 @@ CREATE TABLE salaries (
   estsalary REAL,
   estbenefits REAL,
   leavecategory REAL,
-  laf REAL
+  laf REAL,
+  CONSTRAINT fk_salaries_people_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid)
 );
 
 CREATE TABLE fundingprograms (
@@ -29,19 +34,22 @@ CREATE TABLE fundingprograms (
 
 CREATE TABLE proposals (
   proposalid SERIAL Primary Key,
-  peopleid INTEGER refereneces people(peopleid),
+  peopleid INTEGER,
   projectname VARCHAR(256),
   proposalnumber VARCHAR(128),
   awardnumber VARCHAR(128),
-  programid INTEGER references fundingprograms(programid),
+  programid INTEGER,
   perfperiodstart TIMESTAMP,
-  perfperiodend TIMESTAMP
+  perfperiodend TIMESTAMP,
+  CONSTRAINT fk_proposals_programid FOREIGN KEY (programid) REFERENCES fundingprograms(programid),
+  CONSTRAINT fk_proposals_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid)
 );
 
 CREATE TABLE fbmsaccounts (
   fbmsid SERIAL Primary Key,
   accountno VARCHAR(128),
-  proposalid INTEGER references proposals(proposalid)
+  proposalid INTEGER,
+  CONSTRAINT fk_fbmsaccounts_proposalid FOREIGN KEY (proposalid) REFERENCES proposals(proposalid)
 );
 
 CREATE TABLE conferences (
@@ -52,39 +60,46 @@ CREATE TABLE conferences (
 
 CREATE TABLE conferencerates (
   conferencerateid SERIAL Primary Key,
-  conferenceid INTEGER references conferences(conferenceid),
+  conferenceid INTEGER,
   effectivedate TIMESTAMP,
   perdiem REAL,
   registration REAL,
   groundtransport REAL,
-  airfare REAL
+  airfare REAL,
+  CONSTRAINT fk_conferencerates_conferenceid FOREIGN KEY (conferenceid) REFERENCES conferences(conferenceid)
 );
 
 CREATE TABLE conferenceattendee (
   conferenceattendeeid SERIAL Primary Key,
-  conferenceid INTEGER references conferences(conferenceid),
-  proposalid INTEGER references proposals(proposalid),
-  peopleid INTEGER references people(peopleid),
+  conferenceid INTEGER,
+  proposalid INTEGER,
+  peopleid INTEGER,
   meetingdays INTEGER,
-  traveldays INTEGER
+  traveldays INTEGER,
+  CONSTRAINT fk_conferenceattendee_conferenceid FOREIGN KEY (conferenceid) REFERENCES conferences(conferenceid),
+  CONSTRAINT fk_conferenceattendee_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid),
+  CONSTRAINT fk_conferenceattendee_proposalid FOREIGN KEY (proposalid) REFERENCES proposals(proposalid)
 );
 
 CREATE TABLE tasks (
   taskid BIGSERIAL Primary Key,
-  proposalid INTEGER references proposals(proposalid),
-  taskname VARCHAR(1024)
+  proposalid INTEGER,
+  taskname VARCHAR(1024),
+  CONSTRAINT fk_tasks_proposalid FOREIGN KEY (proposalid) REFERENCES proposals(proposalid)
 );
 
 CREATE TABLE staffing (
   staffingid BIGSERIAL Primary Key,
-  taskid BIGINT references tasks(taskid),
-  peopleid INTEGER references people(peopleid),
+  taskid BIGINT,
+  peopleid INTEGER,
   fiscalyear VARCHAR(4),
   q1hours REAL,
   q2hours REAL,
   q3hours REAL,
-  q4hours REAL
-  flexhours REAL
+  q4hours REAL,
+  flexhours REAL,
+  CONSTRAINT fk_staffing_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid),
+  CONSTRAINT fk_staffing_peopleid FOREIGN KEY (taskid) REFERENCES tasks(taskid)
 );
 
 CREATE TABLE expensetypes (
@@ -94,9 +109,11 @@ CREATE TABLE expensetypes (
 
 CREATE TABLE expenses (
   expenseid BIGSERIAL Primary Key,
-  proposalid INTEGER references proposals(proposalid),
-  expensetypeid INTEGER references expensetypes(expensetypeid),
+  proposalid INTEGER,
+  expensetypeid INTEGER,
   description VARCHAR(256),
   amount REAL,
-  fiscalyear VARCHAR(4)
+  fiscalyear VARCHAR(4),
+  CONSTRAINT fk_expenses_proposalid FOREIGN KEY (proposalid) REFERENCES proposals(proposalid),
+  CONSTRAINT fk_expenses_expensetypeid FOREIGN KEY (expensetypeid) REFERENCES expensetypes(expensetypeid)
 );

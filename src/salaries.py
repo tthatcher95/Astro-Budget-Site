@@ -1,4 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Sequence
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class Salaries(Base):
   __tablename__ = 'salaries'

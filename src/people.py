@@ -10,9 +10,5 @@ class People(Base):
   name     = Column (String)
   username = Column (String)
 
-  def __init__(self, name, username):
-    self.name = name
-    self.username = username
-
   def __repr__(self):
     return "<People(name='%s', username='%s')>" % (self.name, self.username)

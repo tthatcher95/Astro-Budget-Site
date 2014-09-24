@@ -1,9 +1,15 @@
 import sys
 import argparse
-from people import *
+import datetime
+from tables import *
+# from people import *
+# from salaries import *
 from pandas.io.excel import ExcelFile
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 dbconnect = {'server': 'spacely.wr.usgs.gov', 'port'  : '3309', 'user'  : 'budgetmgr', 'pass'  : '!MgrBudget$', 'instance': 'propbudgets_prd'}
 
@@ -26,28 +32,29 @@ def main(argv):
 
   for i in salaries.index:
       if (salaries['Employee Name'][i] != 'COPY EMPLOYEE NAME HERE'):
-        print (salaries['Employee Name'][i])
-        print ("\t%s\t%s\n" % (salaries['Pay Plan'][i], salaries['Position Title'][i]))
-        person = People(name = salaries['Employee Name'][i], username = '')
+        #print (salaries['Employee Name'][i])
+        #print ("\t%s\t%s " % (salaries['Pay Plan'][i], salaries['Position Title'][i]))
         session = Session()
-        session.add(person)
-        session.commit()
+        # Check if the user is already in the database
+        add_person (salaries, i, session)
 
+def add_person (data, index, session):
+  user_count = session.query(People).filter_by(name=data['Employee Name'][index]).count()
+  if (user_count == 0):
+    person = People(name = data['Employee Name'][index], username = '')
+    session.add(person)
+    session.commit()
+    print ("Added %s to people\n" % (data['Employee Name']))
 
-#CREATE TABLE salaries (
-#  salaryid SERIAL Primary Key,
-#  effectivedate TIMESTAMP,
-#  payplan VARCHAR(32),
-#  title VARCHAR(128),
-#  appttype VARCHAR(8),
-#  authhours REAL,
-#  estsalary REAL,
-#  estbenefits REAL,
-#  leavecategory REAL,
-#  laf REAL
-#);
+  user_rec = session.query(People).filter_by(name=data['Employee Name'][index]).first()
+  print ("Searching for people ID %d" %(user_rec.peopleid))
+  salary_count = session.query(Salaries).filter_by(peopleid=user_rec.peopleid).count()
+  if (salary_count == 0):
+    salary = Salaries(peopleid = user_rec.peopleid, effectivedate = datetime.datetime.utcnow(), payplan = data['Pay Plan'][index], title = data['Position Title'][index], appttype = data['Appt Type'][index], estsalary = data['Estimated Salary'][index], estbenefits = data['Estimated Benefits'][index], leavecategory = data['Leave Category'][index], laf = data['LAF'][index])
+    session.add(salary)
+    session.commit()
+    print ("Added %s to salaries\n" % (data['Employee Name']))
 
-      
 
 if __name__ == "__main__":
   main(sys.argv[1:])

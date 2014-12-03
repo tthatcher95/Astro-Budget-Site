@@ -76,6 +76,7 @@ CREATE TABLE conferenceattendee (
   peopleid INTEGER,
   meetingdays INTEGER,
   traveldays INTEGER,
+  startdate TIMESTAMP,
   CONSTRAINT fk_conferenceattendee_conferenceid FOREIGN KEY (conferenceid) REFERENCES conferences(conferenceid),
   CONSTRAINT fk_conferenceattendee_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid),
   CONSTRAINT fk_conferenceattendee_proposalid FOREIGN KEY (proposalid) REFERENCES proposals(proposalid)
@@ -117,3 +118,10 @@ CREATE TABLE expenses (
   CONSTRAINT fk_expenses_proposalid FOREIGN KEY (proposalid) REFERENCES proposals(proposalid),
   CONSTRAINT fk_expenses_expensetypeid FOREIGN KEY (expensetypeid) REFERENCES expensetypes(expensetypeid)
 );
+
+CREATE TABLE administrators (
+  adminid SERIAL Primary Key,
+  peopleid INTEGER,
+  CONSTRAINT fk_staffing_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid)
+);
+

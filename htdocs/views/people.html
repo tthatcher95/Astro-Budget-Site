@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proposal Budget People Listing</title>
+        {% include 'menu-header.html' %}
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+        {% include 'menu-tags.html' %}
+      <div class="container">
+        <h1>List of People</h1>
+        <table id="peopleTable" class="display" cellspacing="0" width="100%">
+          <thead><tr><th>Name</th><th>Title</th><th>Pay Plan</th></tr></thead>
+          <tbody>
+          {% for person in people %}
+            <tr><td><a href="index.php?view=people&peopleid={{ person.peopleid }}">{{ person.name }}</a></td>
+            <td>{{ person.title }}</td><td>{{ person.payplan }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+          $('#peopleTable').dataTable();
+        } );
+      </script>
+    </body>
+</html>

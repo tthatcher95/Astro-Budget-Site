@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Editing {{ person.name }}</title>
+        {% include 'menu-header.html' %}
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+        {% include 'menu-tags.html' %}
+        {% for person in people %}
+          <form action="index.php" method="GET">
+            <input="hidden" name="act" value="save"/>
+            <input="hidden" name="view" value="people"/>
+            <input="hidden" name="peopleid" value="{{ person.peopleid }}"/>
+            Name:<br/>
+            <input type="text" name="name" value="{{ person.name }}" size="40"/><br/>
+            Username:<br/>
+            <input type="text" name="name" value="{{ person.username }}" size="40"/><br/>
+            <input type="submit" name="submit" value="Save"/>
+          </form>
+        {% endfor %}
+        <br/>
+        <hr/>
+        <div id='salaryAjax'></div>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        {% for person in people %}
+        $("#salaryAjax").load("index.php?view=salary-ajax&peopleid={{ person.peopleid }}");
+        {% endfor %}
+      });
+    </script>
+
+    </body>
+</html>

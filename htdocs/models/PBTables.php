@@ -85,9 +85,11 @@ class PBTables {
              "$peopleid, ";
 
     if (!isset($effectivedate)) { $query .= "now(), "; }
-    else { $query .= "timestamp ('$effectivedate'), "; }
+    else { 
+      $query .= "'" . $this->formatDate($effectivedate) . "', "; 
+    }
 
-    $query .= "'$payplan', '$title', '$appttype', $authhours, $estsalary, $estbenefits, $leavecategory, $laf";
+    $query .= "'$payplan', '$title', '$appttype', $authhours, $estsalary, $estbenefits, $leavecategory, $laf)";
 
     $this->db->query($query);
   }
@@ -109,7 +111,7 @@ class PBTables {
     }
     if (isset($effectivedate)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "effectivedate=timestamp('$effectivedate')";
+      $query .= "effectivedate='$effectivedate'";
       $needComma = true;
     }
     if (isset($payplan)) {
@@ -165,7 +167,7 @@ class PBTables {
              "WHERE peopleid=$peopleid";
 
     if (isset($targetdate)) {
-      $query .= " AND effectivedate < timestamp ('$targetdate')";
+      $query .= " AND effectivedate < '" . $this->formatDate($targetdate) . "'";
     }
     else {
       $query .= " AND effectivedate < now()";
@@ -174,7 +176,7 @@ class PBTables {
     $query .= " ORDER BY effectivedate DESC LIMIT 1";
 
     $this->db->query($query);
-    $results = $this->db->getResultRow();
+    $results = $this->db->getResultArray();
 
     return ($results);
   }
@@ -219,8 +221,8 @@ class PBTables {
     if (!isset($agency)) { return "The agency must be set to add a funding program"; }
 
     $query = "INSERT INTO fundingprograms (programname, agency, pocname, pocemail, startdate, enddate) " .
-             "VALUES ('$programname', '$agency', '$pocname', '$pocemail', timestamp('$startdate'), " .
-             "timestamp ('$enddate')";
+             "VALUES ('$programname', '$agency', '$pocname', '$pocemail', '" . $this->formatdate($startdate) . "', " .
+             "'" . $this->formatDate($enddate) . "'";
 
     $this->db->query($query);
   }
@@ -256,12 +258,12 @@ class PBTables {
     }
     if (isset($startdate)) {
       if ($needComa) { $query .= ", "; }
-      $query .= "startdate= timestamp ('$startdate')";
+      $query .= "startdate= '" . $this->formatDate($startdate) . "'";
       $needComma = true;
     }
     if (isset($enddate)) {
       if ($needComa) { $query .= ", "; }
-      $query .= "enddate=timestamp('$enddate')";
+      $query .= "enddate='" . $this->formatDate($enddate) . "'";
       $needComma = true;
     }
 
@@ -307,7 +309,8 @@ class PBTables {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
-      $query .= "startdate > timestamp('$targetdate') AND enddate < timestamp('$targetdate')";
+      $query .= "startdate > '" . $this->formatDate($targetdate) . "' AND enddate < '" .
+                $this->formatDate($targetdate) . "'";
     }
 
     $this->db->query($query);
@@ -343,9 +346,9 @@ class PBTables {
     $query = "INSERT INTO proposals (peopleid, projectname, proposalnumber, awardnumber, " .
              "programid, perfperiodstart, perfperiodend) VALUES ($peopleid, '$projectname', " .
              "'$proposalnumber', '$awardnumber', $programid, ";
-    if (isset($perfperiodstart)) { $query .= "timestamp('$perfperiodstart'), "; }
+    if (isset($perfperiodstart)) { $query .= "'" . $this->formatDate($perfperiodstart) . "', "; }
     else { $query .= "null, "; }
-    if (isset($perfperiodend)) { $query .= "timestamp('$perfperiodend'), "; }
+    if (isset($perfperiodend)) { $query .= "'" . $this->formatDate($perfperiodend) . "', "; }
     else { $query .= "null, "; }
 
     $this->db->query($query);
@@ -388,12 +391,12 @@ class PBTables {
     }
     if (isset($perfperiodstart)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "perfperiodstart=timestamp('$perfperiodstart')";
+      $query .= "perfperiodstart='" . $this->formatDate($perfperiodstart) . "'";
       $needComma = true;
     }
     if (isset($perfperiodend)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "perfperiodend=timestamp('$perfperiodend')";
+      $query .= "perfperiodend='" . $this->formatDate($perfperiodend) . "'";
       $needComma = true;
     }
 
@@ -438,7 +441,8 @@ class PBTables {
     if (isset($perfperiod)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
-      $query .= "perfperiodstart < timestamp('$perfperiod') AND perfperiodend > timestamp('$perfperiod')";
+      $query .= "perfperiodstart < '" . $this->formatDate($perfperiod) . "' AND perfperiodend > '" .
+                $this->formatDate($perfperiod) . "'";
       $needAnd = true;
     }
 
@@ -600,7 +604,7 @@ class PBTables {
 
     $query = "INSERT INTO conferencerates (conferenceid, effectivedate, perdiem, registration, " .
              "groundtransport, airfare) VALUES ($conferenceid, ";
-    if (isset($effectivedate)) { $query .= "timestamp ('$effectivedate'), "; }
+    if (isset($effectivedate)) { $query .= "'" . $this->formatDate($effectivedate) . "', "; }
     else { $query .= "now(), "; }
     $query .= "$perdiem, $registration, $groundtransport, $airfare)";
 
@@ -621,7 +625,7 @@ class PBTables {
     }
     if (isset($effectivedate)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "effectivedate = timestamp('$effectivedate')";
+      $query .= "effectivedate = '" . $this->formatDate($effectivedate) . "'";
       $needComma = true;
     }
     if (isset($perdiem)) {
@@ -656,7 +660,7 @@ class PBTables {
     $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
              "groundrate, airfare FROM conferencerates WHERE conferenceid=$conferenceid";
     if (isset($effectivedate)) { 
-      $query .= " AND effectivedate > timestamp('$effectivedate')"; 
+      $query .= " AND effectivedate > '" . $this->formatDate($effectivedate) . "'"; 
       $query .= " ORDER BY effectivedate DESC LIMIT 1";
     }
     else { $query .= " ORDER BY effectivedate DESC"; }
@@ -692,7 +696,7 @@ class PBTables {
 
     $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, peopleid, meetingdays, traveldays, statedate)".
              " VALUES ($conferenceid, $proposalid, $peopleid, $meetingdays, $traveldays, ";
-    if (isset($startdate)) { $query .= "timestamp ('$startdate'))"; }
+    if (isset($startdate)) { $query .= "'" . $this->formatDate($startdate) . "')"; }
     else { $query .= "now())"; }
 
     $this->db->query($query);
@@ -732,7 +736,7 @@ class PBTables {
     if (isset($startdate)) {
       if ($needComma) { $query .= ", "; }
       $needComma = true;
-      $query .= "startdate=timestamp('$startdate')";
+      $query .= "startdate='" . $this->formatDate($startdate) . "'";
     }
 
     $this->db->query($query);
@@ -1146,6 +1150,15 @@ class PBTables {
   #  adminid SERIAL Primary Key,
   #  peopleid INTEGER,
 
+
+  function formatDate ($effectivedate) {
+    $newtime = strtotime($effectivedate);
+    if ($newtime) {
+      $effectivedate = date('Y-m-d H:i:s', $newtime);
+    }
+
+    return $effectivedate;
+  }
 }
   
 ?>

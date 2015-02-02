@@ -2,23 +2,16 @@
 <html>
     <head>
         <title>Editing {{ person.name }}</title>
-        {% include 'menu-header.html' %}
     </head>
-    {% for error in debug %}
-      <pre>error.msg</pre>
-    {% endfor %}
     <body>
-        {% include 'menu-tags.html' %}
         {% for person in people %}
           <form action="index.php" method="GET">
             <input="hidden" name="act" value="save"/>
             <input="hidden" name="view" value="people"/>
             <input="hidden" name="peopleid" value="{{ person.peopleid }}"/>
-            Name:<br/>
-            <input type="text" name="name" value="{{ person.name }}" size="40"/><br/>
-            Username:<br/>
-            <input type="text" name="name" value="{{ person.username }}" size="40"/><br/>
-            <input type="submit" name="submit" value="Save"/>
+            <table><tr><th>Name</th><td><input type="text" name="name" value="{{ person.name }}" size="40"/></td></tr>
+            <tr><th>Username</th><td><input type="text" name="username" value="{{ person.username }}" size="40"/></td></tr>
+            </table>
           </form>
         {% endfor %}
         <br/>

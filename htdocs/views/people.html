@@ -11,21 +11,44 @@
         {% include 'menu-tags.html' %}
       <div class="container">
         <h1>List of People</h1>
+        <div id="editDialog" class="ui-widget"></div>
         <table id="peopleTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>Name</th><th>Title</th><th>Pay Plan</th></tr></thead>
-          <tbody>
-          {% for person in people %}
-            <tr><td><a href="index.php?view=people&peopleid={{ person.peopleid }}">{{ person.name }}</a></td>
-            <td>{{ person.title }}</td><td>{{ person.payplan }}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
         </table>
       </div>
 
       <script type="text/javascript" charset="utf-8">
+        function editUserDialog(peopleid) {
+          $("#editDialog").load("index.php?view=people-edit&peopleid=" + peopleid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 700,
+            modal: true,
+            buttons: {
+              "Save User": saveUser,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        
+        }
+
+        function saveUser() {
+          dialog.dialog("close");
+        }
+
         $(document).ready(function() {
-          $('#peopleTable').dataTable();
+          $('#peopleTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=people-list-json",
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]]
+          } );
         } );
       </script>
     </body>

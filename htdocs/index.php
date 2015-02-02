@@ -24,6 +24,11 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'people-edit.html';
       $view = $templateArgs['view'];
       break;
+    case 'people-list-json':
+      $templateArgs = peopleView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'people-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
     case 'salary-ajax':
       if (isset($_REQUEST['peopleid'])) {
         $templateArgs = salaryView($pbdb, $templateArgs, $_REQUEST['peopleid']);

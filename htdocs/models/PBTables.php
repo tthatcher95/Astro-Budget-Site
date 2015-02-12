@@ -11,26 +11,34 @@ class PBTables {
   }
 
   # People
-  function addPerson ($name, $username) {
-    $query = "INSERT INTO people (name, username) VALUES ('$name', '$username')";
+  function addPerson ($name, $username, $admin) {
+    $query = "INSERT INTO people (name, username, admin) VALUES ('$name', '$username', $admin)";
 
     $this->db->query ($query);
   }
 
-  function updatePerson ($peopleid, $name, $username) {
+  function updatePerson ($peopleid, $name, $username, $admin) {
     if (!isset($peopleid)) { return "No people ID provided to update"; }
 
-    if ((!isset($name)) and (!isset($username))) { return "A name or username update must be provided"; }
+    if ((!isset($name)) and (!isset($username)) and !(isset($admin))) { 
+      return "A name or username update must be provided"; 
+    }
 
     $query = "UPDATE people SET ";
     if (isset($name)) {
       $query .= "name='$name'";
     }
-    if ((isset($name)) and (isset($username))) {
+    if (isset($name)) {
       $query .= ", ";
     }
     if (isset($username)) {
       $query .= "username='$username'";
+    }
+    if (isset($admin)) {
+      if ((isset($name)) or (isset($username))) {
+        $query .= ", ";
+      }
+      $query .= "admin=$admin";
     }
 
     $query .= " WHERE peopleid=$peopleid";
@@ -39,7 +47,7 @@ class PBTables {
   }
 
   function getPerson ($peopleid, $name, $username) {
-    $query = 'SELECT peopleid, name, username FROM people';
+    $query = 'SELECT peopleid, name, username, admin FROM people';
 
     $needAnd = false;
     if (isset($peopleid)) { 

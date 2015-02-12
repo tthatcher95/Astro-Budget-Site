@@ -12,6 +12,8 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'Proposals', 'href' => 'index.php?view=proposals'),
   array ('caption' => 'Programs', 'href' => 'index.php?view=programs')));
 
+$templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
+
 # Handle GET options
 if (isset($_REQUEST['view'])) {
   switch($_REQUEST['view']) {
@@ -29,7 +31,13 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'people-list-ajax.json';
       $view = $templateArgs['view'];
       break;
-    case 'salary-ajax':
+    case 'people-save':
+      $templateArgs = peopleSave($pbdb, $templateArgs);
+      $templateArgs = peopleSave($pbdb, $templateArgs, $_REQUEST['peopleid'],
+                                 $_REQUEST['name'], $_REQUEST['username']);
+      $view = $templateArgs['view'];
+      break;
+    case 'salary-list-json':
       if (isset($_REQUEST['peopleid'])) {
         $templateArgs = salaryView($pbdb, $templateArgs, $_REQUEST['peopleid']);
       }
@@ -71,9 +79,26 @@ function peopleView ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function peopleSave ($pbdb, $templateArgs, $peopleid, $name, $username) {
+  if ($peopleid != 'new') {
+    $templateArgs['debug'] = array ($peopleid, $name, $username);
+    $pbdb->updatePerson ($peopleid, $name, $username);
+  }
+  else {
+    $templateArgs['debug'] = array ("peopleid was 'new'");
+  }
+
+  $templateArgs['peopleid'] = $peopleid;
+  $templateArgs['name'] = $name;
+  $templateArgs['username'] = $username;
+  $templateArgs['view'] = 'people-save-result.html';
+
+  return ($templateArgs);
+}
+
 function salaryView ($pbdb, $templateArgs, $peopleid) {
   $templateArgs['salaries'] = $pbdb->getSalary($peopleid);
-  $templateArgs['view'] = 'salary-ajax.html';
+  $templateArgs['view'] = 'salary-list-ajax.json';
 
   return ($templateArgs);
 }

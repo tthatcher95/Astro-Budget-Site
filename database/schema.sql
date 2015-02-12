@@ -4,7 +4,8 @@ CREATE SCHEMA public;
 CREATE TABLE people (
   peopleid SERIAL Primary Key,
   name VARCHAR(128),
-  username VARCHAR(32)
+  username VARCHAR(32),
+  admin BOOLEAN
 );
 
 CREATE TABLE salaries (

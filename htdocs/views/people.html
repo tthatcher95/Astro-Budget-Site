@@ -11,9 +11,10 @@
         {% include 'menu-tags.html' %}
       <div class="container">
         <h1>List of People</h1>
+        <div id="warningDiv" class="ui-corner-all ui-state-highlight"></div>
         <div id="editDialog" class="ui-widget"></div>
         <table id="peopleTable" class="display" cellspacing="0" width="100%">
-          <thead><tr><th>Name</th><th>Title</th><th>Pay Plan</th></tr></thead>
+          <thead><tr><th>Name</th><th>Title</th><th>Pay Plan</th><th>Username</th></tr></thead>
         </table>
       </div>
 
@@ -23,8 +24,8 @@
 
           dialog = $("#editDialog").dialog({
             autoOpen: false,
-            height: 400,
-            width: 700,
+            height: 600,
+            width: 950,
             modal: true,
             buttons: {
               "Save User": saveUser,
@@ -39,10 +40,30 @@
         }
 
         function saveUser() {
+          $.post("index.php", $("#peopleForm").serialize());
+          // var table = $("#peopleData").DataTable( {
+          //   "ajax": "index.php?view=people-list-json"
+          // });
+
+          // table.ajax.reload();
+
+          $('#peopleTable').dataTable( {
+            "destroy": true,
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=people-list-json",
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]]
+          } );
+
           dialog.dialog("close");
+          $("#warningDiv").html('<p><span class="ui-icon ui-icon-info"></span>' +
+                                " Updated " + $("#peopleid").val() + " " + $("#name").val() + 
+                                " (" + $("#username").val() +")</p>");
+          $("#warningDiv").show();
         }
 
         $(document).ready(function() {
+          $("#warningDiv").hide();
           $('#peopleTable').dataTable( {
             "processing": true,
             "serverSide": false,

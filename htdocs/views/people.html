@@ -10,8 +10,10 @@
     <body>
         {% include 'menu-tags.html' %}
       <div class="container">
-        <h1>List of People</h1>
-        <div id="warningDiv" class="ui-corner-all ui-state-highlight"></div>
+        <div id="title">
+          <h2>List of People</h2>
+        </div>
+        <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
         <table id="peopleTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>Name</th><th>Title</th><th>Pay Plan</th><th>Username</th></tr></thead>
@@ -47,8 +49,8 @@
 
           // table.ajax.reload();
 
+          $('#peopleTable').dataTable().fnDestroy();
           $('#peopleTable').dataTable( {
-            "destroy": true,
             "processing": true,
             "serverSide": false,
             "ajax": "index.php?view=people-list-json",
@@ -56,8 +58,7 @@
           } );
 
           dialog.dialog("close");
-          $("#warningDiv").html('<p><span class="ui-icon ui-icon-info"></span>' +
-                                " Updated " + $("#peopleid").val() + " " + $("#name").val() + 
+          $("#warningDiv").html("<p>Updated [" + $("#peopleid").val() + "] " + $("#name").val() + 
                                 " (" + $("#username").val() +")</p>");
           $("#warningDiv").show();
         }

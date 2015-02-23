@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proposal Budget Listing</title>
+        {% include 'menu-header.html' %}
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+        {% include 'menu-tags.html' %}
+      <div class="container">
+        <div id="title">
+          <h2>List of Proposals</h2>
+        </div>
+        <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
+        <div id="editDialog" class="ui-widget"></div>
+        <table id="proposalsTable" class="display" cellspacing="0" width="100%">
+          <thead><tr><th>Proposal</th><th>PI</th><th>Proposal #</th><th>Award #</th><th>Start</th><th>End</th></tr></thead>
+        </table>
+      </div>
+
+      <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+          $("#warningDiv").hide();
+          $('#proposalsTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=proposal-list-json",
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]]
+          } );
+        } );
+      </script>
+    </body>
+</html>

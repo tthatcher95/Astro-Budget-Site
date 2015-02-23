@@ -32,7 +32,6 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'people-save':
-      $templateArgs = peopleSave($pbdb, $templateArgs);
       $templateArgs = peopleSave($pbdb, $templateArgs, $_REQUEST['peopleid'],
                                  $_REQUEST['name'], $_REQUEST['username']);
       $view = $templateArgs['view'];
@@ -43,6 +42,21 @@ if (isset($_REQUEST['view'])) {
       }
       $view = $templateArgs['view'];
       break;
+    case 'salary-save':
+      $templateArgs = salarySave($pbdb, $templateArgs, $_REQUEST['salaryid'], $_REQUEST['peopleid'],
+        $_REQUEST['effectivedate'], $_REQUEST['payplan'], $_REQUEST['title'], $_REQUEST['appttype'],
+        $_REQUEST['authhours'], $_REQUEST['estsalary'], $_REQUEST['estbenefits'], $_REQUEST['leavecategory'],
+        $_REQUEST['laf']);
+      $view = $templateArgs['view'];
+      break;
+    case 'proposals':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'proposal-list-json':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'proposal-list-ajax.json';
+      $view = $templateArgs['view'];
   }
 }
 
@@ -99,6 +113,40 @@ function peopleSave ($pbdb, $templateArgs, $peopleid, $name, $username) {
 function salaryView ($pbdb, $templateArgs, $peopleid) {
   $templateArgs['salaries'] = $pbdb->getSalary($peopleid);
   $templateArgs['view'] = 'salary-list-ajax.json';
+
+  return ($templateArgs);
+}
+
+function salarySave ($pbdb, $templateArgs, $salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, 
+                     $authhours, $estsalary, $estbenefits, $leavecategory, $laf) {
+  if ($salaryid != 'new') {
+    $pbdb->updateSalary ($salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, $authhours,
+                         $estsalary, $estbenefits, $leavecategory, $laf);
+  }
+  else {
+    $templateArgs['debug'] = array ("salaryid was 'new'");
+  }
+
+  $templateArgs['view'] = 'salary-save-result.html';
+
+  return ($templateArgs);
+}
+
+function proposalView ($pbdb, $templateArgs) {
+  $peopleid = null;
+  $proposalid = null;
+  if (isset($_REQUEST['proposalid'])) { 
+    $proposalid = $_REQUEST['proposalid']; 
+    $templateArgs['view'] = 'proposal-view.html';
+  }
+  else {
+    $templateArgs['view'] = 'proposals.html';
+    if ($templateArgs['remote_user'][0]['admin'] != 't') { 
+      $peopleid = $templateArgs['remote_user'][0]['peopleid']; 
+    }
+  }
+
+  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null);
 
   return ($templateArgs);
 }

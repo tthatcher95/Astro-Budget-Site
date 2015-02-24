@@ -230,7 +230,7 @@ class PBTables {
 
     $query = "INSERT INTO fundingprograms (programname, agency, pocname, pocemail, startdate, enddate) " .
              "VALUES ('$programname', '$agency', '$pocname', '$pocemail', '" . $this->formatdate($startdate) . "', " .
-             "'" . $this->formatDate($enddate) . "'";
+             "'" . $this->formatDate($enddate) . "')";
 
     $this->db->query($query);
   }
@@ -250,27 +250,27 @@ class PBTables {
       $needComma = true;
     }
     if (isset($agency)) {
-      if ($needComa) { $query .= ", "; }
+      if ($needComma) { $query .= ", "; }
       $query .= "agency='$agency'";
       $needComma = true;
     }
     if (isset($pocname)) {
-      if ($needComa) { $query .= ", "; }
+      if ($needComma) { $query .= ", "; }
       $query .= "pocname='$pocname'";
       $needComma = true;
     }
     if (isset($pocemail)) {
-      if ($needComa) { $query .= ", "; }
+      if ($needComma) { $query .= ", "; }
       $query .= "pocemail='$pocemail'";
       $needComma = true;
     }
     if (isset($startdate)) {
-      if ($needComa) { $query .= ", "; }
+      if ($needComma) { $query .= ", "; }
       $query .= "startdate= '" . $this->formatDate($startdate) . "'";
       $needComma = true;
     }
     if (isset($enddate)) {
-      if ($needComa) { $query .= ", "; }
+      if ($needComma) { $query .= ", "; }
       $query .= "enddate='" . $this->formatDate($enddate) . "'";
       $needComma = true;
     }
@@ -281,12 +281,13 @@ class PBTables {
   }
 
   function getFundingPrograms ($programid, $programname, $agency, $pocname, $pocemail, $targetdate) {
-    $query = "SELECT programid, programname, agency, pocname, pocemail, startdate, enddate " .
+    $query = "SELECT programid, programname, agency, pocname, pocemail, " .
+             "to_char (startdate, 'DD Mon YYYY') as startdate, to_char(enddate, 'DD Mon YYYY') as enddate " .
              "FROM fundingprograms";
 
     $needAnd = false;
     if (isset($programid)) {
-      $query .= "WHERE programid=$programid";
+      $query .= " WHERE programid=$programid";
       $needAnd = true;
     }
     if (isset($programname)) {
@@ -414,8 +415,11 @@ class PBTables {
   }
 
   function getProposals ($proposalid, $peopleid, $programid, $awardnumber, $proposalnumber, $perfperiod) {
-    $query = "SELECT proposalid, peopleid, programid, awardnumber, proposalnumber, perfperiodstart, perfperiodend " .
-             "FROM proposals";
+    $query = "SELECT p.proposalid, p.projectname, p.peopleid, u.name, p.programid, f.programname, p.awardnumber, " .
+             "p.proposalnumber, to_char(p.perfperiodstart, 'DD Mon YYYY') as perfperiodstart, " .
+             "to_char(p.perfperiodend, 'DD Mon YYYY') as perfperiodend " .
+             "FROM proposals p JOIN people u ON (p.peopleid=u.peopleid) " .
+             "JOIN fundingprograms f ON (f.programid=p.programid)";
     $needAnd = false;
 
     if (isset($proposalid)) {
@@ -1124,40 +1128,6 @@ class PBTables {
   #  description VARCHAR(256),
   #  amount REAL,
   #  fiscalyear VARCHAR(4),
-
-  function addAdministrator ($peopleid) {
-    if (!isset($peopleid)) { return "A people ID must be provided to add an administrator"; }
-
-    $query = "INSERT INTO administrators (peopleid) VALUES ($peopleid)";
-
-    $this->db->query($query);
-  }
-
-  function isAdmin ($peopleid) {
-    if (!isset($peopleid)) { return "A people ID must be provided to look up if they are an administrator"; }
-
-    $query = "SELECT adminid, peopleid FROM administrators WHERE peopleid=$peopleid";
-
-    $this->db->query($query);
-    $results = $this->db->getResultArray();
-
-    if (count($results) > 0) { return true; }
-
-    return false;
-  }
-
-  function deleteAdmin ($adminid) {
-    if (!isset($adminid)) { return "An administrator ID is required to delete an administrator"; }
-
-    $query = "DELETE FROM administrators WHERE adminid=$adminid";
-
-    $this->db->query($query);
-  }
-
-  # CREATE TABLE administrators (
-  #  adminid SERIAL Primary Key,
-  #  peopleid INTEGER,
-
 
   function formatDate ($effectivedate) {
     $newtime = strtotime($effectivedate);

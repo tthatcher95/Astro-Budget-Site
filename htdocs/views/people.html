@@ -11,7 +11,8 @@
         {% include 'menu-tags.html' %}
       <div class="container">
         <div id="title">
-          <h2>List of People</h2>
+          <h2>List of People
+          <a href='javascript:void(0)' onClick="editUserDialog('new')" id='newButton'>New</a></h2>
         </div>
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
@@ -64,6 +65,7 @@
         }
 
         $(document).ready(function() {
+          $("#newButton").button();
           $("#warningDiv").hide();
           $('#peopleTable').dataTable( {
             "processing": true,

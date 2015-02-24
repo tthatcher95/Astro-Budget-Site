@@ -8,7 +8,11 @@
 
 <script>
   $(function() {
-    $("#navigation").menu();
+  {% for item in navigation %}
+    $("#menu-button-{{ loop.index }}").button();
+    $("#welcomeButton").button({ disabled: true });
+  {% endfor %}
+
   });
 </script>
 <style>

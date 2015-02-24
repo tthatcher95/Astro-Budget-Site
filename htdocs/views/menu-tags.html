@@ -1,6 +1,6 @@
-<ul id="navigation">
+<div id="menubar" class="ui-widget-header ui-corner-all">
   {% for item in navigation %}
-    <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+    <a href="{{ item.href }}" id="menu-button-{{ loop.index }}">{{ item.caption }}</a>
   {% endfor %}
-<p style="align: right;">Welcome {{ remote_user[0].name }}</p>
-</ul>
+<button id="welcomeButton" style='float:right;'>Welcome {{ remote_user[0].name }}</button>
+</div>

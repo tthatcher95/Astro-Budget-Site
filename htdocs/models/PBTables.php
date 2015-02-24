@@ -12,6 +12,10 @@ class PBTables {
 
   # People
   function addPerson ($name, $username, $admin) {
+    if (!isset($admin)) { $admin = 'false'; }
+    if ($admin == 't') { $admin = 'true'; }
+    if ($admin == 'f') { $admin = 'false'; }
+    
     $query = "INSERT INTO people (name, username, admin) VALUES ('$name', '$username', $admin)";
 
     $this->db->query ($query);
@@ -35,6 +39,8 @@ class PBTables {
       $query .= "username='$username'";
     }
     if (isset($admin)) {
+      if ($admin == 't') { $admin = 'true'; }
+      else { $admin = 'false'; }
       if ((isset($name)) or (isset($username))) {
         $query .= ", ";
       }

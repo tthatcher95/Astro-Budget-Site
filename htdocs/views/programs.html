@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Funding Programs Listing</title>
+        {% include 'menu-header.html' %}
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+        {% include 'menu-tags.html' %}
+      <div class="container">
+        <div id="title">
+          <h2>List of Funding Programs
+          <a href='javascript:void(0)' onClick="editProgramDialog('new')" id='newButton'>New</a></h2>
+        </div>
+        <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
+        <div id="editDialog" class="ui-widget"></div>
+        <table id="programsTable" class="display" cellspacing="0" width="100%">
+          <thead><tr><th>Name</th><th>Agency</th><th>POC</th><th>POC E-Mail</th><th>Start</th><th>End</th></tr></thead>
+        </table>
+      </div>
+
+      <script type="text/javascript" charset="utf-8">
+        function editProgramDialog(programid) {
+          $("#editDialog").load("index.php?view=program-edit&programid=" + programid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 600,
+            width: 950,
+            modal: true,
+            buttons: {
+              "Save": saveProgram,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        
+        }
+
+        function saveProgram() {
+          $.post("index.php", $("#programForm").serialize());
+
+          $('#programsTable').dataTable().fnDestroy();
+          $('#programsTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=programs-list-json",
+            "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]]
+          } );
+
+          dialog.dialog("close");
+          $("#warningDiv").html("<p>Updated [" + $("#programid").val() + "] " + $("#programname").val() + 
+                                " (" + $("#agency").val() +")</p>");
+          $("#warningDiv").show();
+        }
+
+        $(document).ready(function() {
+          $("#newButton").button();
+          $("#warningDiv").hide();
+          $('#programsTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=programs-list-json",
+            "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]]
+          } );
+        } );
+      </script>
+    </body>
+</html>

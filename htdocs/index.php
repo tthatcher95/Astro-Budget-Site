@@ -8,8 +8,9 @@ $pbdb = new PBTables();
 $view = 'default.html'; # Change to default landing page
 
 $templateArgs = array('navigation' => array (
-  array ('caption' => 'People', 'href' => 'index.php?view=people'),
   array ('caption' => 'Proposals', 'href' => 'index.php?view=proposals'),
+  array ('caption' => 'People', 'href' => 'index.php?view=people'),
+  array ('caption' => 'Conferences', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Programs', 'href' => 'index.php?view=programs')));
 
 $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
@@ -32,8 +33,7 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'people-save':
-      $templateArgs = peopleSave($pbdb, $templateArgs, $_REQUEST['peopleid'],
-                                 $_REQUEST['name'], $_REQUEST['username']);
+      $templateArgs = peopleSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'salary-list-json':
@@ -101,6 +101,11 @@ function peopleView ($pbdb, $templateArgs) {
 
   if (isset($_REQUEST['peopleid'])) { $peopleid = $_REQUEST['peopleid']; }
 
+  if ($peopleid == 'new') {
+    $templateArgs['people'] = array ( array ('peopleid' => 'new', 'name' => '', 'username' => '', 'admin' => 'f'));
+    return ($templateArgs);
+  }
+
   $templateArgs['people'] = $pbdb->getPerson ($peopleid, null, null);
   for ($i = 0; $i < count($templateArgs['people']); $i++) {
     $salaryResults = $pbdb->getEffectiveSalary ($templateArgs['people'][$i]['peopleid'],
@@ -114,18 +119,28 @@ function peopleView ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
-function peopleSave ($pbdb, $templateArgs, $peopleid, $name, $username) {
-  if ($peopleid != 'new') {
-    $templateArgs['debug'] = array ($peopleid, $name, $username);
-    $pbdb->updatePerson ($peopleid, $name, $username);
+function peopleSave ($pbdb, $templateArgs) {
+  if (!isset($_REQUEST['peopleid'])) { 
+    $templateArgs['debug'] = array ("Missing person ID to create or update people");
+    return ($templateArgs);
+  }
+
+  $peopleid = $_REQUEST['peopleid'];
+  $name     = (isset($_REQUEST['name'])? $_REQUEST['name'] : null);
+  $username = (isset($_REQUEST['username'])? $_REQUEST['username'] : null);
+  $admin    = (isset($_REQUEST['admin'])? $_REQUEST['admin'] : null);
+
+  if ($peopleid == 'new') {
+    $pbdb->addPerson ($name, $username, $admin);
   }
   else {
-    $templateArgs['debug'] = array ("peopleid was 'new'");
+    $pbdb->updatePerson ($peopleid, $name, $username, $admin);
   }
 
   $templateArgs['peopleid'] = $peopleid;
   $templateArgs['name'] = $name;
   $templateArgs['username'] = $username;
+  $templateArgs['admin'] = $admin;
   $templateArgs['view'] = 'people-save-result.html';
 
   return ($templateArgs);

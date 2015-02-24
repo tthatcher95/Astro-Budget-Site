@@ -57,6 +57,27 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = proposalView($pbdb, $templateArgs);
       $templateArgs['view'] = 'proposal-list-ajax.json';
       $view = $templateArgs['view'];
+      break;
+    case 'proposal-save':
+      break;
+    case 'programs':
+      $templateArgs = programsView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'program-edit':
+      $templateArgs = programsView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'programs-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'programs-list-json':
+      $templateArgs = programsView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'programs-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'program-save':
+      $templateArgs = programSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
   }
 }
 
@@ -147,6 +168,51 @@ function proposalView ($pbdb, $templateArgs) {
   }
 
   $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null);
+
+  return ($templateArgs);
+}
+
+function programsView ($pbdb, $templateArgs) {
+  $programid = null;
+  if (isset($_REQUEST['programid'])) { $programid = $_REQUEST['programid']; }
+  if ($programid == 'new') { 
+    $templateArgs['programs'] = array ( array ('programid' => 'new', 'programname' => '',
+      'agency' => '', 'pocname' => '', 'pocemail' => '', 'startdate' => '', 'enddate' => ''));
+  }
+  else {
+    $templateArgs['programs'] = $pbdb->getFundingPrograms ($programid, null, null, null, null, null);
+  }
+
+  $templateArgs['view'] = 'programs.html';
+
+  return ($templateArgs);
+}
+
+function programSave ($pbdb, $templateArgs) {
+  if (!isset($_REQUEST['programid'])) { 
+    $templateArgs['debug'] = array ("Missing program ID to create or update programs");
+    return ($templateArgs);
+  }
+
+  $programid   = $_REQUEST['programid'];
+  $programname = (isset($_REQUEST['programname'])? $_REQUEST['programname'] : null);
+  $agency      = (isset($_REQUEST['agency'])? $_REQUEST['agency'] : null);
+  $pocname     = (isset($_REQUEST['pocname'])? $_REQUEST['pocname'] : null);
+  $pocemail    = (isset($_REQUEST['pocemail'])? $_REQUEST['pocemail'] : null);
+  $startdate   = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
+  $enddate     = (isset($_REQUEST['enddate'])? $_REQUEST['enddate'] : null);
+
+  if ($programid == 'new') {
+    $pbdb->addFundingProgram ($programname, $agency, $pocname, $pocemail, $startdate, $enddate);
+  }
+  else {
+    $pbdb->updateFundingProgram ($programid, $programname, $agency, $pocname, $pocemail, $startdate, $enddate);
+  }
+
+  $templateArgs['programid'] = $programid;
+  $templateArgs['programname'] = $programname;
+  $templateArgs['agency'] = $agency;
+  $templateArgs['view'] = 'program-save-result.html';
 
   return ($templateArgs);
 }

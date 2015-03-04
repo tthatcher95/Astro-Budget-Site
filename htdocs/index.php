@@ -8,6 +8,7 @@ $pbdb = new PBTables();
 $view = 'default.html'; # Change to default landing page
 
 $templateArgs = array('navigation' => array (
+  array ('caption' => 'Home', 'href' => 'index.php'),
   array ('caption' => 'Proposals', 'href' => 'index.php?view=proposals'),
   array ('caption' => 'People', 'href' => 'index.php?view=people'),
   array ('caption' => 'Conferences', 'href' => 'index.php?view=conferences'),
@@ -76,6 +77,20 @@ if (isset($_REQUEST['view'])) {
       break;
     case 'program-save':
       $templateArgs = programSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'conference':
+      $templateArgs = conferenceView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'conference-edit':
+      $templateArgs = conferenceView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'conference-edit.html';
+      $view = $temlateArgs['view'];
+      break;
+    case 'conferences-list-json':
+      $templateArgs = conferenceView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'conferences-list-ajax.json';
       $view = $templateArgs['view'];
       break;
   }
@@ -153,14 +168,29 @@ function salaryView ($pbdb, $templateArgs, $peopleid) {
   return ($templateArgs);
 }
 
-function salarySave ($pbdb, $templateArgs, $salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, 
-                     $authhours, $estsalary, $estbenefits, $leavecategory, $laf) {
-  if ($salaryid != 'new') {
-    $pbdb->updateSalary ($salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, $authhours,
-                         $estsalary, $estbenefits, $leavecategory, $laf);
+function salarySave ($pbdb, $templateArgs) {
+  $salaryid = null;
+  if (isset($_REQUEST['salaryid'])) { $salaryid = $_REQUEST['salaryid']; }
+  else { 
+    $templateArgs['debug'] = array ('Missing salary ID');
+    return ($templateArgs);
+  }
+  $peopleid = null;
+  if (isset($_REQUEST['peopleid'])) { $peopleid = $_REQUEST['peopleid']; }
+  else { 
+    $templateArgs['debug'] = array ('Missing person ID');
+    return ($templateArgs);
+  }
+
+  if ($salaryid == 'new') {
+    $pbdb->addSalary($peopleid, $_REQUEST['effectivedate'], $_REQUEST['payplan'], $_REQUEST['title'],
+                     $_REQUEST['appttype'], $_REQUEST['authhours'], $_REQUEST['estsalary'], $_REQUEST['estbenefits'],
+                     $_REQUEST['leavecategory'], $_REQUEST['laf']);
   }
   else {
-    $templateArgs['debug'] = array ("salaryid was 'new'");
+    $pbdb->updateSalary($salaryid, $peopleid, $_REQUEST['effectivedate'], $_REQUEST['payplan'], 
+                        $_REQUEST['title'], $_REQUEST['appttype'], $_REQUEST['authhours'], $_REQUEST['estsalary'], 
+                        $_REQUEST['estbenefits'], $_REQUEST['leavecategory'], $_REQUEST['laf']);
   }
 
   $templateArgs['view'] = 'salary-save-result.html';
@@ -187,16 +217,49 @@ function proposalView ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function proposalSave ($pbdb, $templateArgs) {
+  $proposalid = null;
+  if (isset($_REQUEST['proposalid'])) {
+    $templateArgs['debug'] = array ("Missing proposal ID to create or update proposals");
+    return ($templateArgs);
+  }
+
+  $peopleid        = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $projectname     = (isset($_REQUEST['projectname'])? $_REQUEST['projectname'] : null);
+  $proposalnumber  = (isset($_REQUEST['proposalnumber'])? $_REQUEST['proposalnumber'] : null);
+  $awardnumber     = (isset($_REQUEST['awardnumber'])? $_REQUEST['awardnumber'] : null);
+  $programid       = (isset($_REQUEST['programid'])? $_REQUEST['programid'] : null);
+  $perfperiodstart = (isset($_REQUEST['perfperiodstart'])? $_REQUEST['perfperiodstart'] : null);
+  $perfperiodend   = (isset($_REQUEST['perfperiodend'])? $_REQUEST['perfperiodend'] : null);
+
+  if ($proposalid == 'new') {
+    $pbdb->addProposal ($peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
+                        $perfperiodstart, $perfperiodend);
+  }
+  else {
+    $pbdb->updateProposal ($proposalid, $peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
+                           $perfperiodstart, $perfperiodend);
+  }
+
+  $templateArgs['view'] = 'proposal-save-results.html';
+  $templateArgs['proposalid']      = $proposalid;
+  $templateArgs['peopleid']        = $peopleid;
+  $templateArgs['projectname']     = $projectname;
+  $templateArgs['proposalnumber']  = $proposalnumber;
+  $templateArgs['awardnumber']     = $awardnumber;
+  $templateArgs['programid']       = $programid;
+  $templateArgs['perfperiodstart'] = $perfperiodstart;
+  $templateArgs['perfperiodend']   = $perfperiodend;
+
+  return ($templateArgs);
+}
+
 function programsView ($pbdb, $templateArgs) {
   $programid = null;
   if (isset($_REQUEST['programid'])) { $programid = $_REQUEST['programid']; }
-  if ($programid == 'new') { 
-    $templateArgs['programs'] = array ( array ('programid' => 'new', 'programname' => '',
-      'agency' => '', 'pocname' => '', 'pocemail' => '', 'startdate' => '', 'enddate' => ''));
-  }
-  else {
-    $templateArgs['programs'] = $pbdb->getFundingPrograms ($programid, null, null, null, null, null);
-  }
+  if ($programid == 'new') { $programid = 0; }
+
+  $templateArgs['programs'] = $pbdb->getFundingPrograms ($programid, null, null, null, null, null);
 
   $templateArgs['view'] = 'programs.html';
 
@@ -228,6 +291,116 @@ function programSave ($pbdb, $templateArgs) {
   $templateArgs['programname'] = $programname;
   $templateArgs['agency'] = $agency;
   $templateArgs['view'] = 'program-save-result.html';
+
+  return ($templateArgs);
+}
+
+function conferenceView ($pbdb, $templateArgs) {
+  $conferenceid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
+  if ($conferenceid == 'new') { $conferenceid = 0; }
+
+  $meeting = null;
+  if (isset($_REQUEST['meeting'])) { $meeting = $_REQUEST['meeting']; }
+
+  $templateArgs['conferences'] = $pbdb->getConferences ($conferenceid, $meeting, null);
+
+  $templateArgs['view'] = 'conferences.html';
+
+  return ($templateArgs);
+}
+
+function conferenceSave ($pbdb, $templateArgs) {
+  if (!isset($_REQUEST['conferenceid'])) {
+    $templateArgs['debug'] = array ('Missing conference ID to create or update conferences');
+    return ($templateArgs);
+  }
+  $conferenceid = $_REQUEST['conferenceid'];
+
+  $meeting  = (isset($_REQUEST['meeting'])? $_REQUEST['meeting'] : null);
+  $location = (isset($_REQUEST['location'])? $_REQUEST['location'] : null);
+
+  if ($conferenceid == 'new') {
+    $pbdb->addConference ($meeting, $location);
+  }
+  else {
+    $pbdb->updateConference ($conferenceid, $meeting, $location);
+  }
+
+  $templateArgs['meeting'] = $meeting;
+  $templateArgs['location'] = $location;
+  $templateArgs['view'] = 'conference-save-result.html';
+
+  return ($templateArgs);
+}
+
+function conferenceRatesView ($pbdb, $templateArgs) {
+  $conferenceid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
+  if ($conferenceid == 'new') { $conferenceid = 0; }
+  $effectivedate = (isset($_REQUEST['effectivedate'])? $_REQUEST['effectivedate'] : null);
+  $templateArgs['conferencerates'] = $pbdb->getConferenceRates ($conferenceid, $effectivedate);
+
+  $templateArgs['view'] = 'conferencerates.html';
+
+  return ($templateArgs);
+}
+
+function conferenceRateSave ($pbdb, $templateArgs) {
+  $conferenceid     = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
+  $conferencerateid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
+  $effectivedate    = (isset($_REQUEST['effectivedate'])? $_REQUEST['effectivedate'] : null);
+  $perdiem          = (isset($_REQUEST['perdiem'])? $_REQUEST['perdiem'] : null);
+  $registration     = (isset($_REQUEST['registration'])? $_REQUEST['registration'] : null);
+  $groundtransport  = (isset($_REQUEST['groundtransport'])? $_REQUEST['groundtransport'] : null);
+  $airfare          = (isset($_REQUEST['airfare'])? $_REQUEST['airfare'] : null);
+
+  if ($conferencerateid == 'new') {
+    $pbdb->addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare);
+  }
+  else {
+    $pbdb->updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem, $registration,
+                                 $groundtransport, $airfare);
+  }
+
+  $templateArgs['conferenceid'] = $conferenceid;
+  $templateArgs['conferencerateid'] = $conferencerateid;
+  $templateArgs['effectivedate'] = $effectivedate;
+  $templateArgs['perdiem'] = $perdiem;
+  $templateArgs['registration'] = $registration;
+  $templateArgs['groundtransport'] = $groundtransport;
+  $templateArgs['airfare'] = $airfare;
+
+  $templateArgs['view'] = 'conferencerate-save-result.html';
+
+  return ($templateArgs);
+}
+
+function conferenceAttendeeSave ($pbdb, $templateArgs) {
+  $conferenceattendeeid = (isset($_REQUEST['conferenceattendeeid'])? $_REQUEST['conferenceattendeeid'] : null);
+
+  $conferenceid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
+  $proposalid   = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $peopleid     = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $meetingdays  = (isset($_REQUEST['meetingdays'])? $_REQUEST['meetingdays'] : null);
+  $traveldays   = (isset($_REQUEST['traveldays'])? $_REQUEST['traveldays'] : null);
+  $startdate    = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
+
+  if ($conferenceattendeeid == 'new') {
+    $pbdb->addConferenceAttendee ($conferenceid, $proposalid, $peopleid, $meetingdays, $traveldays, $startdate);
+  }
+  else {
+    $pbdb->updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $peopleid, $meetingdays,
+                                     $traveldays, $startdate);
+  }
+
+  $templateArgs['conferenceattendeeid'] = $conferenceattendeeid;
+  $templateArgs['conferenceid'] = $conferenceid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['peopleid'] = $peopleid;
+  $templateArgs['meetingdays'] = $meetingdays;
+  $templateArgs['traveldays'] = $traveldays;
+  $templateArgs['startdate'] = $startdate;
+
+  $templateArgs['view'] = 'conferenceattendee-save-result.html';
 
   return ($templateArgs);
 }

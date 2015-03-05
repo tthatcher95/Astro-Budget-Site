@@ -9,10 +9,14 @@
 <script>
   $(function() {
   {% for item in navigation %}
+    {% if item.caption == "Home" %}
+    $("#menu-button-{{ item.caption }}").button({icons: { primary: "ui-icon-home" }});
+    {% else %}
     $("#menu-button-{{ loop.index }}").button();
-    $("#welcomeButton").button({ disabled: true });
+    {% endif %}
   {% endfor %}
 
+    $("#welcomeButton").button({ disabled: true });
   });
 </script>
 <style>

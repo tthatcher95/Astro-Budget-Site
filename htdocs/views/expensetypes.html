@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proposal Budget Expense Type Listing</title>
+        {% include 'menu-header.html' %}
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+        {% include 'menu-tags.html' %}
+      <div class="container">
+        <div id="title">
+          <h2>List of Expense Types
+          <a href='javascript:void(0)' onClick="editExpenseTypeDialog('new')" id='newButton'>New</a></h2>
+        </div>
+        <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
+        <div id="editDialog" class="ui-widget"></div>
+        <table id="expensetypesTable" class="display" cellspacing="0" width="100%">
+          <thead><tr><th>Description</th></tr></thead>
+        </table>
+      </div>
+
+      <script type="text/javascript" charset="utf-8">
+        function editExpenseTypeDialog(expensetypeid) {
+          $("#editDialog").load("index.php?view=expensetype-edit&expensetypeid=" + expensetypeid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 250,
+            width: 400,
+            modal: true,
+            buttons: {
+              "Save": saveExpensetype,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        
+        }
+
+        function saveExpensetype() {
+          $.post("index.php", $("#expensetypeForm").serialize());
+
+          $('#expensetypesTable').dataTable().fnDestroy();
+          $('#expensetypesTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=expensetypes-list-json",
+            "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]]
+          } );
+
+          dialog.dialog("close");
+          $("#warningDiv").html("<p>Updated [" + $("#expensetypeid").val() + "] " + $("#description").val() + ")</p>");
+          $("#warningDiv").show();
+        }
+
+        $(document).ready(function() {
+          $("#newButton").button();
+          $("#warningDiv").hide();
+          $('#expensetypesTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "ajax": "index.php?view=expensetypes-list-json",
+            "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]]
+          } );
+        } );
+      </script>
+    </body>
+</html>

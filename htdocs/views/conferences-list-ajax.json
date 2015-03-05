@@ -1,0 +1,5 @@
+{"draw":0,"recordsTotal":{{ conferences|length }},"recordsFiltered":{{ conferences|length }},"data":[
+{% for conference in conferences %}
+["<a href='javascript:void(0)' onclick='editConferenceDialog({{ conference.conferenceid }})'>{{ conference.meeting }}</a>","{{ conference.location }}"]{% if loop.last != true %},{% endif %}
+{% endfor %}
+]}

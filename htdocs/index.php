@@ -12,6 +12,7 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'Proposals', 'href' => 'index.php?view=proposals'),
   array ('caption' => 'People', 'href' => 'index.php?view=people'),
   array ('caption' => 'Conferences', 'href' => 'index.php?view=conferences'),
+  array ('caption' => 'Expenses', 'href' => 'index.php?view=expensetypes'),
   array ('caption' => 'Programs', 'href' => 'index.php?view=programs')));
 
 $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
@@ -79,18 +80,36 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = programSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
-    case 'conference':
+    case 'conferences':
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'conference-edit':
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $templateArgs['view'] = 'conference-edit.html';
-      $view = $temlateArgs['view'];
+      $view = $templateArgs['view'];
       break;
     case 'conferences-list-json':
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $templateArgs['view'] = 'conferences-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'expensetypes':
+      $templateArgs = expensetypesView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'expensetype-edit':
+      $templateArgs = expensetypesView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'expensetype-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'expensetypes-list-json':
+      $templateArgs = expensetypesView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'expensetypes-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'expensetype-save':
+      $templateArgs = expensetypesSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
   }
@@ -125,8 +144,10 @@ function peopleView ($pbdb, $templateArgs) {
   for ($i = 0; $i < count($templateArgs['people']); $i++) {
     $salaryResults = $pbdb->getEffectiveSalary ($templateArgs['people'][$i]['peopleid'],
                                                 $date = date('m/d/Y', time()));
-    $templateArgs['people'][$i]['payplan'] = $salaryResults[0]['payplan'];
-    $templateArgs['people'][$i]['title'] = $salaryResults[0]['title'];
+    if (isset($salaryResults[0])) {
+      $templateArgs['people'][$i]['payplan'] = $salaryResults[0]['payplan'];
+      $templateArgs['people'][$i]['title'] = $salaryResults[0]['title'];
+    }
   }
 
   $templateArgs['view'] = 'people.html';
@@ -203,7 +224,7 @@ function proposalView ($pbdb, $templateArgs) {
   $proposalid = null;
   if (isset($_REQUEST['proposalid'])) { 
     $proposalid = $_REQUEST['proposalid']; 
-    $templateArgs['view'] = 'proposal-view.html';
+    $templateArgs['view'] = 'proposals.html';
   }
   else {
     $templateArgs['view'] = 'proposals.html';
@@ -213,6 +234,15 @@ function proposalView ($pbdb, $templateArgs) {
   }
 
   $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null);
+
+  # Add in the tasks, FBMS accounts, conferences/attendees, and expenses too
+  for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
+    $proposalid = $templateArgs['proposals'][$i]['proposalid'];
+    $templateArgs['proposals'][$i]['FBMSaccounts'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
+    $templateArgs['proposals'][$i]['conferenceattendees'] = $pbdb->getConferenceAttendees (null, null, $proposalid, null);
+    $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks (null, $proposalid, null);
+    $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses (null, $proposalid, null, null);
+  }
 
   return ($templateArgs);
 }
@@ -401,6 +431,71 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
   $templateArgs['startdate'] = $startdate;
 
   $templateArgs['view'] = 'conferenceattendee-save-result.html';
+
+  return ($templateArgs);
+}
+
+function tasksView ($pbdb, $templateArgs) {
+  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
+
+  $templateArgs['tasks'] = $pbdb->getTasks ($taskid, $proposalid, $taskname);
+
+  $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON
+
+  return ($templateArgs);
+}
+
+function taskSave ($pbdb, $templateArgs) {
+  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
+
+  if ($taskid == 'new') {
+    $pbdb->addTask ($proposalid, $taskname);
+  }
+  else {
+    $pbdb->updateTask ($taskid, $proposalid, $taskname);
+  }
+
+  $templateArgs['taskid'] = $taskid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['taskname'] = $taskname;
+
+  $templateArgs['view'] = 'task-save-result.html';
+
+  return ($templateArgs);
+}
+
+function expensetypesView ($pbdb, $templateArgs) {
+  $expensetypeid = (isset($_REQUEST['expensetypeid'])? $_REQUEST['expensetypeid'] : null);
+  $description   = (isset($_REQUEST['description'])? $_REQUEST['description'] : null);
+
+  if ($expensetypeid == 'new') { $expensetypeid = 0; }
+
+  $templateArgs['expensetypes'] = $pbdb->getExpenseTypes ($expensetypeid, $description);
+
+  $templateArgs['view'] = 'expensetypes.html';
+
+  return ($templateArgs);
+}
+
+function expensetypesSave ($pbdb, $templateArgs) {
+  $expensetypeid = (isset($_REQUEST['expensetypeid'])? $_REQUEST['expensetypeid'] : null);
+  $description   = (isset($_REQUEST['description'])? $_REQUEST['description'] : null);
+  
+  if ($expensetypeid == 'new') {
+    $pbdb->addExpenseType($description);
+  }
+  else {
+    $pbdb->updateExpenseType($expensetypeid, $description);
+  }
+
+  $templateArgs['expensetypeid'] = $expensetypeid;
+  $templateArgs['description']   = $description;
+
+  $templateArgs['view'] = 'expensetype-save-result.html';
 
   return ($templateArgs);
 }

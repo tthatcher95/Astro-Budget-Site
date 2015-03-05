@@ -84,6 +84,7 @@ class PBTables {
   }
 
   function deletePerson ($peopleid) {
+    if (!isset($peopleid)) { return "A people ID is needed to delete a user"; }
     $query = "DELETE FROM people WHERE peopleid=$peopleid";
 
     $this->db->query ($query);
@@ -197,6 +198,7 @@ class PBTables {
 
   function getSalary ($peopleid) {
     if (!isset($peopleid)) { return "No ID provided to lookup salary information for"; }
+    if ($peopleid == 'new') { $peopleid=0; }
 
     $query = "SELECT salaryid, peopleid, effectivedate, payplan, title, appttype, " .
              "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries " .
@@ -515,7 +517,7 @@ class PBTables {
   }  
   
   function getFBMSAccounts ($fbmsid, $accountno, $proposalid) {
-    $query = "SELECT fmbsid, accountno, proposalid FROM fbmsaccounts";
+    $query = "SELECT fbmsid, accountno, proposalid FROM fbmsaccounts";
     $needAnd = false;
     if (isset($fbmsid)) {
       $query .= " WHERE fbmsid=$fbmsid";
@@ -674,6 +676,7 @@ class PBTables {
 
   function getConferenceRates ($conferenceid, $effectivedate) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to list conference rates"; }
+    if ($conferenceid == 'new') { $conferenceid=0; }
 
     $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
              "groundrate, airfare FROM conferencerates WHERE conferenceid=$conferenceid";
@@ -762,7 +765,7 @@ class PBTables {
     
   function getConferenceAttendees ($confereneceattendeeid, $conferenceid, $proposalid, $peopleid) {
     $query = "SELECT conferenceattendeeid, conferenceid, proposalid, peopleid, meetingdays, traveldays, startdate " .
-             "FROM conferenceattendees";
+             "FROM conferenceattendee";
 
     $needAnd = false;
     if (isset($conferenceattendeeid)) {
@@ -1008,7 +1011,7 @@ class PBTables {
   }
   
   function getExpenseTypes ($expensetypeid, $description) {
-    $query = "SELECT expensetypeid, description) FROM expensetypes";
+    $query = "SELECT expensetypeid, description FROM expensetypes";
 
     if (isset($expensetypeid)) { $query .= " WHERE expensetypeid=$expensetypeid"; }
 

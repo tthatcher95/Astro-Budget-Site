@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proposal Budget for {{ proposals[0].projectname }} </title>
+        {% include 'menu-header.html' %}
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+        {% include 'menu-tags.html' %}
+      <div class="container">
+        <div id="title">
+          <h2>Proposal</h2>
+        </div>
+        <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
+        <div id="editDialog" class="ui-widget"></div>
+        <div id="accordions">
+          <h3>Proposal Details</h3>
+            <div>
+              <form id="proposalForm" action="index.php" method="GET">
+              <table>
+                <tr><th>Project Name</th>
+                  <td colspan="3"><input type='text' name='projectname' size="70"
+                      value='{{ proposals[0].projectname }}'/></td></tr>
+                <tr><th>Principal Investigator</th>
+                  <td colspan="3"><input type='text' name='name' size="70"
+                      value='{{ proposals[0].name }}'/></td></tr>
+                <tr><th>Proposal Number</th>
+                  <td><input type='text' name='proposalnumber' value='{{ proposals[0].proposalnumber }}'/></td>
+                  <th>Award Number</th>
+                  <td><input type='text' name='awardnumber' value='{{ proposals[0].awardnumber }}'/></td></tr>
+                <tr><th>Starting</th>
+                  <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart' 
+                       value='{{ proposals[0].perfperiodstart }}'/></td>
+                  <th>Ending</th>
+                  <td><input type='text' id='proposalperfperiodend' name='perfperiodend' 
+                       value='{{ proposals[0].perfperiodend }}'/></td></tr>
+                </tr>
+              </table>
+              </form>
+            </div>
+          <h3>Tasks</h3>
+            <div>
+              <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a>
+            </div>
+
+          <h3>Conferences</h3>
+            <div>
+              <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a>
+            </div>
+          <h3>Expenses</h3>
+            <div>
+              <a href='javascript:void(0)' onClick="editTask('new')" id='newExpenseButton'>New</a>
+            </div>
+        </div>
+
+      <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+          $('#accordions').accordion();
+          $('#proposalperfperiodstart').datepicker();
+          $('#proposalperfperiodend').datepicker();
+          $('#newTaskButton').button();
+          $('#newConferenceButton').button();
+          $('#newExpenseButton').button();
+
+        } );
+      </script>
+    </body>
+</html>

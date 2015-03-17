@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Editing {{ person.name }}</title>
+
     </head>
     <body>
     <div id="peopleedittabs">
@@ -49,15 +50,18 @@
         <input type="hidden" name="act" value="save"/>
         <input type="hidden" name="view" value="salary-save"/>
         <input type="hidden" id="salaryid" name="salaryid" value=""/>
-        <table><tr><th>Pay Plan</th><td><input type="text" id="payplan" name="payplan" size="20"/></td></tr>
-          <tr><th>Title</th><td><input type="text" id="title" name="title" size="30"/></td></tr>
-          <tr><th>Appointment Type</th><td><input type="text" id="appttype" name="appttype" size="30"/></td></tr>
-          <tr><th>Authorized Hours</th><td><input type="text" id="authhours" name="authhours" size="8"/></td></tr>
-          <tr><th>Estimated Salary</th><td><input type="text" id="estsalary" name="estsalary" size="12"/></td></tr>
-          <tr><th>Estimated Benefits</th><td><input type="text" id="estbenefits" name="estbenefits" size="12"/></td></tr>
-          <tr><th>Leave Category</th><td><input type="text" id="leavecategory" name="leavecategory" size="8"/></td></tr>
-          <tr><th>LAF</th><td><input type="text" id="laf" name="laf" size="4"/></td></tr>
-          <tr><th>Effective Date</th><td><input type="text" id="effdate" name="effdate" size="16"/></td></tr>
+        <table>
+          <tr><th>Pay Plan</th><td><input type="text" id="payplan" name="payplan" size="20"/></td>
+              <th>Title</th><td><input type="text" id="title" name="title" size="30"/></td></tr>
+          <tr><th>Appointment Type</th><td><input type="text" id="appttype" name="appttype" size="30"/></td>
+              <th>Authorized Hours</th><td><input type="text" id="authhours" name="authhours" size="8"/></td></tr>
+          <tr><th>Estimated Salary</th><td><input type="text" id="estsalary" name="estsalary" size="12"/></td>
+              <th>Estimated Benefits</th><td><input type="text" id="estbenefits" name="estbenefits" size="12"/></td></tr>
+          <tr><th>Leave Category</th><td><input type="text" id="leavecategory" name="leavecategory" size="8"/></td>
+              <th>LAF</th><td><input type="text" id="laf" name="laf" size="4"/></td></tr>
+          <tr><th>Effective Date</th><td><input type="text" id="effdate" name="effdate" size="16"/></td>
+              <th></th><td><a href='javascript:void(0)' onClick="editExpenseTypeDialog('new')"
+              id='saveSalaryButton'>Save Salary</a></td></tr>
         </table>
     </div>
     {% endif %}
@@ -73,7 +77,11 @@
             "ajax": "index.php?view=salary-list-json&peopleid={{ person.peopleid }}"
           } );
         {% endfor %}
+
+        $("#effdate").datepicker();
+        $("#saveSalaryButton").button();
       });
+
     </script>
 
     </body>

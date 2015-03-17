@@ -60,6 +60,11 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'proposal-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'proposal-edit':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'proposal-edit.html';
+      $view = $templateArgs['view'];
+      break;
     case 'proposal-save':
       break;
     case 'programs':
@@ -87,6 +92,10 @@ if (isset($_REQUEST['view'])) {
     case 'conference-edit':
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $templateArgs['view'] = 'conference-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'conference-save':
+      $templateArgs = conferenceSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'conferences-list-json':
@@ -356,6 +365,7 @@ function conferenceSave ($pbdb, $templateArgs) {
     $pbdb->updateConference ($conferenceid, $meeting, $location);
   }
 
+  $templateArgs['conferenceid'] = $conferenceid;
   $templateArgs['meeting'] = $meeting;
   $templateArgs['location'] = $location;
   $templateArgs['view'] = 'conference-save-result.html';

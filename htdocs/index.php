@@ -121,6 +121,11 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = expensetypesSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'tasks-list-json':
+      $templateArgs = tasksView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'tasks-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
   }
 }
 
@@ -451,6 +456,10 @@ function tasksView ($pbdb, $templateArgs) {
   $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
 
   $templateArgs['tasks'] = $pbdb->getTasks ($taskid, $proposalid, $taskname);
+  for ($i = 0; $i < count($templateArgs['tasks']); $i++) {
+    $templateArgs['tasks'][$i]['staffing'] = $pbdb->getStaffing(null, $templateArgs['tasks'][$i]['taskid'],
+                                                                null, null);
+  }
 
   $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON
 

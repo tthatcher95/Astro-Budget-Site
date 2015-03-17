@@ -41,8 +41,11 @@
               </form>
             </div>
           <h3>Tasks</h3>
-            <div>
+            <div id='tasksdiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a>
+              <table id='tasksTable' class='display' cellspacing='0' width='100%'>
+                <thead><tr><th>Task</th><th>Staff Count</th></tr></thead>
+              </table>
             </div>
 
           <h3>Conferences</h3>
@@ -57,13 +60,19 @@
 
       <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
-          $('#accordions').accordion();
+          $('#accordions').accordion( {heightStyle: 'content' });
           $('#proposalperfperiodstart').datepicker();
           $('#proposalperfperiodend').datepicker();
           $('#newTaskButton').button();
           $('#newConferenceButton').button();
           $('#newExpenseButton').button();
 
+          $('#tasksTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
         } );
       </script>
     </body>

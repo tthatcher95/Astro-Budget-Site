@@ -290,7 +290,7 @@ class PBTables {
 
   function getFundingPrograms ($programid, $programname, $agency, $pocname, $pocemail, $targetdate) {
     $query = "SELECT programid, programname, agency, pocname, pocemail, " .
-             "to_char (startdate, 'DD Mon YYYY') as startdate, to_char(enddate, 'DD Mon YYYY') as enddate " .
+             "to_char (startdate, 'MM/DD/YYYY') as startdate, to_char(enddate, 'MM/DD/YYYY') as enddate " .
              "FROM fundingprograms";
 
     $needAnd = false;
@@ -424,8 +424,8 @@ class PBTables {
 
   function getProposals ($proposalid, $peopleid, $programid, $awardnumber, $proposalnumber, $perfperiod) {
     $query = "SELECT p.proposalid, p.projectname, p.peopleid, u.name, p.programid, f.programname, p.awardnumber, " .
-             "p.proposalnumber, to_char(p.perfperiodstart, 'DD Mon YYYY') as perfperiodstart, " .
-             "to_char(p.perfperiodend, 'DD Mon YYYY') as perfperiodend " .
+             "p.proposalnumber, to_char(p.perfperiodstart, 'MM/DD/YYYY') as perfperiodstart, " .
+             "to_char(p.perfperiodend, 'MM/DD/YYYY') as perfperiodend " .
              "FROM proposals p JOIN people u ON (p.peopleid=u.peopleid) " .
              "JOIN fundingprograms f ON (f.programid=p.programid)";
     $needAnd = false;

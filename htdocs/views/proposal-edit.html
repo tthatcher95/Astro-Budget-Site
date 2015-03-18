@@ -51,6 +51,11 @@
           <h3>Conferences</h3>
             <div>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a>
+              <form id="conferenceForm" action="index.php" method="GET">
+                {% include 'people-dropdown.html' with {'dropdown_name': 'conferencepeopleid',
+                                                        'dropdown_id': 'conferencepeopledropdown',
+                                                        'selected_peopleid': proposals[0].peopleid } %}
+              </form>
             </div>
           <h3>Expenses</h3>
             <div>

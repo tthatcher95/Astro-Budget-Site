@@ -1,5 +1,5 @@
 {"draw":0,"recordsTotal":{{ tasks|length }},"recordsFiltered":{{ tasks|length }},"data":[
 {% for task in tasks %}
-["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", {{ task.staffing|length }}]{% if loop.last !=true %},{% endif %}
+["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", {{ task.staffing|length }}, "{% for staff in task.staffing %}{{ staff.name }}{% if loop.last != true %}, {% endif %}{% endfor %}"]{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

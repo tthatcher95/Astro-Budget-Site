@@ -1,0 +1,5 @@
+{"draw":0,"recordsTotal":{{ proposals[0].conferenceattendees|length }},"recordsFiltered":{{ proposals[0].conferenceattendees|length }},"data":[
+{% for attendee in proposals[0].conferenceattendees %}
+["<a href='javascript:void(0)' onclick='editAttendeeDialog({{ attendee.conferenceattendeeid }})'>{{ attendee.meeting }}</a>", "{{ attendee.name }}", "{{ attendee.startdate }}", {{ attendee.meetingdays }}, {{ attendee.traveldays }}]{% if loop.last !=true %},{% endif %}
+{% endfor %}
+]}

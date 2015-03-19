@@ -16,7 +16,7 @@
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
         <div id="accordions">
-          <h3>Proposal Details</h3>
+          <h3 id='projectnameaccordion'>Proposal Details - {{ proposals[0].projectname }}</h3>
             <div>
               <form id="proposalForm" action="index.php" method="GET">
               <table>
@@ -24,8 +24,16 @@
                   <td colspan="3"><input type='text' name='projectname' size="70"
                       value='{{ proposals[0].projectname }}'/></td></tr>
                 <tr><th>Principal Investigator</th>
-                  <td colspan="3"><input type='text' name='name' size="70"
-                      value='{{ proposals[0].name }}'/></td></tr>
+                  <td colspan="3">
+                {% include 'people-dropdown.html' with {'dropdown_name': 'conferencepeopleid',
+                                                        'dropdown_id': 'conferencepeopledropdown',
+                                                        'selected_peopleid': proposals[0].peopleid } %}
+                  </td></tr>
+                <tr><th>Funding Program</th><td colspan="3">
+                {% include 'programs-dropdown.html' with {'dropdown_name': 'programid',
+                                                          'dropdown_id': 'programiddropdown',
+                                                          'selected_programid': proposals[0].programid } %}
+                  </td></tr>
                 <tr><th>Proposal Number</th>
                   <td><input type='text' name='proposalnumber' value='{{ proposals[0].proposalnumber }}'/></td>
                   <th>Award Number</th>
@@ -42,24 +50,25 @@
             </div>
           <h3>Tasks</h3>
             <div id='tasksdiv' style='height: 400px;'>
-              <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a>
+              <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a><p/>
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
-                <thead><tr><th>Task</th><th>Staff Count</th></tr></thead>
+                <thead><tr><th>Task</th><th>Staff Count</th><th>Staffing</th></tr></thead>
               </table>
             </div>
 
           <h3>Conferences</h3>
             <div>
-              <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a>
-              <form id="conferenceForm" action="index.php" method="GET">
-                {% include 'people-dropdown.html' with {'dropdown_name': 'conferencepeopleid',
-                                                        'dropdown_id': 'conferencepeopledropdown',
-                                                        'selected_peopleid': proposals[0].peopleid } %}
-              </form>
+              <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a><p/>
+              <table id='conferencesTable' class='display' cellspace='0' width='100%'>
+                <thead><tr><th>Meeting</th><th>Attendee</th><th>Starting</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th></tr></thead>
+              </table>
             </div>
           <h3>Expenses</h3>
             <div>
-              <a href='javascript:void(0)' onClick="editTask('new')" id='newExpenseButton'>New</a>
+              <a href='javascript:void(0)' onClick="editTask('new')" id='newExpenseButton'>New</a><p/>
+              <table id='expensesTable' class='display' cellspace='0' width='100%'>
+                <thead><tr><th>Expense</th><th>Type</th><th>Amount</th><th>Fiscal</th></tr></thead>
+              </table>
             </div>
         </div>
 
@@ -75,7 +84,22 @@
           $('#tasksTable').dataTable( {
             'processing': true,
             'serverSide': false,
+            'autoWidth': false,
             'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+          $('#conferencesTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=conference-attendee-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+          $('#expensesTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}',
             'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
           } );
         } );

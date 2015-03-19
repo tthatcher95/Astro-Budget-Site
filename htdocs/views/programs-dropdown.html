@@ -1,0 +1,6 @@
+<select name='{{ dropdown_name }}' id='{{ dropdown_id }}'>
+{% for program in programs %}
+  <option value='{{ program.programid }}' {% if program.programid == selected_programid %}selected {% endif %}>
+    {{ program.programname }}</option>
+{% endfor %}
+</select>

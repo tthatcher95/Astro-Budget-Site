@@ -17,7 +17,7 @@
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
         <table id="conferencesTable" class="display" cellspacing="0" width="100%">
-          <thead><tr><th>Meeting</th><th>Location</th></tr></thead>
+          <thead><tr><th>Meeting</th></tr></thead>
         </table>
       </div>
 
@@ -54,8 +54,7 @@
           } );
 
           dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#conferenceid").val() + "] " + $("#meeting").val() + 
-                                " (" + $("#location").val() +")</p>");
+          $("#warningDiv").html("<p>Updated [" + $("#conferenceid").val() + "] " + $("#meeting").val() + "</p>");
           $("#warningDiv").show();
         }
 

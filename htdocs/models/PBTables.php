@@ -76,6 +76,7 @@ class PBTables {
       }
       $query .= "username='$username'";
     }
+    $query .= " ORDER BY name";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -556,31 +557,27 @@ class PBTables {
   #  proposalid INTEGER,
   
   # Conferences
-  function addConference ($meeting, $location) {
-    if (!(isset($meeting) or isset($location))) { return "A meeting name or location must be provided"; }
+  function addConference ($meeting) {
+    if (!isset($meeting)) { return "A meeting name must be provided"; }
 
-    $query = "INSERT INTO conferences (meeting, location) VALUES ('$meeting', '$location')";
+    $query = "INSERT INTO conferences (meeting) VALUES ('$meeting')";
 
     $this->db->query($query);
   }
 
-  function updateConference ($conferenceid, $meeting, $location) {
+  function updateConference ($conferenceid, $meeting) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to update conferences"; }
-    if (!(isset($meeting) or isset($location))) { return "A meeting name or location must be provided"; }
+    if (!isset($meeting)) { return "A meeting name must be provided"; }
 
     $query = "UPDATE conferences SET ";
     if (isset($meeting)) { $query .= "meeting='$meeting'"; }
-    if (isset($location)) {
-      if (isset($meeting)) { $query .= ", "; }
-      $query .= "location='$location'";
-    }
     $query .= " WHERE conferenceid=$conferenceid";
 
     $this->db->query($query);
   }
 
-  function getConferences ($conferenceid, $meeting, $location) {
-    $query = "SELECT conferenceid, meeting, location FROM conferences";
+  function getConferences ($conferenceid, $meeting) {
+    $query = "SELECT conferenceid, meeting FROM conferences";
     $needAnd = false;
     if (isset($conferenceid)) {
       $query .= " WHERE conferenceid=$conferenceid";
@@ -591,12 +588,6 @@ class PBTables {
       else { $query .= " WHERE "; }
       $needAnd = true;
       $query .= "meeting='$meeting'";
-    }
-    if (isset($location)) {
-      if ($needAnd) { $query .= " AND "; }
-      else { $query .= " WHERE "; }
-      $needAnd = true;
-      $query .= "location='$location'";
     }
 
     $this->db->query($query);
@@ -616,23 +607,23 @@ class PBTables {
   # CREATE TABLE conferences (
   #  conferenceid SERIAL Primary Key,
   #  meeting VARCHAR(256),
-  #  location VARCHAR(128)
   
   # ConferenceRates
-  function addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare) {
+  function addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare,
+                              $city, $state, $country) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to add new conference rates"; }
 
     $query = "INSERT INTO conferencerates (conferenceid, effectivedate, perdiem, registration, " .
-             "groundtransport, airfare) VALUES ($conferenceid, ";
+             "groundtransport, airfare, city, state, country) VALUES ($conferenceid, ";
     if (isset($effectivedate)) { $query .= "'" . $this->formatDate($effectivedate) . "', "; }
     else { $query .= "now(), "; }
-    $query .= "$perdiem, $registration, $groundtransport, $airfare)";
+    $query .= "$perdiem, $registration, $groundtransport, $airfare, '$city', '$state', '$country')";
 
     $this->db->query($query);
   }
 
   function updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem, 
-                                $registration, $groundtransport, $airfare) {
+                                $registration, $groundtransport, $airfare, $city, $state, $country) {
     if (!isset($conferencerateid)) { return "A conference rate ID must be provided for an update"; }
     if (!(isset($effectivedate) or isset($perdiem) or isset($registration) 
        or isset($groundtransport) or isset ($airfare))) { return "Nothing to change in conference rate update"; }
@@ -668,6 +659,21 @@ class PBTables {
       $query .= "airfare=$airfare";
       $needComma = true;
     }
+    if (isset($city)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "city='$city'";
+      $needComma = true;
+    }
+    if (isset($state)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "state='$state'";
+      $needComma = true;
+    }
+    if (isset($country)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "country='$country'";
+      $needComma = true;
+    }
 
     $query .= " WHERE conferencerateid=$conferencerateid";
 
@@ -679,7 +685,7 @@ class PBTables {
     if ($conferenceid == 'new') { $conferenceid=0; }
 
     $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
-             "groundrate, airfare FROM conferencerates WHERE conferenceid=$conferenceid";
+             "groundrate, airfare, city, state, country FROM conferencerates WHERE conferenceid=$conferenceid";
     if (isset($effectivedate)) { 
       $query .= " AND effectivedate > '" . $this->formatDate($effectivedate) . "'"; 
       $query .= " ORDER BY effectivedate DESC LIMIT 1";
@@ -764,8 +770,10 @@ class PBTables {
   }
     
   function getConferenceAttendees ($confereneceattendeeid, $conferenceid, $proposalid, $peopleid) {
-    $query = "SELECT conferenceattendeeid, conferenceid, proposalid, peopleid, meetingdays, traveldays, startdate " .
-             "FROM conferenceattendee";
+    $query = "SELECT c.conferenceattendeeid, c.conferenceid, c.proposalid, c.peopleid, p.name, c.meetingdays, " .
+             "c.traveldays, to_char(c.startdate, 'MM/DD/YYYY') as startdate, m.meeting " .
+             "FROM conferenceattendee c JOIN people p ON (p.peopleid=c.peopleid) " .
+             "JOIN conferences m ON (c.conferenceid=m.conferenceid)";
 
     $needAnd = false;
     if (isset($conferenceattendeeid)) {
@@ -942,8 +950,8 @@ class PBTables {
   }
 
   function getStaffing ($staffingid, $taskid, $peopleid, $fiscalyear) {
-    $query = "SELECT staffingid, taskid, peopleid, fiscalyear, q1hours, q2hours, q3hours, q4hours, flexhours " .
-             "FROM staffing";
+    $query = "SELECT s.staffingid, s.taskid, s.peopleid, p.name, s.fiscalyear, s.q1hours, s.q2hours, s.q3hours, " .
+             "s.q4hours, s.flexhours FROM staffing s JOIN people p ON (s.peopleid=p.peopleid)";
     $needAnd = false;
 
     if (isset($staffingid)) {
@@ -1090,7 +1098,8 @@ class PBTables {
   }
 
   function getExpenses ($expenseid, $proposalid, $expensetypeid, $fiscalyear) {
-    $query = "SELECT expenseid, proposalid, expensetypeid, description, amount, fiscalyear FROM expenses";
+    $query = "SELECT e.expenseid, e.proposalid, e.expensetypeid, t.description as type, e.description, " .
+             "e.amount, e.fiscalyear FROM expenses e JOIN expensetypes t ON (t.expensetypeid=e.expensetypeid)";
 
     $needAnd = false;
     if (isset($expenseid)) {

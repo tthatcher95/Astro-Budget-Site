@@ -61,6 +61,8 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'proposal-edit':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
       $templateArgs = proposalView($pbdb, $templateArgs);
       $templateArgs['view'] = 'proposal-edit.html';
       $view = $templateArgs['view'];
@@ -103,6 +105,11 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'conferences-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'conference-attendee-list-json':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'conference-attendee-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
     case 'expensetypes':
       $templateArgs = expensetypesView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -124,6 +131,11 @@ if (isset($_REQUEST['view'])) {
     case 'tasks-list-json':
       $templateArgs = tasksView($pbdb, $templateArgs);
       $templateArgs['view'] = 'tasks-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'expense-list-json':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'expense-list-ajax.json';
       $view = $templateArgs['view'];
       break;
   }
@@ -361,18 +373,16 @@ function conferenceSave ($pbdb, $templateArgs) {
   $conferenceid = $_REQUEST['conferenceid'];
 
   $meeting  = (isset($_REQUEST['meeting'])? $_REQUEST['meeting'] : null);
-  $location = (isset($_REQUEST['location'])? $_REQUEST['location'] : null);
 
   if ($conferenceid == 'new') {
-    $pbdb->addConference ($meeting, $location);
+    $pbdb->addConference ($meeting);
   }
   else {
-    $pbdb->updateConference ($conferenceid, $meeting, $location);
+    $pbdb->updateConference ($conferenceid, $meeting);
   }
 
   $templateArgs['conferenceid'] = $conferenceid;
   $templateArgs['meeting'] = $meeting;
-  $templateArgs['location'] = $location;
   $templateArgs['view'] = 'conference-save-result.html';
 
   return ($templateArgs);

@@ -266,6 +266,14 @@ function proposalView ($pbdb, $templateArgs) {
     $proposalid = $templateArgs['proposals'][$i]['proposalid'];
     $templateArgs['proposals'][$i]['FBMSaccounts'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
     $templateArgs['proposals'][$i]['conferenceattendees'] = $pbdb->getConferenceAttendees (null, null, $proposalid, null);
+    for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
+      $templateArgs['debug'] = 'looking up conference rate for ' .
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferenceid'] . " " .
+                                   $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate'];
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'] = 
+        $pbdb->getConferenceRates ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferenceid'],
+                                   $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
+    }
     $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks (null, $proposalid, null);
     $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses (null, $proposalid, null, null);
   }

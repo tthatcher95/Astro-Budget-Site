@@ -11,7 +11,7 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'Home', 'href' => 'index.php'),
   array ('caption' => 'Proposals', 'href' => 'index.php?view=proposals'),
   array ('caption' => 'People', 'href' => 'index.php?view=people'),
-  array ('caption' => 'Conferences', 'href' => 'index.php?view=conferences'),
+  array ('caption' => 'Conferences/Travel', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Expenses', 'href' => 'index.php?view=expensetypes'),
   array ('caption' => 'Programs', 'href' => 'index.php?view=programs')));
 
@@ -313,6 +313,7 @@ function proposalSave ($pbdb, $templateArgs) {
 function programsView ($pbdb, $templateArgs) {
   $programid = null;
   if (isset($_REQUEST['programid'])) { $programid = $_REQUEST['programid']; }
+  $templateArgs['programid'] = $programid;
   if ($programid == 'new') { $programid = 0; }
 
   $templateArgs['programs'] = $pbdb->getFundingPrograms ($programid, null, null, null, null, null);
@@ -469,6 +470,14 @@ function tasksView ($pbdb, $templateArgs) {
   for ($i = 0; $i < count($templateArgs['tasks']); $i++) {
     $templateArgs['tasks'][$i]['staffing'] = $pbdb->getStaffing(null, $templateArgs['tasks'][$i]['taskid'],
                                                                 null, null);
+
+    error_log("Task $i has " . count($templateArgs['tasks'][$i]['staffing']) . " staff", 0);
+    for ($j = 0; $j < count($templateArgs['tasks'][$i]['staffing']); $j++) {
+      error_log("Peopleid " . $templateArgs['tasks'][$i]['staffing'][$j]['peopleid'], 0);
+      $templateArgs['tasks'][$i]['staffing'][$j]['salary'] = 
+        $pbdb->getEffectiveSalary ($templateArgs['tasks'][$i]['staffing'][$j]['peopleid'], 
+          $date = date('m/d/Y', time()));
+    }
   }
 
   $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON

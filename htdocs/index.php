@@ -138,6 +138,12 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'expense-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'proposal-costs-json':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'proposal-costs-ajax.json';
+      $view = $templateArgs['view'];
+      break;
   }
 }
 
@@ -278,6 +284,60 @@ function proposalView ($pbdb, $templateArgs) {
     $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses (null, $proposalid, null, null);
   }
 
+  return ($templateArgs);
+}
+
+function costsSummaryView ($pbdb, $templateArgs) {
+  setlocale(LC_MONETARY, 'en_US');
+  $templateArgs['costs'] = array ();
+  for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
+    $templateArgs['costs'][$i] = array ();
+    $total = 0;
+    $subtotal = 0;
+    for ($j = 0; $j < count($templateArgs['proposals'][$i]['tasks']); $j++) {
+      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'] = $pbdb->getStaffing(null, 
+        $templateArgs['proposals'][$i]['tasks'][$j]['taskid'], null, null);
+
+      for ($x = 0; $x < count($templateArgs['proposals'][$i]['tasks'][$j]['staffing']); $x++) {
+        $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$x]['salary'] = 
+          $pbdb->getEffectiveSalary ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$x]['peopleid'], 
+            $date = date('m/d/Y', time()));
+      }
+      for ($k = 0; $k < count($templateArgs['proposals'][$i]['tasks'][$j]['staffing']); $k++) {
+        $subtotal += ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q1hours'] +
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q2hours'] +
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q3hours'] +
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q4hours'] +
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours']) *
+                     # 1;
+                     (($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']) /
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['authhours']);
+      }
+    }
+
+    $templateArgs['costs'][$i]['staffing'] = "Tasks - " . money_format('%(#8n', $subtotal);
+    $total += $subtotal;
+    $subtotal = 0;
+    for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
+      $subtotal += $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
+      $subtotal += $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'];
+    }
+    $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings - " . money_format('%(#8n', $subtotal);
+    $total += $subtotal;
+    $subtotal = 0;
+    for ($j = 0; $j < count($templateArgs['proposals'][$i]['expenses']); $j++) {
+      $subtotal += $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
+    }
+    $templateArgs['costs'][$i]['expenses'] = "Expenses - " . money_format('%(#8n', $subtotal);
+    $total += $subtotal;
+    $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " . $templateArgs['proposals'][$i]['projectname'] . " " .
+      money_format('%(#8n', $total);
+  }
+  
   return ($templateArgs);
 }
 
@@ -479,9 +539,7 @@ function tasksView ($pbdb, $templateArgs) {
     $templateArgs['tasks'][$i]['staffing'] = $pbdb->getStaffing(null, $templateArgs['tasks'][$i]['taskid'],
                                                                 null, null);
 
-    error_log("Task $i has " . count($templateArgs['tasks'][$i]['staffing']) . " staff", 0);
     for ($j = 0; $j < count($templateArgs['tasks'][$i]['staffing']); $j++) {
-      error_log("Peopleid " . $templateArgs['tasks'][$i]['staffing'][$j]['peopleid'], 0);
       $templateArgs['tasks'][$i]['staffing'][$j]['salary'] = 
         $pbdb->getEffectiveSalary ($templateArgs['tasks'][$i]['staffing'][$j]['peopleid'], 
           $date = date('m/d/Y', time()));

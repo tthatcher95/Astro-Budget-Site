@@ -689,9 +689,9 @@ class PBTables {
     if ($conferenceid == 'new') { $conferenceid=0; }
 
     $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
-             "groundrate, airfare, city, state, country FROM conferencerates WHERE conferenceid=$conferenceid";
+             "groundtransport, airfare, city, state, country FROM conferencerates WHERE conferenceid=$conferenceid";
     if (isset($effectivedate)) { 
-      $query .= " AND effectivedate > '" . $this->formatDate($effectivedate) . "'"; 
+      $query .= " AND effectivedate < '" . $this->formatDate($effectivedate) . "'"; 
       $query .= " ORDER BY effectivedate DESC LIMIT 1";
     }
     else { $query .= " ORDER BY effectivedate DESC"; }

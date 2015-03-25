@@ -1,5 +1,10 @@
 {"draw":0,"recordsTotal":{{ tasks|length }},"recordsFiltered":{{ tasks|length }},"data":[
 {% for task in tasks %}
-["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", {{ task.staffing|length }}, "{% for staff in task.staffing %}{{ staff.name }}{% if loop.last != true %}, {% endif %}{% endfor %}"]{% if loop.last !=true %},{% endif %}
+  {% if task.staffing is empty %}
+["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", "N/A", 0, "$0.00"]{% if loop.last !=true %},{% endif %}
+  {% endif %}
+  {% for staff in task.staffing %}
+["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", "{{ staff.name }}", {{ staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours }}, "${{ ((staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours) * (staff.salary[0].estsalary + staff.salary[0].estbenefits)/staff.salary[0].authhours)|number_format(2,'.',',') }}"]{% if loop.last !=true %},{% endif %}
+  {% endfor %}{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

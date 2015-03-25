@@ -52,11 +52,11 @@
             <div id='tasksdiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a><p/>
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
-                <thead><tr><th>Task</th><th>Staff Count</th><th>Staffing</th></tr></thead>
+                <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben)</th></tr></thead>
               </table>
             </div>
 
-          <h3>Conferences</h3>
+          <h3>Conferences/Meetings/Travel</h3>
             <div>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a><p/>
               <table id='conferencesTable' class='display' cellspace='0' width='100%'>
@@ -74,7 +74,6 @@
 
       <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
-          $('#accordions').accordion( {heightStyle: 'content' });
           $('#proposalperfperiodstart').datepicker();
           $('#proposalperfperiodend').datepicker();
           $('#newTaskButton').button();
@@ -86,7 +85,7 @@
             'serverSide': false,
             'autoWidth': false,
             'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+            'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, 'All']]
           } );
           $('#conferencesTable').dataTable( {
             'processing': true,
@@ -102,6 +101,7 @@
             'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}',
             'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
           } );
+          $('#accordions').accordion( {heightStyle: 'content' });
         } );
       </script>
     </body>

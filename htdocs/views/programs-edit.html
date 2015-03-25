@@ -9,7 +9,7 @@
           <form id="programForm" action="index.php" method="GET">
             <input type="hidden" name="act" value="save"/>
             <input type="hidden" name="view" value="program-save"/>
-            <input type="hidden" id="programid" name="programid" value="{{ programs[0].programid }}"/>
+            <input type="hidden" id="programid" name="programid" value="{{ programid }}"/>
             <table><tr><th>Name</th>
             <td><input type="text" name="programname" id="programname" value="{{ programs[0].programname }}" size="40"/></td></tr>
             <tr><th>Agency</th>
@@ -38,5 +38,11 @@
     </div>
     {% endif %}
 
+    <script type="text/javascript" charset="utf-8">
+    $(function() {
+      $("#startdate").datepicker();
+      $("#enddate").datepicker();
+    });
+    </script>
     </body>
 </html>

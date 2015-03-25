@@ -238,8 +238,10 @@ class PBTables {
     if (!isset($agency)) { return "The agency must be set to add a funding program"; }
 
     $query = "INSERT INTO fundingprograms (programname, agency, pocname, pocemail, startdate, enddate) " .
-             "VALUES ('$programname', '$agency', '$pocname', '$pocemail', '" . $this->formatdate($startdate) . "', " .
+             "VALUES ('$programname', '$agency', '$pocname', '$pocemail', '" . $this->formatDate($startdate) . "', " .
              "'" . $this->formatDate($enddate) . "')";
+             # "VALUES ('$programname', '$agency', '$pocname', '$pocemail', '" . $this->formatdate($startdate) . "', " .
+             # "'" . $this->formatDate($enddate) . "')";
 
     $this->db->query($query);
   }
@@ -330,6 +332,8 @@ class PBTables {
       $query .= "startdate > '" . $this->formatDate($targetdate) . "' AND enddate < '" .
                 $this->formatDate($targetdate) . "'";
     }
+
+    $query .= " ORDER BY programname";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();

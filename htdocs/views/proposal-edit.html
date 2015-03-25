@@ -16,7 +16,7 @@
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
         <div id="accordions">
-          <h3 id='projectnameaccordion'>Proposal Details - {{ proposals[0].projectname }}</h3>
+          <h3 id='proposalTitle'>Proposal Details - {{ proposals[0].projectname }}</h3>
             <div>
               <form id="proposalForm" action="index.php" method="GET">
               <table>
@@ -48,7 +48,7 @@
               </table>
               </form>
             </div>
-          <h3>Tasks</h3>
+          <h3 id='tasksTitle' >Tasks</h3>
             <div id='tasksdiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a><p/>
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
@@ -56,14 +56,14 @@
               </table>
             </div>
 
-          <h3>Conferences/Meetings/Travel</h3>
+          <h3 id='conferencesTitle'>Conferences/Meetings/Travel</h3>
             <div>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a><p/>
               <table id='conferencesTable' class='display' cellspace='0' width='100%'>
                 <thead><tr><th>Meeting</th><th>Attendee</th><th>Starting</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
               </table>
             </div>
-          <h3>Expenses</h3>
+          <h3 id='expensesTitle'>Expenses</h3>
             <div>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newExpenseButton'>New</a><p/>
               <table id='expensesTable' class='display' cellspace='0' width='100%'>
@@ -73,6 +73,17 @@
         </div>
 
       <script type="text/javascript" charset="utf-8">
+        function figureCosts(proposalid) {
+          $.getJSON( "index.php?view=proposal-costs-json&proposalid=" + proposalid, function( data ) {
+            var items = [];
+            $.each( data.data[0], function( key, val ) {
+              $.each( val, function( title, mesg ) {
+                $(title).html(mesg);
+              });
+            });
+          });
+        }
+
         $(document).ready(function() {
           $('#proposalperfperiodstart').datepicker();
           $('#proposalperfperiodend').datepicker();
@@ -102,6 +113,8 @@
             'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
           } );
           $('#accordions').accordion( {heightStyle: 'content' });
+
+          figureCosts({{ proposals[0].proposalid }});
         } );
       </script>
     </body>

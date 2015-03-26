@@ -38,10 +38,12 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = peopleSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'people-task-list-json':
+      $templateArgs = peopleStaffingView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'salary-list-json':
-      if (isset($_REQUEST['peopleid'])) {
-        $templateArgs = salaryView($pbdb, $templateArgs, $_REQUEST['peopleid']);
-      }
+      $templateArgs = salaryView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'salary-save':
@@ -214,7 +216,9 @@ function peopleSave ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
-function salaryView ($pbdb, $templateArgs, $peopleid) {
+function salaryView ($pbdb, $templateArgs) {
+  $peopleid = null;
+  if (isset($_REQUEST['peopleid'])) { $peopleid = $_REQUEST['peopleid']; }
   $templateArgs['salaries'] = $pbdb->getSalary($peopleid);
   $templateArgs['view'] = 'salary-list-ajax.json';
 
@@ -533,11 +537,12 @@ function tasksView ($pbdb, $templateArgs) {
   $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
+  $peoplid    = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
 
   $templateArgs['tasks'] = $pbdb->getTasks ($taskid, $proposalid, $taskname);
   for ($i = 0; $i < count($templateArgs['tasks']); $i++) {
     $templateArgs['tasks'][$i]['staffing'] = $pbdb->getStaffing(null, $templateArgs['tasks'][$i]['taskid'],
-                                                                null, null);
+                                                                $peopleid, null);
 
     for ($j = 0; $j < count($templateArgs['tasks'][$i]['staffing']); $j++) {
       $templateArgs['tasks'][$i]['staffing'][$j]['salary'] = 
@@ -547,6 +552,16 @@ function tasksView ($pbdb, $templateArgs) {
   }
 
   $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON
+
+  return ($templateArgs);
+}
+
+function peopleStaffingView ($pbdb, $templateArgs) {
+  $peopleid = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+
+  $templateArgs['staffing'] = $pbdb->getStaffing(null, null, $peopleid, null);
+
+  $templateArgs['view'] = 'people-task-list-ajax.json';
 
   return ($templateArgs);
 }

@@ -954,8 +954,10 @@ class PBTables {
   }
 
   function getStaffing ($staffingid, $taskid, $peopleid, $fiscalyear) {
-    $query = "SELECT s.staffingid, s.taskid, s.peopleid, p.name, s.fiscalyear, s.q1hours, s.q2hours, s.q3hours, " .
-             "s.q4hours, s.flexhours FROM staffing s JOIN people p ON (s.peopleid=p.peopleid)";
+    $query = "SELECT s.staffingid, s.taskid, t.taskname, x.projectname, s.peopleid, p.name, s.fiscalyear, s.q1hours, " .
+             "s.q2hours, s.q3hours, s.q4hours, s.flexhours " .
+             "FROM staffing s JOIN people p ON (s.peopleid=p.peopleid) JOIN tasks t ON (t.taskid=s.taskid) " .
+             "JOIN proposals x ON (x.proposalid=t.proposalid)";
     $needAnd = false;
 
     if (isset($staffingid)) {
@@ -965,19 +967,19 @@ class PBTables {
     if (isset($taskid)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "taskid=$taskid";
+      $query .= "s.taskid=$taskid";
       $needAnd = true;
     }
     if (isset($peopleid)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "peopleid=$peopleid";
+      $query .= "s.peopleid=$peopleid";
       $needAnd = true;
     }
     if (isset($fiscalyear)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "fiscalyear='$fiscalyear'";
+      $query .= "s.fiscalyear='$fiscalyear'";
       $needAnd = true;
     }
 

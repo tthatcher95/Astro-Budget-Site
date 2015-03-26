@@ -11,6 +11,7 @@
     {% if remote_user[0].admin == 't' %}
         <li><a href="#peopleedittab2">Salary</a></li>
     {% endif %}
+        <li><a href="#peopleedittab3">Staffing</a></li>
       </ul>
     {% if remote_user[0].admin == 't' %}
     <div id="peopleedittab1">
@@ -65,6 +66,11 @@
         </table>
     </div>
     {% endif %}
+    <div id="peopleedittab3">
+      <table id="staffingTable" class="display" cellspacing="0" width="100%">
+        <thead><tr><th>Project</th><th>Task</th><th>Fiscal</th><th>Hours</th></tr></thead>
+      </table>
+    </div>
     </div> <!-- peopleedittabs div -->
 
     <script type="text/javascript">
@@ -74,7 +80,14 @@
           $('#salaryTable').dataTable( {
             "processing": true,
             "serverSide": false,
+            'autoWidth': false,
             "ajax": "index.php?view=salary-list-json&peopleid={{ person.peopleid }}"
+          } );
+          $('#staffingTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            'autoWidth': false,
+            "ajax": "index.php?view=people-task-list-json&peopleid={{ person.peopleid }}"
           } );
         {% endfor %}
 

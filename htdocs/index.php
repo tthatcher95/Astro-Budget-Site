@@ -313,10 +313,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q3hours'] +
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q4hours'] +
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours']) *
-                     # 1;
-                     (($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
-                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']) /
-                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['authhours']);
+                     ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
+                     $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
       }
     }
 

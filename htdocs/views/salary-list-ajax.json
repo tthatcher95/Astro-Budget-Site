@@ -2,7 +2,6 @@
 {% for salary in salaries %}
 ["{{ salary.salaryid }}", "{{ salary.effectivedate|date("m/d/Y") }}", "{{ salary.payplan }}", "{{ salary.title }}", 
 "{{ salary.appttype }}", {{ salary.authhours }}, "${{ salary.estsalary|number_format(2,'.',',') }}", 
-"${{ (salary.estsalary/salary.authhours)|number_format(2,'.',',') }}/hr", 
 "${{ salary.estbenefits|number_format(2,'.',',') }}", "{{ salary.leavecategory }}", 
 "{{ salary.laf }}"]{% if loop.last != true %},{% endif %}
 {% endfor %}

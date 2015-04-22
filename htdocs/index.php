@@ -46,11 +46,13 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = salaryView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'salary-edit-json':
+      $templateArgs = salaryView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'salary-edit-ajax.json';
+      $view = $templateArgs['view'];
+      break;
     case 'salary-save':
-      $templateArgs = salarySave($pbdb, $templateArgs, $_REQUEST['salaryid'], $_REQUEST['peopleid'],
-        $_REQUEST['effectivedate'], $_REQUEST['payplan'], $_REQUEST['title'], $_REQUEST['appttype'],
-        $_REQUEST['authhours'], $_REQUEST['estsalary'], $_REQUEST['estbenefits'], $_REQUEST['leavecategory'],
-        $_REQUEST['laf']);
+      $templateArgs = salarySave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'proposals':
@@ -217,40 +219,52 @@ function peopleSave ($pbdb, $templateArgs) {
 }
 
 function salaryView ($pbdb, $templateArgs) {
-  $peopleid = null;
-  if (isset($_REQUEST['peopleid'])) { $peopleid = $_REQUEST['peopleid']; }
-  $templateArgs['salaries'] = $pbdb->getSalary($peopleid);
+  $peopleid = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $salaryid = (isset($_REQUEST['salaryid'])? $_REQUEST['salaryid'] : null);
+  $templateArgs['salaries'] = $pbdb->getSalary($peopleid, $salaryid);
   $templateArgs['view'] = 'salary-list-ajax.json';
 
   return ($templateArgs);
 }
 
 function salarySave ($pbdb, $templateArgs) {
-  $salaryid = null;
-  if (isset($_REQUEST['salaryid'])) { $salaryid = $_REQUEST['salaryid']; }
-  else { 
+  $templateArgs['view'] = 'salary-save-result.html';
+
+  $salaryid = (isset($_REQUEST['salaryid'])? $_REQUEST['salaryid'] : null);
+  if ($salaryid == null) { 
+    error_log('salarySave: missing salary ID');
     $templateArgs['debug'] = array ('Missing salary ID');
     return ($templateArgs);
   }
-  $peopleid = null;
-  if (isset($_REQUEST['peopleid'])) { $peopleid = $_REQUEST['peopleid']; }
-  else { 
+  $peopleid = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  if ($peopleid == null) { 
+    error_log('salarySave: missing people ID');
     $templateArgs['debug'] = array ('Missing person ID');
     return ($templateArgs);
   }
+  $effectivedate = (isset($_REQUEST['effdate'])? $_REQUEST['effdate'] : null);
+  $payplan       = (isset($_REQUEST['payplan'])? $_REQUEST['payplan'] : null);
+  $title         = (isset($_REQUEST['title'])? $_REQUEST['title'] : null);
+  $appttype      = (isset($_REQUEST['appttype'])? $_REQUEST['appttype'] : null);
+  $authhours     = (isset($_REQUEST['authhours'])? $_REQUEST['authhours'] : null);
+  $estsalary     = (isset($_REQUEST['estsalary'])? $_REQUEST['estsalary'] : null);
+  $estbenefits   = (isset($_REQUEST['estbenefits'])? $_REQUEST['estbenefits'] : null);
+  $leavecategory = (isset($_REQUEST['leavecategory'])? $_REQUEST['leavecategory'] : null);
+  $laf           = (isset($_REQUEST['laf'])? $_REQUEST['laf'] : null);
 
   if ($salaryid == 'new') {
-    $pbdb->addSalary($peopleid, $_REQUEST['effectivedate'], $_REQUEST['payplan'], $_REQUEST['title'],
-                     $_REQUEST['appttype'], $_REQUEST['authhours'], $_REQUEST['estsalary'], $_REQUEST['estbenefits'],
-                     $_REQUEST['leavecategory'], $_REQUEST['laf']);
+    $pbdb->addSalary($peopleid, $effectivedate, $payplan, $title, $appttype, $authhours, $estsalary, 
+                     $estbenefits, $leavecategory, $laf);
   }
   else {
-    $pbdb->updateSalary($salaryid, $peopleid, $_REQUEST['effectivedate'], $_REQUEST['payplan'], 
-                        $_REQUEST['title'], $_REQUEST['appttype'], $_REQUEST['authhours'], $_REQUEST['estsalary'], 
-                        $_REQUEST['estbenefits'], $_REQUEST['leavecategory'], $_REQUEST['laf']);
+    $pbdb->updateSalary($salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, $authhours, $estsalary, 
+                        $estbenefits, $leavecategory, $laf);
   }
 
-  $templateArgs['view'] = 'salary-save-result.html';
+  $templateArgs['peopleid'] = $peopleid;
+  $templateArgs['salaryid'] = $salaryid;
+  $templateArgs['payplan'] = $payplan;
+  $templateArgs['title'] = $title;
 
   return ($templateArgs);
 }
@@ -472,19 +486,23 @@ function conferenceRatesView ($pbdb, $templateArgs) {
 
 function conferenceRateSave ($pbdb, $templateArgs) {
   $conferenceid     = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
-  $conferencerateid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
+  $conferencerateid = (isset($_REQUEST['conferencerateid'])? $_REQUEST['conferencerateid'] : null);
   $effectivedate    = (isset($_REQUEST['effectivedate'])? $_REQUEST['effectivedate'] : null);
   $perdiem          = (isset($_REQUEST['perdiem'])? $_REQUEST['perdiem'] : null);
   $registration     = (isset($_REQUEST['registration'])? $_REQUEST['registration'] : null);
   $groundtransport  = (isset($_REQUEST['groundtransport'])? $_REQUEST['groundtransport'] : null);
   $airfare          = (isset($_REQUEST['airfare'])? $_REQUEST['airfare'] : null);
+  $city             = (isset($_REQUEST['city'])? $_REQUEST['city'] : null);
+  $state            = (isset($_REQUEST['state'])? $_REQUEST['state'] : null);
+  $country          = (isset($_REQUEST['country'])? $_REQUEST['country'] : null);
 
   if ($conferencerateid == 'new') {
-    $pbdb->addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare);
+    $pbdb->addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare, 
+                              $city, $state, $country);
   }
   else {
     $pbdb->updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem, $registration,
-                                 $groundtransport, $airfare);
+                                 $groundtransport, $airfare, $city, $state, $country);
   }
 
   $templateArgs['conferenceid'] = $conferenceid;

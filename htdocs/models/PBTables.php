@@ -152,12 +152,13 @@ class PBTables {
     }
     if (isset($estsalary)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "estsalary=$estsalary";
+      $estsalary = 
+      $query .= "estsalary=" . $this->getAmount($estsalary);
       $needComma = true;
     }
     if (isset($estbenefits)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "estbenefits=$estbenefits";
+      $query .= "estbenefits=" . $this->getAmount($estbenefits);
       $needComma = true;
     }
     if (isset($leavecategory)) {
@@ -173,6 +174,18 @@ class PBTables {
     $query .= " WHERE salaryid=$salaryid";
 
     $this->db->query($query);
+  }
+
+  function getAmount ($money) {
+    $cleanString = preg_replace('/([^0-9\.,])/i', '', $money);
+    $onlyNumbersString = preg_replace('/([^0-9])/i', '', $money);
+
+    $separatorsCountToBeErased = strlen($cleanString) - strlen($onlyNumbersString) - 1;
+
+    $stringWithCommaOrDot = preg_replace('/([,\.])/', '', $cleanString, $separatorsCountToBeErased);
+    $removedThousendSeparator = preg_replace('/(\.|,)(?=[0-9]{3,}$)/', '',  $stringWithCommaOrDot);
+
+    return (float) str_replace(',', '.', $removedThousendSeparator);
   }
 
   function getEffectiveSalary ($peopleid, $targetdate) {
@@ -197,13 +210,18 @@ class PBTables {
     return ($results);
   }
 
-  function getSalary ($peopleid) {
-    if (!isset($peopleid)) { return "No ID provided to lookup salary information for"; }
+  function getSalary ($peopleid, $salaryid) {
+    if (!isset($peopleid) and !isset($salaryid)) { return "No ID provided to lookup salary information for"; }
     if ($peopleid == 'new') { $peopleid=0; }
+    if ($salaryid == 'new') { $salaryid=0; }
 
     $query = "SELECT salaryid, peopleid, effectivedate, payplan, title, appttype, " .
-             "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries " .
-             "WHERE peopleid=$peopleid";
+             "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries WHERE ";
+    if ($peopleid != null) { 
+      $query .= "peopleid=$peopleid";
+      if ($salaryid != null) { $query .= " AND "; }
+    }
+    if ($salaryid != null) { $query .= "salaryid=$salaryid"; }
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -684,12 +702,15 @@ class PBTables {
     $this->db->query($query);
   }
 
-  function getConferenceRates ($conferenceid, $effectivedate) {
+  function getConferenceRates ($conferenceid, $conferencerateid, $effectivedate) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to list conference rates"; }
     if ($conferenceid == 'new') { $conferenceid=0; }
 
     $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
              "groundtransport, airfare, city, state, country FROM conferencerates WHERE conferenceid=$conferenceid";
+    if (isset($conferencerateid)) {
+      $query .= " AND conferencerateid=$conferencerateid";
+    }
     if (isset($effectivedate)) { 
       $query .= " AND effectivedate < '" . $this->formatDate($effectivedate) . "'"; 
       $query .= " ORDER BY effectivedate DESC LIMIT 1";

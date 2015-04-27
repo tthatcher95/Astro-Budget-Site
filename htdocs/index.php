@@ -95,6 +95,20 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'conference-rate-edit-json':
+      $templateArgs = conferenceRatesView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'conference-rate-edit-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'conference-rate-list-json':
+      $templateArgs = conferenceRatesView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'conference-rate-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'conference-rate-save':
+      $templateArgs = conferenceRateSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'conference-edit':
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $templateArgs['view'] = 'conference-edit.html';
@@ -296,6 +310,7 @@ function proposalView ($pbdb, $templateArgs) {
                                    $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate'];
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'] = 
         $pbdb->getConferenceRates ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferenceid'],
+                                   null,
                                    $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
     }
     $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks (null, $proposalid, null);
@@ -444,6 +459,11 @@ function conferenceView ($pbdb, $templateArgs) {
   if (isset($_REQUEST['meeting'])) { $meeting = $_REQUEST['meeting']; }
 
   $templateArgs['conferences'] = $pbdb->getConferences ($conferenceid, $meeting, null);
+  $effectivedate = date('m/d/Y');
+  for ($i=0; $i < count($templateArgs['conferences']); $i++) {
+    $templateArgs['conferences'][$i]['conferencerates'] = 
+      $pbdb->getConferenceRates ($templateArgs['conferences'][$i]['conferenceid'], null, $effectivedate);
+  }
 
   $templateArgs['view'] = 'conferences.html';
 
@@ -476,8 +496,10 @@ function conferenceSave ($pbdb, $templateArgs) {
 function conferenceRatesView ($pbdb, $templateArgs) {
   $conferenceid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
   if ($conferenceid == 'new') { $conferenceid = 0; }
+  $conferencerateid = (isset($_REQUEST['conferencerateid'])? $_REQUEST['conferencerateid'] : null);
+  if ($conferencerateid == 'new') { $conferencerateid = 0; }
   $effectivedate = (isset($_REQUEST['effectivedate'])? $_REQUEST['effectivedate'] : null);
-  $templateArgs['conferencerates'] = $pbdb->getConferenceRates ($conferenceid, $effectivedate);
+  $templateArgs['conferencerates'] = $pbdb->getConferenceRates ($conferenceid, $conferencerateid, $effectivedate);
 
   $templateArgs['view'] = 'conferencerates.html';
 
@@ -513,7 +535,7 @@ function conferenceRateSave ($pbdb, $templateArgs) {
   $templateArgs['groundtransport'] = $groundtransport;
   $templateArgs['airfare'] = $airfare;
 
-  $templateArgs['view'] = 'conferencerate-save-result.html';
+  $templateArgs['view'] = 'conference-rate-save-result.html';
 
   return ($templateArgs);
 }

@@ -17,7 +17,8 @@
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
         <table id="conferencesTable" class="display" cellspacing="0" width="100%">
-          <thead><tr><th>Meeting</th></tr></thead>
+          <thead><tr><th>Meeting</th><th>Location</th><th>Per<br/>Diem</th><th>Registration</th>
+                     <th>Ground<br/>Transport</th><th>Airfare</th></tr></thead>
         </table>
       </div>
 
@@ -27,8 +28,8 @@
 
           dialog = $("#editDialog").dialog({
             autoOpen: false,
-            height: 460,
-            width: 740,
+            height: 620,
+            width: 1100,
             modal: true,
             buttons: {
               "Save": saveConference,

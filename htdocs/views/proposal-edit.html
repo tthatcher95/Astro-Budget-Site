@@ -32,6 +32,11 @@
                                                           'dropdown_id': 'programiddropdown',
                                                           'selected_programid': proposals[0].programid } %}
                   </td></tr>
+                <tr><th>Status</th><td colspan="3">
+                {% include 'status-dropdown.html' with {'dropdown_name': 'status',
+                                                        'dropdown_id': 'statusdropdown',
+                                                        'selected_status': proposals[0].status } %}
+                  </td></tr>
                 <tr><th>Proposal Number</th>
                   <td><input type='text' name='proposalnumber' value='{{ proposals[0].proposalnumber }}'/></td>
                   <th>Award Number</th>

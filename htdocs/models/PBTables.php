@@ -184,6 +184,7 @@ class PBTables {
 
     $stringWithCommaOrDot = preg_replace('/([,\.])/', '', $cleanString, $separatorsCountToBeErased);
     $removedThousendSeparator = preg_replace('/(\.|,)(?=[0-9]{3,}$)/', '',  $stringWithCommaOrDot);
+    # error_log("getAmount for $money returning " . (float) str_replace(',', '.', $removedThousendSeparator));
 
     return (float) str_replace(',', '.', $removedThousendSeparator);
   }
@@ -378,27 +379,28 @@ class PBTables {
 
   # Proposals
   function addProposal ($peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
-                        $perfperiodstart, $perfperiodend) {
+                        $perfperiodstart, $perfperiodend, $status) {
     if (!(isset($peopleid) and isset($projectname))) { 
       return "A PI and project name must be provided to create a proposal"; 
     }
 
     $query = "INSERT INTO proposals (peopleid, projectname, proposalnumber, awardnumber, " .
-             "programid, perfperiodstart, perfperiodend) VALUES ($peopleid, '$projectname', " .
+             "programid, perfperiodstart, perfperiodend, status) VALUES ($peopleid, '$projectname', " .
              "'$proposalnumber', '$awardnumber', $programid, ";
     if (isset($perfperiodstart)) { $query .= "'" . $this->formatDate($perfperiodstart) . "', "; }
     else { $query .= "null, "; }
     if (isset($perfperiodend)) { $query .= "'" . $this->formatDate($perfperiodend) . "', "; }
     else { $query .= "null, "; }
+    $query .= " $status";
 
     $this->db->query($query);
   }
 
   function updateProposal ($proposalid, $peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
-                        $perfperiodstart, $perfperiodend) {
+                        $perfperiodstart, $perfperiodend, $status) {
     if (!isset($proposalid)) { return "A proposal ID is required for an update"; }
     if (!(isset($peopleid) or isset($projectname) or isset($proposalnumber) or isset($awardnumber) or
-          isset($programid) or isset($perfperiodstart) or isset($perfperiodend))) {
+          isset($programid) or isset($perfperiodstart) or isset($perfperiodend) or isset($status))) {
       return "No changed provided to update proposals with";
     }
 
@@ -439,16 +441,21 @@ class PBTables {
       $query .= "perfperiodend='" . $this->formatDate($perfperiodend) . "'";
       $needComma = true;
     }
+    if (isset($status)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "status='$status'";
+      $needComma = true;
+    }
 
     $query .= " WHERE proposalid=$proposalid";
 
     $this->db->query($query);
   }
 
-  function getProposals ($proposalid, $peopleid, $programid, $awardnumber, $proposalnumber, $perfperiod) {
+  function getProposals ($proposalid, $peopleid, $programid, $awardnumber, $proposalnumber, $perfperiod, $status) {
     $query = "SELECT p.proposalid, p.projectname, p.peopleid, u.name, p.programid, f.programname, p.awardnumber, " .
              "p.proposalnumber, to_char(p.perfperiodstart, 'MM/DD/YYYY') as perfperiodstart, " .
-             "to_char(p.perfperiodend, 'MM/DD/YYYY') as perfperiodend " .
+             "to_char(p.perfperiodend, 'MM/DD/YYYY') as perfperiodend, status " .
              "FROM proposals p JOIN people u ON (p.peopleid=u.peopleid) " .
              "JOIN fundingprograms f ON (f.programid=p.programid)";
     $needAnd = false;
@@ -486,6 +493,12 @@ class PBTables {
       else { $query .= " WHERE "; }
       $query .= "perfperiodstart < '" . $this->formatDate($perfperiod) . "' AND perfperiodend > '" .
                 $this->formatDate($perfperiod) . "'";
+      $needAnd = true;
+    }
+    if (isset($status)) {
+      if ($needAnd) { $query .= " AND ";}
+      else { $query .= " WHERE "; }
+      $query .= "status=$status";
       $needAnd = true;
     }
 
@@ -639,7 +652,8 @@ class PBTables {
              "groundtransport, airfare, city, state, country) VALUES ($conferenceid, ";
     if (isset($effectivedate)) { $query .= "'" . $this->formatDate($effectivedate) . "', "; }
     else { $query .= "now(), "; }
-    $query .= "$perdiem, $registration, $groundtransport, $airfare, '$city', '$state', '$country')";
+    $query .= $this->getAmount($perdiem) . ", " . $this->getAmount($registration) . ", " .
+              $this->getAmount($groundtransport) . ", " . $this->getAmount($airfare) . ", '$city', '$state', '$country')";
 
     $this->db->query($query);
   }
@@ -663,22 +677,22 @@ class PBTables {
     }
     if (isset($perdiem)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "perdiem=$perdiem";
+      $query .= "perdiem=" . $this->getAmount($perdiem);
       $needComma = true;
     }
     if (isset($registration)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "registration=$registration";
+      $query .= "registration=" . $this->getAmount($registration);
       $needComma = true;
     }
     if (isset($groundtransport)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "groundtransport=$groundtransport";
+      $query .= "groundtransport=" . $this->getAmount($groundtransport);
       $needComma = true;
     }
     if (isset($airfare)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "airfare=$airfare";
+      $query .= "airfare=" . $this->getAmount($airfare);
       $needComma = true;
     }
     if (isset($city)) {
@@ -917,7 +931,10 @@ class PBTables {
     }
 
     $query = "INSERT INTO staffing (taskid, peopleid, fiscalyear, q1hours, q2hours, q3hours, q4hours, flexhours) " .
-             "VALUES ($taskid, $peopleid, '$fiscalyear', $q1hours, $q2hours, $q3hours, $q4hours, $flexhours)";
+             "VALUES ($taskid, $peopleid, ";
+    if (isset($fiscalyear)) { $query .= "'" . $this->formatDate($fiscalyear) . "', "; }
+    else { $query .= "now(), "; }
+    $query .= "$q1hours, $q2hours, $q3hours, $q4hours, $flexhours)";
 
     $this->db->query($query);
   }
@@ -942,7 +959,7 @@ class PBTables {
     }
     if (isset($fiscalyear)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "fiscalyear='$fiscalyear'";
+      $query .= "fiscalyear='" . $this->formatDate($fiscalyear) . "'";
       $needComma = true;
     }
     if (isset($q1hours)) {
@@ -975,8 +992,8 @@ class PBTables {
   }
 
   function getStaffing ($staffingid, $taskid, $peopleid, $fiscalyear) {
-    $query = "SELECT s.staffingid, s.taskid, t.taskname, x.projectname, s.peopleid, p.name, s.fiscalyear, s.q1hours, " .
-             "s.q2hours, s.q3hours, s.q4hours, s.flexhours " .
+    $query = "SELECT s.staffingid, s.taskid, t.taskname, x.projectname, s.peopleid, p.name, " .
+             "to_char(s.fiscalyear, 'MM/DD/YYYY') as fiscalyear, s.q1hours, s.q2hours, s.q3hours, s.q4hours, s.flexhours " .
              "FROM staffing s JOIN people p ON (s.peopleid=p.peopleid) JOIN tasks t ON (t.taskid=s.taskid) " .
              "JOIN proposals x ON (x.proposalid=t.proposalid)";
     $needAnd = false;
@@ -1000,7 +1017,7 @@ class PBTables {
     if (isset($fiscalyear)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "s.fiscalyear='$fiscalyear'";
+      $query .= "s.fiscalyear='" . $this->formatDate($fiscalyear) . "'";
       $needAnd = true;
     }
 
@@ -1081,7 +1098,8 @@ class PBTables {
     }
 
     $query = "INSERT INTO expenses (proposalid, expensetypeid, description, amount, fiscalyear) VALUES " .
-             "($proposalid, $expensetypeid, '$description', $amount, '$fiscalyear')";
+             "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", " . 
+              $this->formatDate($fiscalyear) . "')";
 
     $this->db->query($query);
   }
@@ -1110,12 +1128,12 @@ class PBTables {
     }
     if (isset($amount)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "amount=$amount";
+      $query .= "amount=" . $this->getAmount($amount);
       $needComma = true;
     }
     if (isset($fiscalyear)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "fiscalyear='$fiscalyear'";
+      $query .= "fiscalyear='" . $this->formatDate($fiscalyear) . "'";
       $needComma = true;
     }
 
@@ -1126,7 +1144,7 @@ class PBTables {
 
   function getExpenses ($expenseid, $proposalid, $expensetypeid, $fiscalyear) {
     $query = "SELECT e.expenseid, e.proposalid, e.expensetypeid, t.description as type, e.description, " .
-             "e.amount, e.fiscalyear FROM expenses e JOIN expensetypes t ON (t.expensetypeid=e.expensetypeid)";
+             "e.amount, to_char(e.fiscalyear, 'MM/DD/YYYY') as fiscalyear FROM expenses e JOIN expensetypes t ON (t.expensetypeid=e.expensetypeid)";
 
     $needAnd = false;
     if (isset($expenseid)) {
@@ -1148,7 +1166,7 @@ class PBTables {
     if (isset($fiscalyear)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "fiscalyear='$fiscalyear'";
+      $query .= "fiscalyear='" . $this->formatDate($fiscalyear) . "'";
       $needAnd = true;
     }
 

@@ -119,6 +119,46 @@
 
           figureCosts({{ proposals[0].proposalid }});
         } );
+
+        function editExpenseDialog(expenseid) {
+          $("#editDialog").load(
+            "index.php?view=expense-edit&proposalid={{ proposals[0].proposalid }}&expenseid=" + expenseid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 600,
+            width: 800,
+            modal: true,
+            buttons: {
+              "Save Expense": saveExpense,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        }
+
+        function saveExpense() {
+          $.post("index.php", $("#expenseForm").serialize());
+
+          $('#expensesTable').dataTable().fnDestroy();
+          $('#expensesTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "autoWidth": false,
+            'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+
+          dialog.dialog("close");
+          $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] " + $("#description").val() + ")</p>");
+          $("#warningDiv").show();
+
+          figureCosts({{ proposals[0].proposalid }});
+        }
+
       </script>
     </body>
 </html>

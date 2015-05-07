@@ -14,6 +14,7 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'Conferences/Travel*', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Expense Categories*', 'href' => 'index.php?view=expensetypes'),
   array ('caption' => 'Programs*', 'href' => 'index.php?view=programs')));
+$templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Rejected', 'Active', 'Completed');
 
 $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
 
@@ -152,8 +153,19 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'expense-list-json':
+      $templateArgs = expensetypesView($pbdb, $templateArgs);
       $templateArgs = proposalView($pbdb, $templateArgs);
       $templateArgs['view'] = 'expense-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'expense-edit':
+      $templateArgs = expensetypesView($pbdb, $templateArgs);
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'expense-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'expense-save':
+      $templateArgs = expenseSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'proposal-costs-json':
@@ -296,8 +308,9 @@ function proposalView ($pbdb, $templateArgs) {
       $peopleid = $templateArgs['remote_user'][0]['peopleid']; 
     }
   }
+  $expenseid = (isset($_REQUEST['expenseid'])? $_REQUEST['expenseid'] : null);
 
-  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null);
+  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null, null);
 
   # Add in the tasks, FBMS accounts, conferences/attendees, and expenses too
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
@@ -314,7 +327,7 @@ function proposalView ($pbdb, $templateArgs) {
                                    $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
     }
     $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks (null, $proposalid, null);
-    $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses (null, $proposalid, null, null);
+    $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses ($expenseid, $proposalid, null, null);
   }
 
   return ($templateArgs);
@@ -386,14 +399,15 @@ function proposalSave ($pbdb, $templateArgs) {
   $programid       = (isset($_REQUEST['programid'])? $_REQUEST['programid'] : null);
   $perfperiodstart = (isset($_REQUEST['perfperiodstart'])? $_REQUEST['perfperiodstart'] : null);
   $perfperiodend   = (isset($_REQUEST['perfperiodend'])? $_REQUEST['perfperiodend'] : null);
+  $status          = (isset($_REQUEST['status'])? $_REQUEST['status'] : null);
 
   if ($proposalid == 'new') {
     $pbdb->addProposal ($peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
-                        $perfperiodstart, $perfperiodend);
+                        $perfperiodstart, $perfperiodend, $status);
   }
   else {
     $pbdb->updateProposal ($proposalid, $peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
-                           $perfperiodstart, $perfperiodend);
+                           $perfperiodstart, $perfperiodend, $status);
   }
 
   $templateArgs['view'] = 'proposal-save-results.html';
@@ -405,6 +419,7 @@ function proposalSave ($pbdb, $templateArgs) {
   $templateArgs['programid']       = $programid;
   $templateArgs['perfperiodstart'] = $perfperiodstart;
   $templateArgs['perfperiodend']   = $perfperiodend;
+  $templateArgs['status']          = $status;
 
   return ($templateArgs);
 }
@@ -653,6 +668,33 @@ function expensetypesSave ($pbdb, $templateArgs) {
   $templateArgs['description']   = $description;
 
   $templateArgs['view'] = 'expensetype-save-result.html';
+
+  return ($templateArgs);
+}
+
+function expenseSave ($pbdb, $templateArgs) {
+  $proposalid    = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $expenseid     = (isset($_REQUEST['expenseid'])? $_REQUEST['expenseid'] : null);
+  $expensetypeid = (isset($_REQUEST['expensetypeid'])? $_REQUEST['expensetypeid'] : null);
+  $description   = (isset($_REQUEST['description'])? $_REQUEST['description'] : null);
+  $amount        = (isset($_REQUEST['amount'])? $_REQUEST['amount'] : null);
+  $fiscalyear    = (isset($_REQUEST['fiscalyear'])? $_REQUEST['fiscalyear'] : null);
+  
+  if ($expenseid == 'new') {
+    $pbdb->addExpense ($proposalid, $expensetypeid, $description, $amount, $fiscalyear);
+  }
+  else {
+    $pbdb->updateExpense ($expenseid, $proposalid, $expensetypeid, $description, $amount, $fiscalyear);
+  }
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['expenseid'] = $expenseid;
+  $templateArgs['expensetypeid'] = $expensetypeid;
+  $templateArgs['description']   = $description;
+  $templateArgs['amount']   = $amount;
+  $templateArgs['fiscalyear']   = $fiscalyear;
+
+  $templateArgs['view'] = 'expense-save-result.html';
 
   return ($templateArgs);
 }

@@ -10,6 +10,7 @@
             <input type="hidden" name="act" value="save"/>
             <input type="hidden" name="view" value="conference-attendee-save"/>
             <input type="hidden" id="conferenceattendeeid" name="conferenceattendeeid" value="{{ proposals[0].conferenceattendees[0].conferenceattendeeid }}"/>
+            <input type="hidden" id="proposalid" name="proposalid" value="{{ proposals[0].proposalid }}"/>
             <table><tr><th>Meeting/Conference/Training</th>
             <td>
               {% include 'conferences-dropdown.html' with {'dropdown_name': 'conferenceid',

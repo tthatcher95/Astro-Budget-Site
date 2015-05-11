@@ -141,7 +141,7 @@
         }
 
         function saveAttendee() {
-          $.post("index.php", $("#conferenceattendeeForm").serialize());
+          $.post("index.php", $("#conferenceAttendeeForm").serialize());
 
           $('#conferencesTable').dataTable().fnDestroy();
           $('#conferencesTable').dataTable( {

@@ -61,7 +61,7 @@
 
           <h3 id='conferencesTitle'>Conferences/Meetings/Travel</h3>
             <div>
-              <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a><p/>
+              <a href='javascript:void(0)' onClick="editAttendeeDialog({{ proposals[0].proposalid }}, 'new')" id='newConferenceButton'>New</a><p/>
               <table id='conferencesTable' class='display' cellspace='0' width='100%'>
                 <thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
               </table>
@@ -120,9 +120,9 @@
           figureCosts({{ proposals[0].proposalid }});
         } );
 
-        function editAttendeeDialog(conferenceattendeeid) {
+        function editAttendeeDialog(proposalid, conferenceattendeeid) {
           $("#editDialog").load(
-            "index.php?view=conference-attendee-edit&proposalid={{ proposals[0].proposalid}}&conferenceattendeeid=" + conferenceattendeeid);
+            "index.php?view=conference-attendee-edit&proposalid=" + proposalid + "&conferenceattendeeid=" + conferenceattendeeid);
 
           dialog = $("#editDialog").dialog({
             autoOpen: false,

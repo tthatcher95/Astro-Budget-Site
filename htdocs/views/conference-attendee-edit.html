@@ -9,7 +9,11 @@
        <form id="conferenceAttendeeForm" action="index.php" method="GET">
             <input type="hidden" name="act" value="save"/>
             <input type="hidden" name="view" value="conference-attendee-save"/>
-            <input type="hidden" id="conferenceattendeeid" name="conferenceattendeeid" value="{{ proposals[0].conferenceattendees[0].conferenceattendeeid }}"/>
+            <input type="hidden" id="conferenceattendeeid" name="conferenceattendeeid" 
+            {% if proposals[0].conferenceattendees[0] is empty %} value="new"/>
+            {% else %} value="{{ proposals[0].conferenceattendees[0].conferenceattendeeid }}"/>
+            {% endif %}
+
             <input type="hidden" id="proposalid" name="proposalid" value="{{ proposals[0].proposalid }}"/>
             <table><tr><th>Meeting/Conference/Training</th>
             <td>

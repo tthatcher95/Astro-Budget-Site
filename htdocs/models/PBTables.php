@@ -774,6 +774,8 @@ class PBTables {
     if (!(isset($conferenceid) or isset($proposalid) or isset($travelers) or isset($meetingdays)
        or isset($traveldays) or isset($startdate))) { return "No changes provided for conference attendee update"; }
 
+    $query = "UPDATE conferenceattendee set ";
+
     $needComma = false;
     if (isset($conferenceid)) {
       $query .= "conferenceid=$conferenceid";
@@ -804,6 +806,8 @@ class PBTables {
       $needComma = true;
       $query .= "startdate='" . $this->formatDate($startdate) . "'";
     }
+
+    $query .= " WHERE conferenceattendeeid=$conferenceattendeeid";
 
     $this->db->query($query);
   }

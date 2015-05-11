@@ -63,7 +63,7 @@
             <div>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newConferenceButton'>New</a><p/>
               <table id='conferencesTable' class='display' cellspace='0' width='100%'>
-                <thead><tr><th>Meeting</th><th>Attendee</th><th>Starting</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
+                <thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
               </table>
             </div>
           <h3 id='expensesTitle'>Expenses</h3>
@@ -120,6 +120,45 @@
           figureCosts({{ proposals[0].proposalid }});
         } );
 
+        function editAttendeeDialog(conferenceattendeeid) {
+          $("#editDialog").load(
+            "index.php?view=conference-attendee-edit&proposalid={{ proposals[0].proposalid}}&conferenceattendeeid=" + conferenceattendeeid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 600,
+            width: 800,
+            modal: true,
+            buttons: {
+              "Save Attendee": saveAttendee,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        }
+
+        function saveAttendee() {
+          $.post("index.php", $("#conferenceattendeeForm").serialize());
+
+          $('#conferencesTable').dataTable().fnDestroy();
+          $('#conferencesTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "autoWidth": false,
+            'ajax': 'index.php?view=conference-attendee-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+
+          dialog.dialog("close");
+          $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
+          $("#warningDiv").show();
+
+          figureCosts({{ proposals[0].proposalid }});
+        }
+
         function editExpenseDialog(expenseid) {
           $("#editDialog").load(
             "index.php?view=expense-edit&proposalid={{ proposals[0].proposalid }}&expenseid=" + expenseid);
@@ -153,7 +192,7 @@
           } );
 
           dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] " + $("#description").val() + ")</p>");
+          $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
           $("#warningDiv").show();
 
           figureCosts({{ proposals[0].proposalid }});

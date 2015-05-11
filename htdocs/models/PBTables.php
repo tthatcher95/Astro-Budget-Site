@@ -760,7 +760,7 @@ class PBTables {
       return "Missing required information to add conference attendee";
     }
 
-    $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, travelers, meetingdays, traveldays, statedate)".
+    $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, travelers, meetingdays, traveldays, startdate)".
              " VALUES ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, ";
     if (isset($startdate)) { $query .= "'" . $this->formatDate($startdate) . "')"; }
     else { $query .= "now())"; }

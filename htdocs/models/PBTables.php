@@ -755,23 +755,23 @@ class PBTables {
   #  airfare REAL,
   
   # ConferenceAttendee
-  function addConferenceAttendee ($conferenceid, $proposalid, $peopleid, $meetingdays, $traveldays, $startdate) {
-    if (!(isset($conferenceid) and isset($proposalid) and isset($peopleid))) {
+  function addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate) {
+    if (!(isset($conferenceid) and isset($proposalid) and isset($travelers))) {
       return "Missing required information to add conference attendee";
     }
 
-    $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, peopleid, meetingdays, traveldays, statedate)".
-             " VALUES ($conferenceid, $proposalid, $peopleid, $meetingdays, $traveldays, ";
+    $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, travelers, meetingdays, traveldays, statedate)".
+             " VALUES ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, ";
     if (isset($startdate)) { $query .= "'" . $this->formatDate($startdate) . "')"; }
     else { $query .= "now())"; }
 
     $this->db->query($query);
   }
 
-  function updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $peopleid, $meetingdays, 
+  function updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $travelers, $meetingdays, 
                                     $traveldays, $startdate) {
     if (!isset($conferenceattendeeid)) { return "A conference attendee ID must be provided for an update"; }
-    if (!(isset($conferenceid) or isset($proposalid) or isset($peopleid) or isset($meetingdays)
+    if (!(isset($conferenceid) or isset($proposalid) or isset($travelers) or isset($meetingdays)
        or isset($traveldays) or isset($startdate))) { return "No changes provided for conference attendee update"; }
 
     $needComma = false;
@@ -784,10 +784,10 @@ class PBTables {
       $needComma = true;
       $query .= "proposalid=$proposalid";
     }
-    if (isset($peopleid)) {
+    if (isset($travelers)) {
       if ($needComma) { $query .= ", "; }
       $needComma = true;
-      $query .= "peopleid=$peopleid";
+      $query .= "travelers=$travelers";
     }
     if (isset($meetingdays)) {
       if ($needComma) { $query .= ", "; }
@@ -808,11 +808,10 @@ class PBTables {
     $this->db->query($query);
   }
     
-  function getConferenceAttendees ($confereneceattendeeid, $conferenceid, $proposalid, $peopleid) {
-    $query = "SELECT c.conferenceattendeeid, c.conferenceid, c.proposalid, c.peopleid, p.name, c.meetingdays, " .
+  function getConferenceAttendees ($confereneceattendeeid, $conferenceid, $proposalid, $travelers) {
+    $query = "SELECT c.conferenceattendeeid, c.conferenceid, c.proposalid, c.travelers, c.meetingdays, " .
              "c.traveldays, to_char(c.startdate, 'MM/DD/YYYY') as startdate, m.meeting " .
-             "FROM conferenceattendee c JOIN people p ON (p.peopleid=c.peopleid) " .
-             "JOIN conferences m ON (c.conferenceid=m.conferenceid)";
+             "FROM conferenceattendee c JOIN conferences m ON (c.conferenceid=m.conferenceid)";
 
     $needAnd = false;
     if (isset($conferenceattendeeid)) {
@@ -829,12 +828,6 @@ class PBTables {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $query .= "proposalid=$proposalid";
-      $needAnd = true;
-    }
-    if (isset($peopleid)) {
-      if ($needAnd) { $query .= " AND "; }
-      else { $query .= " WHERE "; }
-      $query .= "peopleid=$peopleid";
       $needAnd = true;
     }
 

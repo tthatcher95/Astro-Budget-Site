@@ -129,6 +129,16 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'conference-attendee-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'conference-attendee-edit':
+      $templateArgs = conferenceView($pbdb, $templateArgs);
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'conference-attendee-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'conference-attendee-save':
+      $templateArgs = conferenceAttendeeSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'expensetypes':
       $templateArgs = expensetypesView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -312,11 +322,12 @@ function proposalView ($pbdb, $templateArgs) {
 
   $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null, null);
 
+  $conferenceattendeeid = (isset($_REQUEST['conferenceattendeeid'])? $_REQUEST['conferenceattendeeid'] : null);
   # Add in the tasks, FBMS accounts, conferences/attendees, and expenses too
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
     $proposalid = $templateArgs['proposals'][$i]['proposalid'];
     $templateArgs['proposals'][$i]['FBMSaccounts'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
-    $templateArgs['proposals'][$i]['conferenceattendees'] = $pbdb->getConferenceAttendees (null, null, $proposalid, null);
+    $templateArgs['proposals'][$i]['conferenceattendees'] = $pbdb->getConferenceAttendees ($conferenceattendeeid, null, $proposalid, null);
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
       $templateArgs['debug'] = 'looking up conference rate for ' .
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferenceid'] . " " .
@@ -364,11 +375,13 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $total += $subtotal;
     $subtotal = 0;
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
-      $subtotal += $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
-        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
-      $subtotal += $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
+      $subtotal += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+                    $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
+                    $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
+      $subtotal += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+                    ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
-        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'];
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']));
     }
     $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings - " . money_format('%(#8n', $subtotal);
     $total += $subtotal;
@@ -560,28 +573,28 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
 
   $conferenceid = (isset($_REQUEST['conferenceid'])? $_REQUEST['conferenceid'] : null);
   $proposalid   = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
-  $peopleid     = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $travelers    = (isset($_REQUEST['travelers'])? $_REQUEST['travelers'] : null);
   $meetingdays  = (isset($_REQUEST['meetingdays'])? $_REQUEST['meetingdays'] : null);
   $traveldays   = (isset($_REQUEST['traveldays'])? $_REQUEST['traveldays'] : null);
   $startdate    = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
 
   if ($conferenceattendeeid == 'new') {
-    $pbdb->addConferenceAttendee ($conferenceid, $proposalid, $peopleid, $meetingdays, $traveldays, $startdate);
+    $pbdb->addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate);
   }
   else {
-    $pbdb->updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $peopleid, $meetingdays,
+    $pbdb->updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $travelers, $meetingdays,
                                      $traveldays, $startdate);
   }
 
   $templateArgs['conferenceattendeeid'] = $conferenceattendeeid;
   $templateArgs['conferenceid'] = $conferenceid;
   $templateArgs['proposalid'] = $proposalid;
-  $templateArgs['peopleid'] = $peopleid;
+  $templateArgs['travelers'] = $travelers;
   $templateArgs['meetingdays'] = $meetingdays;
   $templateArgs['traveldays'] = $traveldays;
   $templateArgs['startdate'] = $startdate;
 
-  $templateArgs['view'] = 'conferenceattendee-save-result.html';
+  $templateArgs['view'] = 'conference-attendee-save-result.html';
 
   return ($templateArgs);
 }
@@ -590,7 +603,7 @@ function tasksView ($pbdb, $templateArgs) {
   $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
-  $peoplid    = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $peopleid    = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
 
   $templateArgs['tasks'] = $pbdb->getTasks ($taskid, $proposalid, $taskname);
   for ($i = 0; $i < count($templateArgs['tasks']); $i++) {

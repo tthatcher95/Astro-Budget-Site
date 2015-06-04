@@ -74,6 +74,19 @@ if (isset($_REQUEST['view'])) {
       break;
     case 'proposal-save':
       break;
+    case 'fbms-list-json':
+      $templateArgs = fbmsView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'fbms-edit':
+      $templateArgs = fbmsView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'fbms-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'fbms-save':
+      $templateArgs = fbmsSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'programs':
       $templateArgs = programsView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -475,6 +488,40 @@ function programSave ($pbdb, $templateArgs) {
   $templateArgs['programname'] = $programname;
   $templateArgs['agency'] = $agency;
   $templateArgs['view'] = 'program-save-result.html';
+
+  return ($templateArgs);
+}
+
+function fbmsView ($pbdb, $templateArgs) {
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $fbmsid     = (isset($_REQUEST['fbmsid'])? $_REQUEST['fbmsid'] : null);
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['fbmsid']     = $fbmsid;
+
+  $templateArgs['fbms'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
+  $templateArgs['view'] = 'fbms-list-ajax.json';
+
+  return ($templateArgs);
+}
+
+function fbmsSave ($pbdb, $templateArgs) {
+  $fbmsid     = (isset($_REQUEST['fbmsid'])? $_REQUEST['fbmsid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $accountno  = (isset($_REQUEST['accountno'])? $_REQUEST['accountno'] : null);
+
+  error_log("fbmsSave: $fbmsid - $proposalid - $accountno ");
+  if ($fbmsid == 'new') {
+    $pbdb->addFBMSAccount ($accountno, $proposalid);
+  }
+  else {
+    $pbdb->updateFBMSAccount ($fbmsid, $accountno, $proposalid);
+  }
+
+  $templateArgs['fbmsid'] = $fbmsid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['accountno'] = $accountno;
+  $templateArgs['view'] = 'fbms-save-result.html';
 
   return ($templateArgs);
 }

@@ -1095,7 +1095,7 @@ class PBTables {
     }
 
     $query = "INSERT INTO expenses (proposalid, expensetypeid, description, amount, fiscalyear) VALUES " .
-             "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", " . 
+             "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", '" . 
               $this->formatDate($fiscalyear) . "')";
 
     $this->db->query($query);
@@ -1140,6 +1140,7 @@ class PBTables {
   }
 
   function getExpenses ($expenseid, $proposalid, $expensetypeid, $fiscalyear) {
+    if ($expenseid == 'new') { $expenseid=0; }
     $query = "SELECT e.expenseid, e.proposalid, e.expensetypeid, t.description as type, e.description, " .
              "e.amount, to_char(e.fiscalyear, 'MM/DD/YYYY') as fiscalyear FROM expenses e JOIN expensetypes t ON (t.expensetypeid=e.expensetypeid)";
 

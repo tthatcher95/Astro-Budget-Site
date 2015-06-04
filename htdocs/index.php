@@ -319,10 +319,9 @@ function salarySave ($pbdb, $templateArgs) {
 }
 
 function proposalView ($pbdb, $templateArgs) {
-  $peopleid = null;
-  $proposalid = null;
+  $peopleid   = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   if (isset($_REQUEST['proposalid'])) { 
-    $proposalid = $_REQUEST['proposalid']; 
     $templateArgs['view'] = 'proposals.html';
   }
   else {
@@ -412,12 +411,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
 }
 
 function proposalSave ($pbdb, $templateArgs) {
-  $proposalid = null;
-  if (isset($_REQUEST['proposalid'])) {
-    $templateArgs['debug'] = array ("Missing proposal ID to create or update proposals");
-    return ($templateArgs);
-  }
-
+  $proposalid      = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $peopleid        = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
   $projectname     = (isset($_REQUEST['projectname'])? $_REQUEST['projectname'] : null);
   $proposalnumber  = (isset($_REQUEST['proposalnumber'])? $_REQUEST['proposalnumber'] : null);
@@ -499,7 +493,7 @@ function fbmsView ($pbdb, $templateArgs) {
   $templateArgs['proposalid'] = $proposalid;
   $templateArgs['fbmsid']     = $fbmsid;
 
-  $templateArgs['fbms'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
+  $templateArgs['fbms'] = $pbdb->getFBMSAccounts ($fbmsid, null, $proposalid);
   $templateArgs['view'] = 'fbms-list-ajax.json';
 
   return ($templateArgs);

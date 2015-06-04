@@ -542,7 +542,7 @@ class PBTables {
     }
 
     $query = "UPDATE fbmsaccounts SET";
-    if (isset($accountno)) { $query .= "accountno=$accountno"; }
+    if (isset($accountno)) { $query .= " accountno='$accountno'"; }
     if (isset($proposalid)) {
       if (isset($accountno)) { $query .= ", "; }
       $query .= "proposalid=$proposalid";
@@ -556,6 +556,7 @@ class PBTables {
     $query = "SELECT fbmsid, accountno, proposalid FROM fbmsaccounts";
     $needAnd = false;
     if (isset($fbmsid)) {
+      if ($fbmsid == 'new') { $fbmsid = 0; }
       $query .= " WHERE fbmsid=$fbmsid";
       $needAnd = true;
     }
@@ -812,13 +813,14 @@ class PBTables {
     $this->db->query($query);
   }
     
-  function getConferenceAttendees ($confereneceattendeeid, $conferenceid, $proposalid, $travelers) {
+  function getConferenceAttendees ($conferenceattendeeid, $conferenceid, $proposalid, $travelers) {
     $query = "SELECT c.conferenceattendeeid, c.conferenceid, c.proposalid, c.travelers, c.meetingdays, " .
              "c.traveldays, to_char(c.startdate, 'MM/DD/YYYY') as startdate, m.meeting " .
              "FROM conferenceattendee c JOIN conferences m ON (c.conferenceid=m.conferenceid)";
 
     $needAnd = false;
     if (isset($conferenceattendeeid)) {
+      if ($conferenceattendeeid == 'new') { $conferenceattendeeid=0; }
       $query .= " WHERE conferenceattendeeid=$conferenceattendeeid";
       $needAnd = true;
     }

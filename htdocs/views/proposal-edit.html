@@ -146,7 +146,7 @@
             width: 400,
             modal: true,
             buttons: {
-              "Save FBMS": saveAttendee,
+              "Save FBMS": saveFBMS,
               Cancel: function () {
                 dialog.dialog("close");
               }
@@ -157,6 +157,7 @@
         }
 
         function saveFBMS() {
+        console.log ($("#fbmsForm").serialize());
           $.post("index.php", $("#fbmsForm").serialize());
 
           $('#fbmsTable').dataTable().fnDestroy();
@@ -175,7 +176,7 @@
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {
           $("#editDialog").load(
-            "index.php?view=conference-attendee-edit&proposalid=" + proposalid + "&conferenceattendeeid=" + conferenceattendeeid);
+            "index.php?view=conference-attendee-edit&debug?proposalid=" + proposalid + "&conferenceattendeeid=" + conferenceattendeeid);
 
           dialog = $("#editDialog").dialog({
             autoOpen: false,

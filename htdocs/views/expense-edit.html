@@ -10,7 +10,11 @@
             <input type="hidden" name="act" value="save"/>
             <input type="hidden" name="view" value="expense-save"/>
             <input type="hidden" id="proposalid" name="proposalid" value="{{ proposals[0].proposalid }}"/>
-            <input type="hidden" id="expenseid" name="expenseid" value="{{ proposals[0].expenses[0].expenseid }}"/>
+            <input type="hidden" id="expenseid" name="expenseid"
+            {% if proposals[0].expenses[0] is empty %} value="new"/>
+            {% else %} value="{{ proposals[0].expenses[0].expenseid }}"/>
+            {% endif %}
+
             <table><tr><th>Description</th>
             <td><input type="text" name="description" id="description" value="{{ proposals[0].expenses[0].description }}" size="40"/></td></tr>
             <tr><th>Expense Type</th>

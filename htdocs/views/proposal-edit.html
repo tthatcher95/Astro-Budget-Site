@@ -51,6 +51,13 @@
               </table>
               </form>
             </div>
+          <h3 id='accountingTitle' >FMBS and Overhead Rates</h3>
+            <div id='accountingDiv' style='height: 400px;'>
+              <a href='javascript:void(0)' onClick="editFBMSDialog('new')" id='newFBMSButton'>New</a><p/>
+              <table id='fbmsTable' class='display' cellspacing='0' width='100%'>
+                <thead><tr><th>Account No.</th></tr></thead>
+              </table>
+            </div>
           <h3 id='tasksTitle' >Tasks</h3>
             <div id='tasksdiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a><p/>
@@ -68,7 +75,7 @@
             </div>
           <h3 id='expensesTitle'>Expenses</h3>
             <div>
-              <a href='javascript:void(0)' onClick="editTask('new')" id='newExpenseButton'>New</a><p/>
+              <a href='javascript:void(0)' onClick="editExpenseDialog('new')" id='newExpenseButton'>New</a><p/>
               <table id='expensesTable' class='display' cellspace='0' width='100%'>
                 <thead><tr><th>Expense</th><th>Type</th><th>Amount</th><th>Fiscal</th></tr></thead>
               </table>
@@ -85,15 +92,24 @@
               });
             });
           });
+          $('#accountingTitle').html('FBMS and Overhead Rates');
         }
 
         $(document).ready(function() {
           $('#proposalperfperiodstart').datepicker();
           $('#proposalperfperiodend').datepicker();
           $('#newTaskButton').button();
+          $('#newFBMSButton').button();
           $('#newConferenceButton').button();
           $('#newExpenseButton').button();
 
+          $('#fbmsTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
           $('#tasksTable').dataTable( {
             'processing': true,
             'serverSide': false,
@@ -119,6 +135,43 @@
 
           figureCosts({{ proposals[0].proposalid }});
         } );
+
+        function editFBMSDialog(fbmsid) {
+          $("#editDialog").load(
+            "index.php?view=fbms-edit&proposalid=" + {{ proposals[0].proposalid }} + "&fbmsid=" + fbmsid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 200,
+            width: 400,
+            modal: true,
+            buttons: {
+              "Save FBMS": saveAttendee,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        }
+
+        function saveFBMS() {
+          $.post("index.php", $("#fbmsForm").serialize());
+
+          $('#fbmsTable').dataTable().fnDestroy();
+          $('#fbmsTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "autoWidth": false,
+            'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+
+          dialog.dialog("close");
+          $("#warningDiv").html("<p>Updated [" + $("#fbmsid").val() + "] (" + $("#accountno").val() + ")</p>");
+          $("#warningDiv").show();
+        }
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {
           $("#editDialog").load(

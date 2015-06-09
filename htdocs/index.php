@@ -73,6 +73,8 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'proposal-save':
+      $templateArgs = proposalSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
       break;
     case 'fbms-list-json':
       $templateArgs = fbmsView($pbdb, $templateArgs);

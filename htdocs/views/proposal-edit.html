@@ -17,6 +17,8 @@
           <h3 id='proposalTitle'>Proposal Details - {{ proposals[0].projectname }}</h3>
             <div>
               <form id="proposalForm" action="index.php" method="GET">
+              <input type='hidden' name='proposalid' value='{{ proposals[0].proposalid }}'/>
+              <input type='hidden' name='view' value='proposal-save'/>
               <table>
                 <tr><th>Project Name</th>
                   <td colspan="3"><input type='text' name='projectname' size="70"
@@ -47,6 +49,9 @@
                   <th>Ending</th>
                   <td><input type='text' id='proposalperfperiodend' name='perfperiodend' 
                        value='{{ proposals[0].perfperiodend }}'/></td></tr>
+                </tr>
+                <tr><th></th>
+                    <td><a href='javascript:void(0)' onClick='saveProposal()' id='saveProposalButton'>Save</a></td>
                 </tr>
               </table>
               </form>
@@ -98,6 +103,7 @@
         $(document).ready(function() {
           $('#proposalperfperiodstart').datepicker();
           $('#proposalperfperiodend').datepicker();
+          $('#saveProposalButton').button();
           $('#newTaskButton').button();
           $('#newFBMSButton').button();
           $('#newConferenceButton').button();
@@ -136,6 +142,13 @@
           figureCosts({{ proposals[0].proposalid }});
         } );
 
+        function saveProposal() {
+          $.post("index.php", $("#proposalForm").serialize());
+          
+          $("#warningDiv").html("<p>Updated proposal details</p>");
+          $("#warningDiv").show();
+        }
+
         function editFBMSDialog(fbmsid) {
           $("#editDialog").load(
             "index.php?view=fbms-edit&proposalid=" + {{ proposals[0].proposalid }} + "&fbmsid=" + fbmsid);
@@ -157,7 +170,6 @@
         }
 
         function saveFBMS() {
-        console.log ($("#fbmsForm").serialize());
           $.post("index.php", $("#fbmsForm").serialize());
 
           $('#fbmsTable').dataTable().fnDestroy();

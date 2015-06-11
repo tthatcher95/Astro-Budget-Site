@@ -1184,13 +1184,58 @@ class PBTables {
     $this->db->query($query);
   }
 
-  # CREATE TABLE expenses (
-  #  expenseid BIGSERIAL Primary Key,
-  #  proposalid INTEGER,
-  #  expensetypeid INTEGER,
-  #  description VARCHAR(256),
-  #  amount REAL,
-  #  fiscalyear VARCHAR(4),
+  function addOverheadrate ($proposalid, $rate, $description, $effectivedate) {
+    if (!(isset($rate) and isset($effectivedate))) {
+      return "Missing required information to add overhead rate";
+    }
+
+    $query = "INSERT INTO overheadrates (proposalid, rate, description, effectivedate) " .
+             " VALUES ($proposalid, $rate, '$description', '" . $this->formatDate($effectivedate) . "')"; 
+
+    $this->db->query($query);
+  }
+
+  function updateOverheadrate ($overheadid, $proposalid, $rate, $description, $effectivedate) {
+    if (!isset($overheadid)) { return "An overhead rate ID must be provided for an update"; }
+    if (!(isset($rate) or isset($proposalid) or isset($description) or isset($effectivedate))) { 
+      return "No changes provided for overhead rate update"; 
+    }
+
+    $query = "UPDATE overheadrates set ";
+
+    $needComma = false;
+    if (isset($proposalid)) {
+      $query .= "proposalid=$proposalid";
+      $needComma = true;
+    }
+    if (isset($rate)) {
+      if ($needComma) { $query .= ", "; }
+      $needComma = true;
+      $query .= "rate=$rate";
+    }
+    if (isset($description)) {
+      if ($needComma) { $query .= ", "; }
+      $needComma = true;
+      $query .= "description='$description'";
+    }
+    if (isset($effectivedate)) {
+      if ($needComma) { $query .= ", "; }
+      $needComma = true;
+      $query .= "effectivedate='" . $this->formatDate($effectivedate) . "'";
+    }
+
+    $query .= " WHERE overheadid=$overheadid";
+
+    $this->db->query($query);
+  }
+    
+  function getOverheadrates ($proposalid, $targetdate) {
+    $query = "SELECT overheadid, proposalid, rate, description, to_char(effectivedate, 'MM/DD/YYYY') " .
+             "FROM overheadrates";
+
+    # If $proposalid isset, search first with that $proposalid, if no results, do the search again 
+    # where the proposalid is null (default rate for everything) and return that instead.
+  }
 
   function formatDate ($effectivedate) {
     $newtime = strtotime($effectivedate);

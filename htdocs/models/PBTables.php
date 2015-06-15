@@ -357,6 +357,11 @@ class PBTables {
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['startFY'] = $this->fiscalYear($results[$r]['startdate']);
+      $results[$r]['endFY'] = $this->fiscalYear($results[$r]['enddate']);
+    }
+
     return ($results);
   }
 
@@ -504,6 +509,11 @@ class PBTables {
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
+
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['startFY'] = $this->fiscalYear($results[$r]['perfperiodstart']);
+      $results[$r]['endFY'] = $this->fiscalYear($results[$r]['perfperiodend']);
+    }
 
     return ($results);
   }
@@ -840,6 +850,10 @@ class PBTables {
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['FY'] = $this->fiscalYear($results[$r]['startdate']);
+    }
+
     return ($results);
   }
 
@@ -1023,6 +1037,10 @@ class PBTables {
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['FY'] = $this->fiscalYear($results[$r]['fiscalyear']);
+    }
+
     return ($results);
   }
 
@@ -1173,6 +1191,10 @@ class PBTables {
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['FY'] = $this->fiscalYear($results[$r]['fiscalyear']);
+    }
+
     return ($results);
   }
 
@@ -1244,6 +1266,18 @@ class PBTables {
     }
 
     return $effectivedate;
+  }
+
+  function fiscalYear ($date) {
+    $newtime = strtotime($date);
+    $month = intval(date('m', $newtime));
+    $year  = intval(date('y', $newtime));
+
+    if ($month > 9) {
+      $year = $year + 1;
+    }
+    
+    return "FY$year";
   }
 }
   

@@ -1,0 +1,5 @@
+{"draw":0,"recordsTotal":{{ overheadrates|length }},"recordsFiltered":{{ overheadrates|length }},"data":[
+{% for rate in overheadrates %}
+["{{ rate.rate }}%", "{{ rate.description }}", "{{ rate.FY }}"]{% if loop.last != true %},{% endif %}
+{% endfor %}
+]}

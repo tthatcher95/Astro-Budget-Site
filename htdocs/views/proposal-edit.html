@@ -56,11 +56,17 @@
               </table>
               </form>
             </div>
-          <h3 id='accountingTitle' >FMBS and Overhead Rates</h3>
+          <h3 id='fbmsTitle' >FMBS Accounts</h3>
             <div id='accountingDiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editFBMSDialog('new')" id='newFBMSButton'>New</a><p/>
               <table id='fbmsTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>Account No.</th></tr></thead>
+              </table>
+            </div>
+          <h3 id='overheadTitle'>Overhead Rates</h3>
+            <div id='overheadDiv' style='height: 400px;'>
+              <table id='overheadTable' class='display' cellspacing='0' width='100%'>
+                <thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th></tr>
               </table>
             </div>
           <h3 id='tasksTitle' >Tasks</h3>
@@ -97,7 +103,8 @@
               });
             });
           });
-          $('#accountingTitle').html('FBMS and Overhead Rates');
+          $('#fbmsTitle').html('FBMS Accounts');
+          $('#overheadTitle').html('Overhead Rates');
         }
 
         $(document).ready(function() {
@@ -114,6 +121,13 @@
             'serverSide': false,
             'autoWidth': false,
             'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+          $('#overheadTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=overhead-list-json&proposalid={{ proposals[0].proposalid}}',
             'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
           } );
           $('#tasksTable').dataTable( {
@@ -188,7 +202,7 @@
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {
           $("#editDialog").load(
-            "index.php?view=conference-attendee-edit&debug?proposalid=" + proposalid + "&conferenceattendeeid=" + conferenceattendeeid);
+            "index.php?view=conference-attendee-edit&proposalid=" + proposalid + "&conferenceattendeeid=" + conferenceattendeeid);
 
           dialog = $("#editDialog").dialog({
             autoOpen: false,

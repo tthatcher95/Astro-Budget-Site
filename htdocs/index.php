@@ -1,6 +1,7 @@
 <?php
 
 require_once '/usr/share/pear/Twig/Autoloader.php';
+# require_once '/var/www/budgetprops-dev/php_packages/Twig-1.18.2/lib/Twig/Autoloader.php';
 require_once(dirname(__FILE__) . '/models/PBTables.php');
 
 $pbdb = new PBTables();
@@ -87,6 +88,19 @@ if (isset($_REQUEST['view'])) {
       break;
     case 'fbms-save':
       $templateArgs = fbmsSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'overhead-list-json':
+      $templateArgs = overheadView($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'overhead-edit':
+      $templateArgs = overheadView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'overhead-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'overhead-save':
+      $templateArgs = overheadSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'programs':
@@ -194,6 +208,7 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'proposal-costs-json':
+      $templateArgs = overheadView($pbdb, $templateArgs);
       $templateArgs = proposalView($pbdb, $templateArgs);
       $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'proposal-costs-ajax.json';
@@ -364,7 +379,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
     $templateArgs['costs'][$i] = array ();
     $total = 0;
-    $subtotal = 0;
+    $subtotals = array();
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['tasks']); $j++) {
       $templateArgs['proposals'][$i]['tasks'][$j]['staffing'] = $pbdb->getStaffing(null, 
         $templateArgs['proposals'][$i]['tasks'][$j]['taskid'], null, null);
@@ -375,7 +390,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
             $date = date('m/d/Y', time()));
       }
       for ($k = 0; $k < count($templateArgs['proposals'][$i]['tasks'][$j]['staffing']); $k++) {
-        $subtotal += ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q1hours'] +
+        $currFy = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['FY'];
+        $subtotals[$currFy] += ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q1hours'] +
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q2hours'] +
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q3hours'] +
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q4hours'] +
@@ -384,26 +400,49 @@ function costsSummaryView ($pbdb, $templateArgs) {
                      $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
       }
     }
-
-    $templateArgs['costs'][$i]['staffing'] = "Tasks - " . money_format('%(#8n', $subtotal);
+  
+    $subtotal = 0;
+    $templateArgs['costs'][$i]['staffing'] = "Tasks - ";
+    foreach ($subtotals as $fy => $cost) {
+      $templateArgs['costs'][$i]['staffing'] .= " $fy " . money_format('%(#8n', $cost);
+      $subtotal += $cost;
+    }
+    
+    $templateArgs['costs'][$i]['staffing'] .= " Total " . money_format('%(#8n', $subtotal);
     $total += $subtotal;
     $subtotal = 0;
+    $subtotals = array ();
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
-      $subtotal += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+      $currFy = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['FY'];
+      $subtotals[$currFy] += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
-      $subtotal += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+      $subtotals[$currFy] += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                     ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']));
     }
-    $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings - " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings - ";
+    foreach ($subtotals as $fy => $cost) {
+      $templateArgs['costs'][$i]['conferences'] .= " $fy " . money_format('%(#8n', $cost);
+      $subtotal += $cost;
+    }
+    
+    $templateArgs['costs'][$i]['conferences'] .= " Total " . money_format('%(#8n', $subtotal);
     $total += $subtotal;
     $subtotal = 0;
+    $subtotals = array();
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['expenses']); $j++) {
-      $subtotal += $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
+      $currFy = $templateArgs['proposals'][$i]['expenses'][$j]['FY'];
+      $subtotals[$currFy] += $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
     }
-    $templateArgs['costs'][$i]['expenses'] = "Expenses - " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['expenses'] = "Expenses - ";
+    foreach ($subtotals as $fy => $cost) {
+      $templateArgs['costs'][$i]['expenses'] .= " $fy " . money_format('%(#8n', $cost);
+      $subtotal += $cost;
+    }
+    
+    $templateArgs['costs'][$i]['expenses'] .= " Total " . money_format('%(#8n', $subtotal);
     $total += $subtotal;
     $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " . $templateArgs['proposals'][$i]['projectname'] . " " .
       money_format('%(#8n', $total);
@@ -518,6 +557,21 @@ function fbmsSave ($pbdb, $templateArgs) {
   $templateArgs['proposalid'] = $proposalid;
   $templateArgs['accountno'] = $accountno;
   $templateArgs['view'] = 'fbms-save-result.html';
+
+  return ($templateArgs);
+}
+
+function overheadView ($pbdb, $templateArgs) {
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $overheadid = (isset($_REQUEST['overheadid'])? $_REQUEST['overheadid'] : null);
+  $effectivedate = (isset($_REQUEST['effectivedate'])? $_REQUEST['effectivedate'] : null);
+
+  $templateArgs['proposalid']    = $proposalid;
+  $templateArgs['overheadid']    = $overheadid;
+  $templateArgs['effectivedate'] = $effectivedate;
+
+  $templateArgs['overheadrates'] = $pbdb->getOverheadrates ($proposalid, $overheadid, $effectivedate);
+  $templateArgs['view'] = 'overhead-list-ajax.json';
 
   return ($templateArgs);
 }

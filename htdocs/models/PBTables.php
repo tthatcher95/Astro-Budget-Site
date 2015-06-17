@@ -1251,12 +1251,31 @@ class PBTables {
     $this->db->query($query);
   }
     
-  function getOverheadrates ($proposalid, $targetdate) {
-    $query = "SELECT overheadid, proposalid, rate, description, to_char(effectivedate, 'MM/DD/YYYY') " .
-             "FROM overheadrates";
+  function getOverheadrates ($proposalid, $overheadid, $targetdate) {
+    $query = "SELECT overheadid, proposalid, rate, description, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate" .
+             " FROM overheadrates";
+
+    $results = array();
 
     # If $proposalid isset, search first with that $proposalid, if no results, do the search again 
     # where the proposalid is null (default rate for everything) and return that instead.
+    if (isset($proposalid)) {
+      $proposalquery = $query . " WHERE proposalid=$proposalid";
+      $this->db->query($proposalquery);
+      $results = $this->db->getResultArray();
+    }
+
+    if (count($results) < 1) {
+      $query .= " WHERE proposalid is null";
+      $this->db->query($query);
+      $results = $this->db->getResultArray();
+    }
+
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['FY'] = $this->fiscalYear($results[$r]['effectivedate']);
+    }
+
+    return ($results);
   }
 
   function formatDate ($effectivedate) {

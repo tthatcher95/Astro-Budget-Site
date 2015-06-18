@@ -408,6 +408,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
   
     $subtotal = 0;
     $templateArgs['costs'][$i]['staffing'] = "Tasks - ";
+    ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
       $templateArgs['costs'][$i]['staffing'] .= " $fy " . money_format('%(#8n', $cost);
       $subtotal += $cost;
@@ -432,6 +433,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $totals[$currFy] += $cost * (1 + ($currOver * .01));
     }
     $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings - ";
+    ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
       $templateArgs['costs'][$i]['conferences'] .= " $fy " . money_format('%(#8n', $cost);
       $subtotal += $cost;
@@ -449,6 +451,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $totals[$currFy] += $templateArgs['proposals'][$i]['expenses'][$j]['amount'] * (1 + ($currOver * .01));;
     }
     $templateArgs['costs'][$i]['expenses'] = "Expenses - ";
+    ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
       $templateArgs['costs'][$i]['expenses'] .= " $fy " . money_format('%(#8n', $cost);
       $subtotal += $cost;
@@ -459,6 +462,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " . 
                                              $templateArgs['proposals'][$i]['projectname'] . " - ";
     $total = 0;
+    ksort($totals);
     foreach ($totals as $fy => $cost) {
       $templateArgs['costs'][$i]['proposal'] .= " $fy " . money_format('%(#8n', $cost);
       $total += $cost;

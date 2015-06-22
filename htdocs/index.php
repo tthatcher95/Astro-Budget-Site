@@ -379,6 +379,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
     $templateArgs['costs'][$i] = array ();
     $totals = array();
+    $overhead = array();
     $subtotals = array();
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['tasks']); $j++) {
       $templateArgs['proposals'][$i]['tasks'][$j]['staffing'] = $pbdb->getStaffing(null, 
@@ -401,7 +402,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
                  $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours']) *
                  ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
                  $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
-        $subtotals[$currFy] += $cost * (1 + ($currOver * .01));
+        $subtotals[$currFy] += $cost;
+        $overhead[$currFy] += $cost * ($currOver * .01);
         $totals[$currFy] += $cost * (1 + ($currOver * .01));
       }
     }
@@ -420,26 +422,27 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $subtotals = array ();
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
       $currFy = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['FY'];
-      $costs = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
-                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
-                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
-      $costs += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
-                ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
-                 $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
-                 $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']));
+      $cost = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+               $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
+               $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
+      $cost += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+               ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
+                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
+                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']));
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
-      $subtotals[$currFy] += $cost * (1 + ($currOver * .01));
+      $subtotals[$currFy] += $cost;
+      $overhead[$currFy] += $cost * ($currOver * .01);
       $totals[$currFy] += $cost * (1 + ($currOver * .01));
     }
-    $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings - ";
+    $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings ";
     ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
-      $templateArgs['costs'][$i]['conferences'] .= " $fy " . money_format('%(#8n', $cost);
+      $templateArgs['costs'][$i]['conferences'] .= " - $fy " . money_format('%(#8n', $cost);
       $subtotal += $cost;
     }
     
-    $templateArgs['costs'][$i]['conferences'] .= " Total " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['conferences'] .= " - Total " . money_format('%(#8n', $subtotal);
     $total += $subtotal;
     $subtotal = 0;
     $subtotals = array();
@@ -447,27 +450,37 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $currFy = $templateArgs['proposals'][$i]['expenses'][$j]['FY'];
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['expenses'][$j]['fiscalyear']);
-      $subtotals[$currFy] += $templateArgs['proposals'][$i]['expenses'][$j]['amount'] * (1 + ($currOver * .01));;
-      $totals[$currFy] += $templateArgs['proposals'][$i]['expenses'][$j]['amount'] * (1 + ($currOver * .01));;
+      $cost = $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
+      $subtotals[$currFy] += $cost;
+      $overhead[$currFy]  += $cost * ($currOver * .01);
+      $totals[$currFy]    += $cost * (1 + ($currOver * .01));
     }
-    $templateArgs['costs'][$i]['expenses'] = "Expenses - ";
+    $templateArgs['costs'][$i]['expenses'] = "Expenses ";
     ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
-      $templateArgs['costs'][$i]['expenses'] .= " $fy " . money_format('%(#8n', $cost);
+      $templateArgs['costs'][$i]['expenses'] .= " - $fy " . money_format('%(#8n', $cost);
       $subtotal += $cost;
     }
     
-    $templateArgs['costs'][$i]['expenses'] .= " Totals " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['expenses'] .= " - Totals " . money_format('%(#8n', $subtotal);
     $total += $subtotal;
     $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " . 
-                                             $templateArgs['proposals'][$i]['projectname'] . " - ";
-    $total = 0;
+                                             $templateArgs['proposals'][$i]['projectname'];
+    $subtotal = 0;
     ksort($totals);
     foreach ($totals as $fy => $cost) {
-      $templateArgs['costs'][$i]['proposal'] .= " $fy " . money_format('%(#8n', $cost);
-      $total += $cost;
+      $templateArgs['costs'][$i]['proposal'] .= " - $fy " . money_format('%(#8n', $cost);
+      $subtotal += $cost;
     }
-    $templateArgs['costs'][$i]['proposal'] .= " Totals " . money_format('%(#8n', $total);
+    $templateArgs['costs'][$i]['proposal'] .= " - Totals " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['overhead'] = "Overhead ";
+    ksort($overhead);
+    $subtotal = 0;
+    foreach ($overhead as $fy => $cost) {
+      $templateArgs['costs'][$i]['overhead'] .= " - $fy " . money_format('%(#8n', $cost);
+      $subtotal += $cost;
+    }
+    $templateArgs['costs'][$i]['overhead'] .= " - Total " . money_format('%(#8n', $subtotal);
   }
   
   return ($templateArgs);

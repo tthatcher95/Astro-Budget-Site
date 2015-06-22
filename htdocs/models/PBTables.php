@@ -847,7 +847,7 @@ class PBTables {
       $needAnd = true;
     }
 
-    $query .= " ORDER BY startdate desc";
+    $query .= " ORDER BY startdate asc";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -1036,7 +1036,7 @@ class PBTables {
       $needAnd = true;
     }
 
-    $query .= " ORDER BY s.fiscalyear DESC";
+    $query .= " ORDER BY s.fiscalyear ASC";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -1192,7 +1192,7 @@ class PBTables {
       $needAnd = true;
     }
 
-    $query .= " ORDER BY fiscalyear DESC";
+    $query .= " ORDER BY fiscalyear ASC";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();

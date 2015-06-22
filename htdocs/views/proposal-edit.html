@@ -73,7 +73,7 @@
             <div id='tasksdiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editTask('new')" id='newTaskButton'>New</a><p/>
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
-                <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben)</th><th>FY</th></tr></thead>
+                <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th></tr></thead>
               </table>
             </div>
 
@@ -81,7 +81,7 @@
             <div>
               <a href='javascript:void(0)' onClick="editAttendeeDialog({{ proposals[0].proposalid }}, 'new')" id='newConferenceButton'>New</a><p/>
               <table id='conferencesTable' class='display' cellspace='0' width='100%'>
-                <thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
+                <thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>FY</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
               </table>
             </div>
           <h3 id='expensesTitle'>Expenses</h3>
@@ -104,7 +104,7 @@
             });
           });
           $('#fbmsTitle').html('FBMS Accounts');
-          $('#overheadTitle').html('Overhead Rates');
+          // $('#overheadTitle').html('Overhead Rates');
         }
 
         $(document).ready(function() {

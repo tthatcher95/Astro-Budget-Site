@@ -191,6 +191,26 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'tasks-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'task-edit':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = tasksView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'task-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'staffing-edit-json':
+      $templateArgs = staffingView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'staffing-edit-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'staffing-list-json':
+      $templateArgs = tasksView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'staffing-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'staffing-save':
+      $templateArgs = staffingSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'expense-list-json':
       $templateArgs = expensetypesView($pbdb, $templateArgs);
       $templateArgs = proposalView($pbdb, $templateArgs);
@@ -374,6 +394,7 @@ function proposalView ($pbdb, $templateArgs) {
 }
 
 function costsSummaryView ($pbdb, $templateArgs) {
+  error_reporting( error_reporting() & ~E_NOTICE );
   setlocale(LC_MONETARY, 'en_US');
   $templateArgs['costs'] = array ();
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
@@ -750,6 +771,50 @@ function tasksView ($pbdb, $templateArgs) {
   }
 
   $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON
+
+  return ($templateArgs);
+}
+
+function staffingView ($pbdb, $templateArgs) {
+  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+  $staffingid = (isset($_REQUEST['staffingid'])? $_REQUEST['staffingid'] : null);
+
+  $templateArgs['staffing'] = $pbdb->getStaffing($staffingid, $taskid, null, null);
+  $templateArgs['view'] = 'staffing-edit-ajax.json';
+
+  return ($templateArgs);
+}
+
+function staffingSave ($pbdb, $templateArgs) {
+  $staffingid = (isset($_REQUEST['staffingid'])? $_REQUEST['staffingid'] : null);
+  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+  $peopleid   = (isset($_REQUEST['staffingpeopleid'])? $_REQUEST['staffingpeopleid'] : null);
+  $fiscalyear = (isset($_REQUEST['fiscalyear'])? $_REQUEST['fiscalyear'] : null);
+  $q1hours    = (isset($_REQUEST['q1hours'])? $_REQUEST['q1hours'] : null);
+  $q2hours    = (isset($_REQUEST['q2hours'])? $_REQUEST['q2hours'] : null);
+  $q3hours    = (isset($_REQUEST['q3hours'])? $_REQUEST['q3hours'] : null);
+  $q4hours    = (isset($_REQUEST['q4hours'])? $_REQUEST['q4hours'] : null);
+  $flexhours  = (isset($_REQUEST['flexhours'])? $_REQUEST['flexhours'] : null);
+
+  if ($staffingid == 'new') {
+    $pbdb->addStaffing($taskid, $peopleid, $fiscalyear, $q1hours, $q2hours, $q3hours, $q4hours, $flexhours);
+  }
+  else {
+    $pbdb->updateStaffing($staffingid, $taskid, $peopleid, $fiscalyear, $q1hours, $q2hours, $q3hours, $q4hours, 
+                          $flexhours);
+  }
+
+  $templateArgs['staffingid'] = $staffingid;
+  $templateArgs['taskid']     = $taskid;
+  $templateArgs['peopleid']   = $peopleid;
+  $templateArgs['fiscalyear'] = $fiscalyear;
+  $templateArgs['q1hours']    = $q1hours;
+  $templateArgs['q2hours']    = $q2hours;
+  $templateArgs['q3hours']    = $q3hours;
+  $templateArgs['q4hours']    = $q4hours;
+  $templateArgs['flexhours']  = $flexhours;
+
+  $templateArgs['view'] = 'staffing-save-result.html';
 
   return ($templateArgs);
 }

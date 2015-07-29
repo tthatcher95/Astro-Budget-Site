@@ -950,7 +950,7 @@ class PBTables {
     if (isset($fiscalyear)) { $query .= "'" . $this->formatDate($fiscalyear) . "', "; }
     else { $query .= "now(), "; }
     $query .= "$q1hours, $q2hours, $q3hours, $q4hours, $flexhours)";
-
+    
     $this->db->query($query);
   }
 
@@ -1003,6 +1003,8 @@ class PBTables {
       $needComma = true;
     }
 
+    $query .= " WHERE staffingid=$staffingid";
+
     $this->db->query($query);
   }
 
@@ -1014,7 +1016,7 @@ class PBTables {
     $needAnd = false;
 
     if (isset($staffingid)) {
-      $query .= " WHERE staffingid=$staffingid";
+      $query .= " WHERE s.staffingid=$staffingid ";
       $needAnd = true;
     }
     if (isset($taskid)) {

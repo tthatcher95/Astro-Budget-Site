@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Editing {{ task.name }}</title>
+
+    </head>
+    <body>
+    <div id="taskedittabs">
+      <ul>
+        <li><a href="#tasktab">Task</a></li>
+        <li><a href="#stafftab">Staffing</a></li>
+      </ul>
+    <div id="tasktab">
+        {% for task in tasks %}
+          <form id="taskForm" action="index.php" method="GET">
+            <input type="hidden" name="act" value="save"/>
+            <input type="hidden" name="view" value="task-save"/>
+            <input type="hidden" id="proposalid" name="proposalid" value="{{ task.proposalid }}"/>
+            <table><tr><th>Task Name</th>
+            <td><input type="text" name="taskname" id="taskname" value="{{ task.taskname }}" size="40"/></td></tr>
+            <tr><td><a href='javascript:void(0)' onClick="staffingEdit({{ task.taskid }}, 'new')" id='newStaffButton'>New Staffing</a></td><td></td></tr>
+            </table>
+          </form>
+        {% endfor %}
+        <table id='taskStaffingTable' class='display' cellspacing='0' width='100%'>
+           <thead>
+             <tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th>
+             </tr>
+           </thead>
+        </table>
+    </div>
+    <div id="stafftab">
+      <form id="staffingForm" action="index.php" method="GET">
+        <input type="hidden" name="act" value="save"/>
+        <input type="hidden" name="view" value="staffing-save"/>
+        <input type="hidden" id="taskid" name="taskid" value="{{ tasks[0].taskid }}"/>
+        <input type="hidden" id="staffingid" name="staffingid" value=""/>
+        <table>
+          <tr><th>Person</th><td>
+              {% include 'people-dropdown.html' with {'dropdown_name': 'staffingpeopleid',
+                                                      'dropdown_id': 'staffingpeopleid',
+                                                      'selected_peopleid': 1 } %}
+              </td>
+          </tr>
+          <tr>
+          </td><th>Fiscal Year</th><td><input type="text" id="fiscalyear" name="fiscalyear" size="20"/></td></tr>
+        </table>
+        <table>
+          <tr><th>Q1 Hours</th><th>Q2 Hours</th><th>Q3 Hours</th><th>Q4 Hours</th><th>Flex Hours</th></tr>
+          <tr>
+            <td><input type="text" id="q1hours" name="q1hours" size="8"/></td>
+            <td><input type="text" id="q2hours" name="q2hours" size="8"/></td>
+            <td><input type="text" id="q3hours" name="q3hours" size="8"/></td>
+            <td><input type="text" id="q4hours" name="q4hours" size="8"/></td>
+            <td><input type="text" id="flexhours" name="flexhours" size="8"/></td>
+          </tr>
+        </table>
+        <table>
+          <tr><th></th><td>
+          <a href='javascript:void(0)' onClick="staffingSave()" id='saveStaffingButton'>Save Staffing</a></td></tr>
+        </table>
+    </div>
+    </div> <!-- taskedittabs div -->
+
+    <script type="text/javascript">
+      $(function() {
+        $("#taskedittabs").tabs();
+        {% for task in tasks %}
+          $('#taskStaffingTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            'autoWidth': false,
+            "ajax": "index.php?view=staffing-list-json&proposalid={{ tasks[0].proposalid }}&taskid={{ tasks[0].taskid }}"
+          } );
+
+        $("#fiscalyear").datepicker();
+        $("#newStaffButton").button();
+        $("#saveStaffingButton").button();
+      });
+
+      function staffingEdit(taskid,staffingid) {
+        $("#taskedittabs").tabs( "option", "active", 1 );
+        $("#taskid").val(taskid);
+        $("#staffingid").val(staffingid);
+        if (staffingid == 'new') {
+          $("#staffingpeopleid").val(0);
+          $("#fiscalyear").val('');
+          $("#q1hours").val('');
+          $("#q2hours").val('');
+          $("#q3hours").val('');
+          $("#q4hours").val('');
+          $("#flexhours").val('');
+        }
+        else {
+          $.getJSON( "index.php?view=staffing-edit-json&taskid=" + taskid + "&staffingid=" + staffingid, function( data ) {
+            $("#staffingid").val(data.data[0][0]);
+            $("#staffingpeopleid").val(data.data[0][2]);
+            $("#fiscalyear").val(data.data[0][3]);
+            $("#q1hours").val(data.data[0][4]);
+            $("#q2hours").val(data.data[0][5]);
+            $("#q3hours").val(data.data[0][6]);
+            $("#q4hours").val(data.data[0][7]);
+            $("#flexhours").val(data.data[0][8]);
+          });
+        }
+      }
+
+      function staffingSave() {
+        $.post("index.php", $("#staffingForm").serialize());
+
+        $('#salaryTable').dataTable().fnDestroy();
+        $('#salaryTable').dataTable( {
+          "processing": true,
+          "serverSide": false,
+          'autoWidth': false,
+          "ajax": "index.php?view=salary-list-json&peopleid={{ person.peopleid }}"
+        } );
+
+        $("#peopleedittabs").tabs( "option", "active", 0 );
+        $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +
+                              " (" + $("#fiscalyear").val() +")</p>");
+        $("#warningDiv").show();
+        {% endfor %}
+
+        $("#taskedittabs").tabs( "option", "active", 0 );
+    }
+
+    </script>
+
+    </body>
+</html>

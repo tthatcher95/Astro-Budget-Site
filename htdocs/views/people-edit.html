@@ -114,6 +114,7 @@
         else {
           $.getJSON( "index.php?view=salary-edit-json&salaryid=" + salaryid, function( data ) {
             $("#salpeopleid").val(data.data[0][1]);
+            $("#effdate").val(data.data[0][2]);
             $("#payplan").val(data.data[0][3]);
             $("#saltitle").val(data.data[0][4]);
             $("#appttype").val(data.data[0][5]);
@@ -122,7 +123,6 @@
             $("#estbenefits").val(data.data[0][8]);
             $("#leavecategory").val(data.data[0][9]);
             $("#laf").val(data.data[0][10]);
-            $("#effdate").val(data.data[0][2]);
           });
         }
       }

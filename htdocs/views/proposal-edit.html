@@ -25,8 +25,8 @@
                       value='{{ proposals[0].projectname }}'/></td></tr>
                 <tr><th>Principal Investigator</th>
                   <td colspan="3">
-                {% include 'people-dropdown.html' with {'dropdown_name': 'conferencepeopleid',
-                                                        'dropdown_id': 'conferencepeopledropdown',
+                {% include 'people-dropdown.html' with {'dropdown_name': 'peopleid',
+                                                        'dropdown_id': 'proposalpeopledropdown',
                                                         'selected_peopleid': proposals[0].peopleid } %}
                   </td></tr>
                 <tr><th>Funding Program</th><td colspan="3">
@@ -135,7 +135,7 @@
             'serverSide': false,
             'autoWidth': false,
             'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+            'lengthMenu': [[10, 20, 50, -1], [10, 20, 50, 'All']]
           } );
           $('#conferencesTable').dataTable( {
             'processing': true,
@@ -198,6 +198,29 @@
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#fbmsid").val() + "] (" + $("#accountno").val() + ")</p>");
           $("#warningDiv").show();
+        }
+
+        function editTaskDialog (taskid) {
+          $("#editDialog").load(
+            "index.php?view=task-edit&proposalid={{ proposals[0].proposalid }}&taskid=" + taskid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 600,
+            width: 1000,
+            modal: true,
+            buttons: {
+              "Save Task": saveTask,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        }
+
+        function saveTask () {
         }
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {

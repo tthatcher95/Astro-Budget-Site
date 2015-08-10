@@ -1,7 +1,7 @@
 {"draw":0,"recordsTotal":{{ tasks|length }},"recordsFiltered":{{ tasks|length }},"data":[
 {% for task in tasks %}
   {% if task.staffing is empty %}
-["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", "N/A", 0, "$0.00", ""]{% if loop.last !=true %},{% endif %}
+["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", "N/A", 0, "$0.00", ""]
   {% endif %}
   {% for staff in task.staffing %}
 ["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }})'>{{ task.taskname }}</a>", "{{ staff.name }}", {{ staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours }}, "${{ ((staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours) * staff.salary[0].laf * (staff.salary[0].estsalary + staff.salary[0].estbenefits))|number_format(2,'.',',') }}", "{{ staff.FY }}"]{% if loop.last !=true %},{% endif %}

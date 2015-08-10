@@ -197,6 +197,12 @@ if (isset($_REQUEST['view'])) {
       $templateArgs['view'] = 'task-edit.html';
       $view = $templateArgs['view'];
       break;
+    case 'task-save':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = tasksView($pbdb, $templateArgs);
+      $templateArgs = taskSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'staffing-edit-json':
       $templateArgs = staffingView($pbdb, $templateArgs);
       $templateArgs['view'] = 'staffing-edit-ajax.json';
@@ -758,6 +764,10 @@ function tasksView ($pbdb, $templateArgs) {
   $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
   $peopleid    = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
 
+  if (isset($templateArgs['taskid'])) {
+    $taskid = $templateArgs['taskid'];
+  }
+
   $templateArgs['tasks'] = $pbdb->getTasks ($taskid, $proposalid, $taskname);
   for ($i = 0; $i < count($templateArgs['tasks']); $i++) {
     $templateArgs['tasks'][$i]['staffing'] = $pbdb->getStaffing(null, $templateArgs['tasks'][$i]['taskid'],
@@ -771,6 +781,28 @@ function tasksView ($pbdb, $templateArgs) {
   }
 
   $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON
+
+  return ($templateArgs);
+}
+
+function taskSave ($pbdb, $templateArgs) {
+  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
+  
+  if ($taskid == 'new') {
+    $taskid = $pbdb->addTask ($proposalid, $taskname);
+    error_log("taskSave: taskid was new now is $taskid");
+  }
+  else {
+    $pbdb->updateTask ($taskid, $proposalid, $taskname);
+  }
+
+  $templateArgs['taskid']     = $taskid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['taskname']   = $taskname;
+
+  $templateArgs['view'] = 'task-result-ajax.json';
 
   return ($templateArgs);
 }
@@ -825,27 +857,6 @@ function peopleStaffingView ($pbdb, $templateArgs) {
   $templateArgs['staffing'] = $pbdb->getStaffing(null, null, $peopleid, null);
 
   $templateArgs['view'] = 'people-task-list-ajax.json';
-
-  return ($templateArgs);
-}
-
-function taskSave ($pbdb, $templateArgs) {
-  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
-  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
-  $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
-
-  if ($taskid == 'new') {
-    $pbdb->addTask ($proposalid, $taskname);
-  }
-  else {
-    $pbdb->updateTask ($taskid, $proposalid, $taskname);
-  }
-
-  $templateArgs['taskid'] = $taskid;
-  $templateArgs['proposalid'] = $proposalid;
-  $templateArgs['taskname'] = $taskname;
-
-  $templateArgs['view'] = 'task-save-result.html';
 
   return ($templateArgs);
 }

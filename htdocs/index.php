@@ -58,6 +58,8 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'proposals':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
       $templateArgs = proposalView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;

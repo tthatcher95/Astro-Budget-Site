@@ -14,7 +14,43 @@
           <h2>List of Proposals</h2>
         </div>
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
-        <div id="editDialog" class="ui-widget"></div>
+        <div id="editDialog" class="ui-widget">
+          <form id="proposalForm" action="index.php" method="GET">
+          <input type='hidden' name='proposalid' value='new'/>
+          <input type='hidden' name='view' value='proposal-save'/>
+          <table>
+            <tr><th>Project Name</th>
+              <td colspan="3"><input type='text' name='projectname' size="70" value=''/></td></tr>
+            <tr><th>Principal Investigator</th>
+              <td colspan="3">
+            {% include 'people-dropdown.html' with {'dropdown_name': 'peopleid',
+                                                    'dropdown_id': 'proposalpeopledropdown',
+                                                    'selected_peopleid': remote_user[0].peopleid } %}
+              </td></tr>
+            <tr><th>Funding Program</th><td colspan="3">
+            {% include 'programs-dropdown.html' with {'dropdown_name': 'programid',
+                                                      'dropdown_id': 'programiddropdown',
+                                                      'selected_programid': 0 } %}
+              </td></tr>
+            <tr><th>Status</th><td colspan="3">
+            {% include 'status-dropdown.html' with {'dropdown_name': 'status',
+                                                    'dropdown_id': 'statusdropdown',
+                                                    'selected_status': 0 } %}
+              </td></tr>
+            <tr><th>Proposal Number</th>
+              <td><input type='text' name='proposalnumber' value=''/></td>
+              <th>Award Number</th>
+              <td><input type='text' name='awardnumber' value=''/></td></tr>
+            <tr><th>Starting</th>
+              <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart' value=''/></td>
+              <th>Ending</th>
+              <td><input type='text' id='proposalperfperiodend' name='perfperiodend' value=''/></td></tr>
+            </tr>
+          </table>
+          </form>
+        </div>
+
+         <a href='javascript:void(0)' onClick="editProjectDialog()" id='newProjectButton'>New</a><p/>
         <table id="proposalsTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>Proposal</th><th>PI</th><th>Program</th><th>Status</th><th>Proposal #</th><th>Award #</th><th>Start</th><th>End</th></tr></thead>
         </table>
@@ -23,6 +59,12 @@
       <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
           $("#warningDiv").hide();
+          $("#editDialog").hide();
+
+          $('#newProjectButton').button();
+          $("#proposalperfperiodstart").datepicker();
+          $("#proposalperfperiodend").datepicker();
+
           $('#proposalsTable').dataTable( {
             "processing": true,
             "serverSide": false,
@@ -30,6 +72,27 @@
             "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]]
           } );
         } );
+
+        function editProjectDialog() {
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 800,
+            modal: true,
+            buttons: {
+              "AddProject": saveProject,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        }
+
+        function saveProject () {
+        }
+
       </script>
     </body>
 </html>

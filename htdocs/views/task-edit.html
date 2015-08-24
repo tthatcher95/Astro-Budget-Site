@@ -16,6 +16,7 @@
             <input type="hidden" name="act" value="save"/>
             <input type="hidden" name="view" value="task-save"/>
             <input type="hidden" id="proposalid" name="proposalid" value="{{ task.proposalid }}"/>
+            <input type="hidden" id="taskid" name="taskid" value="{{ task.taskid }}"/>
             <table><tr><th>Task Name</th>
             <td><input type="text" name="taskname" id="taskname" value="{{ task.taskname }}" size="40"/></td></tr>
             <tr><td><a href='javascript:void(0)' onClick="staffingEdit({{ task.taskid }}, 'new')" id='newStaffButton'>New Staffing</a></td><td></td></tr>
@@ -108,13 +109,22 @@
       function staffingSave() {
         $.post("index.php", $("#staffingForm").serialize());
 
-        $('#salaryTable').dataTable().fnDestroy();
-        $('#salaryTable').dataTable( {
+        $('#taskStaffingTable').dataTable().fnDestroy();
+        $('#taskStaffingTable').dataTable( {
           "processing": true,
           "serverSide": false,
           'autoWidth': false,
-          "ajax": "index.php?view=salary-list-json&peopleid={{ person.peopleid }}"
+          "ajax": "index.php?view=staffing-list-json&proposalid={{ tasks[0].proposalid }}&taskid={{ tasks[0].taskid }}"
         } );
+
+        $('#tasksTable').dataTable().fnDestroy();
+        $('#tasksTable').dataTable( {
+          'processing': true,
+          'serverSide': false,
+          'autoWidth': false,
+          'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
+        } );
+
 
         $("#peopleedittabs").tabs( "option", "active", 0 );
         $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +

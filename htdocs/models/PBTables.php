@@ -883,6 +883,13 @@ class PBTables {
     $query = "INSERT INTO tasks (proposalid, taskname) VALUES ($proposalid, '$taskname')";
 
     $this->db->query($query);
+
+    $query = "SELECT taskid from tasks WHERE proposalid=$proposalid and taskname='$taskname' " .
+             " order by taskid desc limit 1";
+
+    $this->db->query($query);
+    $results = $this->db->getResultArray();
+    return ($results[0]['taskid']);
   }
   
   function updateTask ($taskid, $proposalid, $taskname) {
@@ -896,6 +903,8 @@ class PBTables {
       $query .= "taskname='$taskname'";
     }
 
+    $query .= " WHERE taskid=$taskid";
+
     $this->db->query($query);
   }
   
@@ -903,7 +912,7 @@ class PBTables {
     $query = "SELECT taskid, proposalid, taskname FROM tasks";
 
     $needAnd = false;
-    if (isset($taskid)) {
+    if ((isset($taskid)) and ($taskid != 'new')) {
       $query .= " WHERE taskid=$taskid";
       $needAnd = true;
     }
@@ -916,7 +925,7 @@ class PBTables {
     if (isset($taskname)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "taskname=$taskname";
+      $query .= "taskname='$taskname'";
       $needAnd = true;
     }
 
@@ -1020,6 +1029,7 @@ class PBTables {
       $needAnd = true;
     }
     if (isset($taskid)) {
+      if ($taskid == 'new') { $taskid=0; }
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $query .= "s.taskid=$taskid";

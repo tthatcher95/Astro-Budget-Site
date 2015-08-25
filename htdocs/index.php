@@ -15,7 +15,7 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'Conferences/Travel*', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Expense Categories*', 'href' => 'index.php?view=expensetypes'),
   array ('caption' => 'Programs*', 'href' => 'index.php?view=programs')));
-$templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Rejected', 'Active', 'Completed');
+$templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Rejected', 'Active', 'Completed', 'Scratch');
 
 $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
 
@@ -527,8 +527,8 @@ function proposalSave ($pbdb, $templateArgs) {
   $status          = (isset($_REQUEST['status'])? $_REQUEST['status'] : null);
 
   if ($proposalid == 'new') {
-    $pbdb->addProposal ($peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
-                        $perfperiodstart, $perfperiodend, $status);
+    $proposalid = $pbdb->addProposal ($peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
+                                      $perfperiodstart, $perfperiodend, $status);
   }
   else {
     $pbdb->updateProposal ($proposalid, $peopleid, $projectname, $proposalnumber, $awardnumber, $programid,

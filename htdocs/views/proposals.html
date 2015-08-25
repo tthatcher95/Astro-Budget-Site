@@ -91,6 +91,12 @@
         }
 
         function saveProject () {
+            $.post("index.php", $("#proposalForm").serialize(), function(data){
+              console.log("Inside post: " + data);
+              var go_to_url = "index.php?view=proposal-edit&proposalid=" + data;
+              document.location.href = go_to_url;
+            });
+
         }
 
       </script>

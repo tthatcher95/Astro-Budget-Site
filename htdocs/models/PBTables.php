@@ -396,9 +396,15 @@ class PBTables {
     else { $query .= "null, "; }
     if (isset($perfperiodend)) { $query .= "'" . $this->formatDate($perfperiodend) . "', "; }
     else { $query .= "null, "; }
-    $query .= " $status";
+    $query .= " $status)";
 
     $this->db->query($query);
+
+    $query = "SELECT proposalid FROM proposals WHERE peopleid=$peopleid AND projectname='$projectname' " .
+             " ORDER BY proposalid DESC LIMIT 1";
+    $this->db->query($query);
+    $results = $this->db->getResultArray();
+    return ($results[0]['proposalid']);
   }
 
   function updateProposal ($proposalid, $peopleid, $projectname, $proposalnumber, $awardnumber, $programid,

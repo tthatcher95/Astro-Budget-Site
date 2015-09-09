@@ -23,12 +23,14 @@
             </table>
           </form>
         {% endfor %}
+        <div id="taskStaffingTableDiv">
         <table id='taskStaffingTable' class='display' cellspacing='0' width='100%'>
            <thead>
              <tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th>
              </tr>
            </thead>
         </table>
+        </div>
     </div>
     <div id="stafftab">
       <form id="staffingForm" action="index.php" method="GET">
@@ -64,15 +66,26 @@
     </div> <!-- taskedittabs div -->
 
     <script type="text/javascript">
+      function loadStaffingTable (reload) {
+        if (reload) {
+          $('#taskStaffingTable').dataTable().fnDestroy();
+        }
+
+        $('#taskStaffingTableDiv').html("<table id='taskStaffingTable' class='display' cellspacing='0' width='100%'>" +
+           "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
+           "<th>FY</th></tr></thead></table>");
+
+        $('#taskStaffingTable').dataTable( {
+          "processing": true,
+          "serverSide": false,
+          'autoWidth': false,
+          "ajax": "index.php?view=staffing-list-json&proposalid={{ tasks[0].proposalid }}&taskid={{ tasks[0].taskid }}"
+        } );
+      }
+      
       $(function() {
         $("#taskedittabs").tabs();
-        {% for task in tasks %}
-          $('#taskStaffingTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            'autoWidth': false,
-            "ajax": "index.php?view=staffing-list-json&proposalid={{ tasks[0].proposalid }}&taskid={{ tasks[0].taskid }}"
-          } );
+        loadStaffingTable(false);
 
         $("#fiscalyear").datepicker();
         $("#newStaffButton").button();
@@ -109,28 +122,23 @@
       function staffingSave() {
         $.post("index.php", $("#staffingForm").serialize());
 
-        $('#taskStaffingTable').dataTable().fnDestroy();
-        $('#taskStaffingTable').dataTable( {
-          "processing": true,
-          "serverSide": false,
-          'autoWidth': false,
-          "ajax": "index.php?view=staffing-list-json&proposalid={{ tasks[0].proposalid }}&taskid={{ tasks[0].taskid }}"
-        } );
+        loadStaffingTable(true);
 
-        $('#tasksTable').dataTable().fnDestroy();
-        $('#tasksTable').dataTable( {
-          'processing': true,
-          'serverSide': false,
-          'autoWidth': false,
-          'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
-        } );
+        loadTasksTable(true);
+        // $('#tasksTable').dataTable().fnClearTable();
+        // $('#tasksTable').dataTable().fnDraw();
+        // $('#tasksTable').dataTable( {
+          // 'processing': true,
+          // 'serverSide': false,
+          // 'autoWidth': false,
+          // 'ajax': 'index.php?view=tasks-list-json&proposalid={{ tasks[0].proposalid }}'
+        // } );
 
 
         $("#peopleedittabs").tabs( "option", "active", 0 );
         $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +
                               " (" + $("#fiscalyear").val() +")</p>");
         $("#warningDiv").show();
-        {% endfor %}
 
         $("#taskedittabs").tabs( "option", "active", 0 );
     }

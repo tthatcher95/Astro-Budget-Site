@@ -59,15 +59,19 @@
           <h3 id='fbmsTitle' >FMBS Accounts</h3>
             <div id='accountingDiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editFBMSDialog('new')" id='newFBMSButton'>New</a><p/>
+              <div id="fbmsTableDiv">
               <table id='fbmsTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>Account No.</th></tr></thead>
               </table>
+              </div>
             </div>
           <h3 id='overheadTitle'>Overhead Rates</h3>
             <div id='overheadDiv' style='height: 400px;'>
+              <div id="overheadTableDiv">
               <table id='overheadTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th></tr>
               </table>
+              </div>
             </div>
           <h3 id='tasksTitle' >Tasks</h3>
             <div id='tasksdiv'>
@@ -78,24 +82,30 @@
               <input type='text' name='taskname' value='New Task'/></td>
               <a href='javascript:void(0)' onClick="editTaskDialog('new')" id='newTaskButton'>New</a><p/>
               </form>
+              <div id="tasksTableDiv">
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th></tr></thead>
               </table>
+              </div>
             </div>
 
           <h3 id='conferencesTitle'>Conferences/Meetings/Travel</h3>
             <div>
               <a href='javascript:void(0)' onClick="editAttendeeDialog({{ proposals[0].proposalid }}, 'new')" id='newConferenceButton'>New</a><p/>
+              <div id="conferencesTableDiv">
               <table id='conferencesTable' class='display' cellspace='0' width='100%'>
                 <thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>FY</th><th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th><th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead>
               </table>
+              </div>
             </div>
           <h3 id='expensesTitle'>Expenses</h3>
             <div>
               <a href='javascript:void(0)' onClick="editExpenseDialog('new')" id='newExpenseButton'>New</a><p/>
+              <div id="expensesTableDiv">
               <table id='expensesTable' class='display' cellspace='0' width='100%'>
                 <thead><tr><th>Expense</th><th>Type</th><th>Amount</th><th>Fiscal</th></tr></thead>
               </table>
+            </div>
             </div>
         </div>
 
@@ -110,7 +120,92 @@
             });
           });
           $('#fbmsTitle').html('FBMS Accounts');
-          // $('#overheadTitle').html('Overhead Rates');
+        }
+
+        function loadFbmsTable (reload) {
+          if (reload) {
+            $('#fbmsTable').dataTable().fnDestroy();
+          }
+
+          $('fbmsTableDiv').html("<table id='fbmsTable' class='display' cellspacing='0' width='100%'>" +
+            "<thead><tr><th>Account No.</th></tr></thead></table>");
+
+          $('#fbmsTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "autoWidth": false,
+            'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid }}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+        }
+
+        function loadOverheadTable (reload) {
+          if (reload) {
+            $('#overheadTable').dataTable().fnDestroy();
+          }
+
+          $('#overheadTableDiv').html("<table id='overheadTable' class='display' cellspacing='0' width='100%'>" +
+            "<thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th></tr></table>");
+
+          $('#overheadTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=overhead-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+        }
+
+        function loadTasksTable (reload) {
+          if (reload) {
+            $('#tasksTable').dataTable().fnDestroy();
+          }
+
+          $('#tasksTableDiv').html("<table id='tasksTable' class='display' cellspacing='0' width='100%'>" +
+            "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
+            "<th>FY</th></tr></thead></table>");
+          $('#tasksTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
+          } );
+        }
+
+        function loadConferencesTable (reload) {
+          if (reload) {
+            $('#conferencesTable').dataTable().fnDestroy();
+          }
+
+          $('#conferencesTableDiv').html("<table id='conferencesTable' class='display' cellspace='0' width='100%'>" +
+            "<thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>FY</th>" +
+            "<th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th>" +
+            "<th>Registration</th><th>per<br/>diem</th><th>Total</th></tr></thead></table>");
+
+          $('#conferencesTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=conference-attendee-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
+        }
+
+        function loadExpensesTable (reload) {
+          if (reload) {
+            $('#expensesTable').dataTable().fnDestroy();
+          }
+
+          $('#expensesTableDiv').html("<table id='expensesTable' class='display' cellspace='0' width='100%'>" +
+            "<thead><tr><th>Expense</th><th>Type</th><th>Amount</th><th>Fiscal</th></tr></thead></table>");
+
+          $('#expensesTable').dataTable( {
+            'processing': true,
+            'serverSide': false,
+            'autoWidth': false,
+            'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          } );
         }
 
         $(document).ready(function() {
@@ -122,41 +217,12 @@
           $('#newConferenceButton').button();
           $('#newExpenseButton').button();
 
-          $('#fbmsTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid }}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-          $('#overheadTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=overhead-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-          $('#tasksTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[10, 20, 50, -1], [10, 20, 50, 'All']]
-          } );
-          $('#conferencesTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=conference-attendee-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-          $('#expensesTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
+          loadFbmsTable(false);
+          loadOverheadTable(false);
+          loadTasksTable(false);
+          loadConferencesTable(false);
+          loadExpensesTable(false);
+
           $('#accordions').accordion( {heightStyle: 'content' });
 
           figureCosts({{ proposals[0].proposalid }});
@@ -192,14 +258,7 @@
         function saveFBMS() {
           $.post("index.php", $("#fbmsForm").serialize());
 
-          $('#fbmsTable').dataTable().fnDestroy();
-          $('#fbmsTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autoWidth": false,
-            'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid }}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
+          loadFbmsTable(true);
 
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#fbmsid").val() + "] (" + $("#accountno").val() + ")</p>");
@@ -237,13 +296,14 @@
         function saveTask () {
           $.post("index.php", $("#taskForm").serialize());
 
-          $('#tasksTable').dataTable().fnDestroy();
-          $('#tasksTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
-          } );
+          // $('#tasksTable').dataTable().fnDestroy();
+          // $('#tasksTable').dataTable( {
+            // 'processing': true,
+            // 'serverSide': false,
+            // 'autoWidth': false,
+            // 'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
+          // } );
+          loadTasksTable(true);
 
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
@@ -273,14 +333,7 @@
         function saveAttendee() {
           $.post("index.php", $("#conferenceAttendeeForm").serialize());
 
-          $('#conferencesTable').dataTable().fnDestroy();
-          $('#conferencesTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autoWidth": false,
-            'ajax': 'index.php?view=conference-attendee-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
+          loadConferencesTable(true);
 
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
@@ -312,14 +365,7 @@
         function saveExpense() {
           $.post("index.php", $("#expenseForm").serialize());
 
-          $('#expensesTable').dataTable().fnDestroy();
-          $('#expensesTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autoWidth": false,
-            'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
+          loadExpensesTable(true);
 
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");

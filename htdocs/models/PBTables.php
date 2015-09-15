@@ -541,6 +541,92 @@ class PBTables {
   #   perfperiodstart TIMESTAMP,
   #   perfperiodend TIMESTAMP,
 
+  #                                          Table "public.funding"
+#   Column   |            Type             |                          Modifiers
+#   ------------+-----------------------------+-------------------------------------------------------------
+#   fundingid  | integer                     | not null default nextval('funding_fundingid_seq'::regclass)
+#   proposalid | integer                     |
+#   fiscalyear | timestamp without time zone |
+#   newfunding | real                        |
+#   carryover  | real                        |
+
+  # funding
+  function addFunding ($proposalid, $fiscalyear, $newfunding, $carryover) {
+    if (!isset($proposalid)) { return "The proposal ID is required to add new funding"; }
+
+    $query = "INSERT INTO funding (proposalid, fiscalyear, newfunding, carryover) VALUES " .
+             "($proposalid, '" . $this->formatDate($fiscalyear) . "', $newfunding, $carryover)";
+
+    $this->db->query($query);
+  }
+
+  function updateFunding ($fundingid, $proposalid, $fiscalyear, $newfunding, $carryover) {
+    if (!isset($fundingid)) { return "The funding ID is required to update funding"; }
+
+    if (!(isset($proposalid) or isset($fiscalyear) or isset($newfunding) or isset($carryover))) {
+      return "Nothing to change";
+    }
+
+    $needComma = false;
+    $query = "UPDATE funding SET";
+    if (isset($proposalid)) {
+      $query .= " proposalid=$proposalid";
+      $needComma = true;
+    }
+    if (isset($fiscalyear)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= " fiscalyear='" . $this->formatDate($fiscalyear) . "'";
+      $needComma = true;
+    }
+    if (isset($newfunding)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= " newfunding=$newfinding";
+      $needComma = true;
+    }
+    if (isset($carryover)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= " carryover=$carryover";
+      $needComma = true;
+    }
+
+    $query .= " WHERE fundingid=$fundingid";
+
+    $this->db->query($query);
+  }
+
+  function getFunding ($fundingid, $proposalid) {
+    $query = "SELECT fundingid, proposalid, to_char(fiscalyear, 'MM/DD/YYYY') as fiscalyear, " .
+             "newfunding, carryover FROM funding";
+
+    $needAnd = false;
+    if (isset($fundingid)) {
+      $query .= "WHERE fundingid=$fundingid";
+      $needAnd = true;
+    }
+    if (isset($proposalid)) {
+      if ($needAnd) { $query .= " AND "; }
+      else { $query .= " WHERE "; }
+      $query .= "proposalid=$proposalid";
+    }
+
+    $this->db->query($query);
+    $results = $this->db->getResultArray();
+
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['FY'] = $this->fiscalYear($results[$r]['fiscalyear']);
+    }
+
+    return ($results);
+  }
+
+  function deleteFunding ($fundingid) {
+    if (!isset($fundingid)) { return "A funding ID must be set to delete";}
+
+    $query = "DELETE FROM funding WHERE fundingid=$fundingid";
+
+    $this->db->query($query);
+  }
+
   # FBMSAccounts
   function addFBMSAccount ($accountno, $proposalid) {
     if (!(isset($accountno) and isset($proposalid))) { return "Both the account No and proposal ID are required"; }

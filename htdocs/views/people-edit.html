@@ -40,11 +40,13 @@
           </form>
         {% endfor %}
     {% endif %}
+        <div id="salaryTableDiv">
         <table id="salaryTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>ID</th><th>Effective<br/>Date</th><th>Pay<br/>Plan</th><th>Title</th>
                      <th>Appt<br/>Type</th><th>Auth<br/>Hours</th><th>Est<br/>Salary</th>
                      <th>Est<br/>Benefits</th><th>Leave<br/>Cat</th><th>LAF</th></tr></thead>
         </table>
+        </div>
     </div>
     {% if remote_user[0].admin == 't' %}
     <div id="peopleedittab2">
@@ -52,7 +54,7 @@
         <input type="hidden" name="act" value="save"/>
         <input type="hidden" name="view" value="salary-save"/>
         <input type="hidden" id="salaryid" name="salaryid" value=""/>
-        <input type="hidden" id="salpeopleid" name="peopleid" value="{{ person.peopleid }}"/>
+        <input type="hidden" id="salpeopleid" name="peopleid" value="{{ people[0].peopleid }}"/>
         <table>
           <tr><th>Pay Plan</th><td><input type="text" id="payplan" name="payplan" size="20"/></td>
               <th>Title</th><td><input type="text" id="saltitle" name="title" size="30"/></td></tr>
@@ -75,22 +77,34 @@
     </div> <!-- peopleedittabs div -->
 
     <script type="text/javascript">
+      function loadSalaryTable (reload) {
+        if (reload) {
+          $('#salaryTable').dataTable().fnDestroy();
+        }
+
+        $('#salaryTableDiv').html('<table id="salaryTable" class="display" cellspacing="0" width="100%">' +
+          "<thead><tr><th>ID</th><th>Effective<br/>Date</th><th>Pay<br/>Plan</th><th>Title</th>" +
+          "<th>Appt<br/>Type</th><th>Auth<br/>Hours</th><th>Est<br/>Salary</th>" +
+          "<th>Est<br/>Benefits</th><th>Leave<br/>Cat</th><th>LAF</th></tr></thead></table>");
+
+        $('#salaryTable').dataTable( {
+          "processing": true,
+          "serverSide": false,
+          'autoWidth': false,
+          "ajax": "index.php?view=salary-list-json&peopleid={{ people[0].peopleid }}"
+        } );
+      }
+
       $(function() {
         $("#peopleedittabs").tabs();
-        {% for person in people %}
-          $('#salaryTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            'autoWidth': false,
-            "ajax": "index.php?view=salary-list-json&peopleid={{ person.peopleid }}"
-          } );
+          loadSalaryTable(false);
           $('#staffingTable').dataTable( {
             "processing": true,
             "serverSide": false,
             'autoWidth': false,
-            "ajax": "index.php?view=people-task-list-json&peopleid={{ person.peopleid }}"
+            "ajax": "index.php?view=people-task-list-json&peopleid={{ people[0].peopleid }}"
           } );
-
+        
         $("#effdate").datepicker();
         $("#saveSalaryButton").button();
         $("#newSalaryButton").button();
@@ -130,19 +144,12 @@
       function salarySave() {
         $.post("index.php", $("#salaryForm").serialize());
 
-        $('#salaryTable').dataTable().fnDestroy();
-        $('#salaryTable').dataTable( {
-          "processing": true,
-          "serverSide": false,
-          'autoWidth': false,
-          "ajax": "index.php?view=salary-list-json&peopleid={{ person.peopleid }}"
-        } );
+        loadSalaryTable(true);
 
         $("#peopleedittabs").tabs( "option", "active", 0 );
         $("#warningDiv").html("<p>Updated [" + $("#salaryid").val() + "] " + $("#saltitle").val() +
                               " (" + $("#payplan").val() +")</p>");
         $("#warningDiv").show();
-        {% endfor %}
     }
 
     </script>

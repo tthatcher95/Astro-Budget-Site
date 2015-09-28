@@ -56,6 +56,15 @@
               </table>
               </form>
             </div>
+          <h3 id='fundingTitle' >Funding</h3>
+            <div id='fundingDiv' style='height: 400px;'>
+              <a href='javascript:void(0)' onClick="editFundingDialog('new')" id='newFundingButton'>New</a><p/>
+              <div id="fundingTableDiv">
+              <table id='fundingTable' class='display' cellspacing='0' width='100%'>
+                <thead><tr><th>FY</th><th>New Funding</th><th>Carryover</th></tr></thead>
+              </table>
+              </div>
+            </div>
           <h3 id='fbmsTitle' >FMBS Accounts</h3>
             <div id='accountingDiv' style='height: 400px;'>
               <a href='javascript:void(0)' onClick="editFBMSDialog('new')" id='newFBMSButton'>New</a><p/>
@@ -120,6 +129,23 @@
             });
           });
           $('#fbmsTitle').html('FBMS Accounts');
+        }
+
+        function loadFundingTable (reload) {
+          if (reload) {
+            $('#fundingTable').dataTable().fnDestroy();
+          }
+
+          $('#fundingTableDiv').html("<table id='fundingTable' class='display' cellspacing='0' width='100%'>" +
+            "<thead><tr><th>FY</th><th>New Funding</th><th>Carryover</th></tr></thead></table>");
+
+          $('#fundingTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "autoWidth": false,
+            'ajax': 'index.php?view=funding-list-json&proposalid={{ proposals[0].proposalid }}',
+            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
+          });
         }
 
         function loadFbmsTable (reload) {
@@ -217,6 +243,7 @@
           $('#newConferenceButton').button();
           $('#newExpenseButton').button();
 
+          loadFundingTable(false);
           loadFbmsTable(false);
           loadOverheadTable(false);
           loadTasksTable(false);
@@ -232,6 +259,36 @@
           $.post("index.php", $("#proposalForm").serialize());
           
           $("#warningDiv").html("<p>Updated proposal details</p>");
+          $("#warningDiv").show();
+        }
+
+        function editFundingDialog(fundingid) {
+          $("#editDialog").load(
+            "index.php?view=funding-edit&proposalid=" + {{ proposals[0].proposalid }} + "&fundingid=" + fundingid);
+
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 300,
+            width: 400,
+            modal: true,
+            buttons: {
+              "Save Funding": saveFunding,
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+
+          dialog.dialog("open");
+        }
+
+        function saveFunding() {
+          $.post("index.php", $("#fundingForm").serialize());
+
+          loadFundingTable(true);
+
+          dialog.dialog("close");
+          $("#warningDiv").html("<p>Updated [" + $("#fiscalyear").val() + "]</p>");
           $("#warningDiv").show();
         }
 

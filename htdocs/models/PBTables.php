@@ -555,7 +555,8 @@ class PBTables {
     if (!isset($proposalid)) { return "The proposal ID is required to add new funding"; }
 
     $query = "INSERT INTO funding (proposalid, fiscalyear, newfunding, carryover) VALUES " .
-             "($proposalid, '" . $this->formatDate($fiscalyear) . "', $newfunding, $carryover)";
+             "($proposalid, '" . $this->formatDate($fiscalyear) . "', " . $this->getAmount($newfunding) . ", " .
+             $this->getAmount($carryover) . ")";
 
     $this->db->query($query);
   }
@@ -580,12 +581,12 @@ class PBTables {
     }
     if (isset($newfunding)) {
       if ($needComma) { $query .= ", "; }
-      $query .= " newfunding=$newfinding";
+      $query .= " newfunding=" . $this->getAmount($newfinding);
       $needComma = true;
     }
     if (isset($carryover)) {
       if ($needComma) { $query .= ", "; }
-      $query .= " carryover=$carryover";
+      $query .= " carryover=" . $this->getAmount($carryover);
       $needComma = true;
     }
 

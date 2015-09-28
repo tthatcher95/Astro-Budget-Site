@@ -188,6 +188,20 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = expensetypesSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'funding-edit':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'funding-edit.html';
+      $view = $templateArgs['view'];
+      break;
+    case 'funding-list-json':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'funding-list-ajax.json';
+      $view = $templateArgs['view'];
+      break;
+    case 'funding-save':
+      $templateArgs = fundingSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'tasks-list-json':
       $templateArgs = tasksView($pbdb, $templateArgs);
       $templateArgs['view'] = 'tasks-list-ajax.json';
@@ -246,7 +260,8 @@ if (isset($_REQUEST['view'])) {
 }
 
 Twig_Autoloader::register();
-$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
+// $loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
+$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/dev/htdocs/views'); // dev
 $twig = new Twig_Environment ($loader, 
   array ('cache' => '/var/www/budgetprops-dev/htdocs/views/cache',
          'auto_reload' => true));
@@ -384,6 +399,7 @@ function proposalView ($pbdb, $templateArgs) {
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
     $proposalid = $templateArgs['proposals'][$i]['proposalid'];
     $templateArgs['proposals'][$i]['FBMSaccounts'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
+    $templateArgs['proposals'][$i]['funding'] = $pbdb->getFunding (null, $proposalid);
     $templateArgs['proposals'][$i]['conferenceattendees'] = $pbdb->getConferenceAttendees ($conferenceattendeeid, null, $proposalid, null);
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
       $templateArgs['debug'] = 'looking up conference rate for ' .
@@ -397,6 +413,9 @@ function proposalView ($pbdb, $templateArgs) {
     $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks (null, $proposalid, null);
     $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses ($expenseid, $proposalid, null, null);
   }
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['fundingid']  = (isset($_REQUEST['fundingid'])? $_REQUEST['fundingid'] : 'new');
 
   return ($templateArgs);
 }
@@ -587,6 +606,27 @@ function programSave ($pbdb, $templateArgs) {
   $templateArgs['programname'] = $programname;
   $templateArgs['agency'] = $agency;
   $templateArgs['view'] = 'program-save-result.html';
+
+  return ($templateArgs);
+}
+
+function fundingSave($pbdb, $templateArgs) {
+  $fundingid  = (isset($_REQUEST['fundingid'])? $_REQUEST['fundingid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $fiscalyear = (isset($_REQUEST['fiscalyear'])? $_REQUEST['fiscalyear'] : null);
+  $newfunding = (isset($_REQUEST['newfunding'])? $_REQUEST['newfunding'] : null);
+  $carryover  = (isset($_REQUEST['carryover'])? $_REQUEST['carryover'] : null);
+
+  if ($fundingid == 'new') {
+    $pbdb->addFunding ($proposalid, $fiscalyear, $newfunding, $carryover);
+  }
+  else {
+    $pbdb->addFunding ($fundingid, $proposalid, $fiscalyear, $newfunding, $carryover);
+  }
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['fundingid'] = $fundingid;
+  $templateArgs['view'] = 'funding-save-result.html';
 
   return ($templateArgs);
 }

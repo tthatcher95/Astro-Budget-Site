@@ -478,7 +478,7 @@ class PBTables {
     if (isset($peopleid)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
-      $query .= "peopleid=$peopleid";
+      $query .= "p.peopleid=$peopleid";
       $needAnd = true;
     }
     if (isset($programid)) {

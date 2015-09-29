@@ -353,18 +353,13 @@
         function saveTask () {
           $.post("index.php", $("#taskForm").serialize());
 
-          // $('#tasksTable').dataTable().fnDestroy();
-          // $('#tasksTable').dataTable( {
-            // 'processing': true,
-            // 'serverSide': false,
-            // 'autoWidth': false,
-            // 'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
-          // } );
           loadTasksTable(true);
 
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
           $("#warningDiv").show();
+
+          figureCosts({{ proposals[0].proposalid }});
         }
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {

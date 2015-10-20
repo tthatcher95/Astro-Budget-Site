@@ -120,7 +120,7 @@
 
       <script type="text/javascript" charset="utf-8">
         function figureCosts(proposalid) {
-          $.getJSON( "index.php?view=proposal-costs-json&proposalid=" + proposalid, function( data ) {
+          $.getJSON( "index.php?view=proposal-cost-titles-json&proposalid=" + proposalid, function( data ) {
             var items = [];
             $.each( data.data[0], function( key, val ) {
               $.each( val, function( title, mesg ) {

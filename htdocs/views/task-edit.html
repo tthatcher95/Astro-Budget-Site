@@ -125,15 +125,6 @@
         loadStaffingTable(true);
 
         loadTasksTable(true);
-        // $('#tasksTable').dataTable().fnClearTable();
-        // $('#tasksTable').dataTable().fnDraw();
-        // $('#tasksTable').dataTable( {
-          // 'processing': true,
-          // 'serverSide': false,
-          // 'autoWidth': false,
-          // 'ajax': 'index.php?view=tasks-list-json&proposalid={{ tasks[0].proposalid }}'
-        // } );
-
 
         $("#peopleedittabs").tabs( "option", "active", 0 );
         $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +
@@ -141,6 +132,7 @@
         $("#warningDiv").show();
 
         $("#taskedittabs").tabs( "option", "active", 0 );
+        figureCosts({{ task.proposalid }});
     }
 
     </script>

@@ -218,11 +218,11 @@ class PBTables {
 
     $query = "SELECT salaryid, peopleid, effectivedate, payplan, title, appttype, " .
              "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries WHERE ";
-    if ($peopleid != null) { 
+    if (isset($peopleid)) {
       $query .= "peopleid=$peopleid";
-      if ($salaryid != null) { $query .= " AND "; }
+      if (isset($salaryid)) { $query .= " AND "; }
     }
-    if ($salaryid != null) { $query .= "salaryid=$salaryid"; }
+    if (isset($salaryid)) { $query .= "salaryid=$salaryid"; }
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -466,7 +466,7 @@ class PBTables {
   function getProposals ($proposalid, $peopleid, $programid, $awardnumber, $proposalnumber, $perfperiod, $status) {
     $query = "SELECT p.proposalid, p.projectname, p.peopleid, u.name, p.programid, f.programname, p.awardnumber, " .
              "p.proposalnumber, to_char(p.perfperiodstart, 'MM/DD/YYYY') as perfperiodstart, " .
-             "to_char(p.perfperiodend, 'MM/DD/YYYY') as perfperiodend, status " .
+             "to_char(p.perfperiodend, 'MM/DD/YYYY') as perfperiodend, p.status " .
              "FROM proposals p JOIN people u ON (p.peopleid=u.peopleid) " .
              "JOIN fundingprograms f ON (f.programid=p.programid)";
     $needAnd = false;
@@ -1118,6 +1118,7 @@ class PBTables {
     $needAnd = false;
 
     if (isset($staffingid)) {
+      if ($staffingid == 'new') {$staffingid = -1;}
       $query .= " WHERE s.staffingid=$staffingid ";
       $needAnd = true;
     }
@@ -1129,6 +1130,7 @@ class PBTables {
       $needAnd = true;
     }
     if (isset($peopleid)) {
+      if ($peopleid == 'new') { $peopleid=-1; }
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $query .= "s.peopleid=$peopleid";

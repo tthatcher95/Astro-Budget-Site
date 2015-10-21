@@ -823,6 +823,10 @@ class PBTables {
   function getConferenceRates ($conferenceid, $conferencerateid, $effectivedate) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to list conference rates"; }
     if ($conferenceid == 'new') { $conferenceid=0; }
+    if (!is_numeric($conferenceid)) { 
+     error_log("is_numeric says false for ($conferenceid)");
+     $conferenceid=0;
+    }
 
     $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
              "groundtransport, airfare, city, state, country FROM conferencerates WHERE conferenceid=$conferenceid";

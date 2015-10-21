@@ -27,16 +27,18 @@
 
             </table>
           </form>
+        <div id="rateTableDiv">
         <table id="rateTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>Action</th><th>Per Diem</th><th>Registration</th><th>Ground<br/>Transport</th>
                      <th>Airfare</th><th>City</th><th>State</th><th>Country</th><th>Effective<br/>Date</tr></thead>
         </table>
+        </div>
       </div>
         {% if remote_user[0].admin == 't' %}
         <div id="ratetab">
           <form id="rateForm" action="index.php" method="GET">
             <input type="hidden" name="act" value="save"/>
-            <input type="hidden" name="view" value="conferencerate-save"/>
+            <input type="hidden" name="view" value="conference-rate-save"/>
             <input type="hidden" id="conferenceid" name="conferenceid" value="{{ conferences[0].conferenceid }}"/>
             <input type="hidden" id="conferencerateid" name="conferencerateid" value=""/>
             <table>
@@ -55,11 +57,14 @@
         {% endif %}
 
     <script type="text/javascript">
-      $(function() {
-        $("#conferenceedittabs").tabs();
-        $("#effectivedate").datepicker();
-        $("#rateSaveButton").button();
-        $("#newRateButton").button();
+      function loadRateTable(reload) {
+        if (reload) {
+          $('#rateTable').dataTable().fnDestroy();
+        }
+
+        $("#rateTableDiv").html('<table id="rateTable" class="display" cellspacing="0" width="100%">' +
+          '<thead><tr><th>Action</th><th>Per Diem</th><th>Registration</th><th>Ground<br/>Transport</th>' +
+          '<th>Airfare</th><th>City</th><th>State</th><th>Country</th><th>Effective<br/>Date</tr></thead></table>');
 
         $('#rateTable').dataTable( {
           "processing": true,
@@ -67,6 +72,15 @@
           'autoWidth': false,
           "ajax": "index.php?view=conference-rate-list-json&conferenceid={{ conferences[0].conferenceid }}"
         } );
+      }
+
+      $(function() {
+        $("#conferenceedittabs").tabs();
+        $("#effectivedate").datepicker();
+        $("#rateSaveButton").button();
+        $("#newRateButton").button();
+
+        loadRateTable(false);
       });
 
       function rateEdit(conferencerateid) {
@@ -105,14 +119,10 @@
         $("#peopleedittabs").tabs( "option", "active", 0 );
         $("#warningDiv").html("<p>Updated [" + $("#conferencerateid").val() + "]</p>");
         $("#warningDiv").show();
-        $('#rateTable').dataTable().fnDestroy();
-        $('#rateTable').dataTable( {
-          "processing": true,
-          "serverSide": false,
-          'autoWidth': false,
-          "ajax": "index.php?view=conference-rate-list-json&conferenceid={{ conferences[0].conferenceid }}"
-        } );
 
+        loadRateTable(true);
+
+        $("#conferenceedittabs").tabs( "option", "active", 0 );
       }
     </script>
 

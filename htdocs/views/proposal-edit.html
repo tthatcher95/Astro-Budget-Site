@@ -3,6 +3,7 @@
     <head>
         <title>Proposal Budget for {{ proposals[0].projectname }} </title>
         {% include 'menu-header.html' %}
+        {% include 'graphs-header.html' %}
     </head>
     {% for error in debug %}
       <pre>error.msg</pre>
@@ -10,6 +11,7 @@
     <body>
         {% include 'menu-tags.html' %}
       <p/>
+      <div id="budgetDashboard"></div>
       <div class="container">
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
@@ -129,6 +131,11 @@
             });
           });
           $('#fbmsTitle').html('FBMS Accounts');
+
+          // Dashboard
+          $.getJSON( "index.php?view=proposal-costs-json&proposalid=" + proposalid, function( data ) {
+            projectBudgetDashboard('#budgetDashboard',data.data[0].budget);
+          });
         }
 
         function loadFundingTable (reload) {

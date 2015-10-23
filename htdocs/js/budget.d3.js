@@ -4,13 +4,15 @@ function projectBudgetDashboard(id, bData){
     function segColor(c){ return {expenses:"yellow", staffing:"aqua",travel:"purple", overhead:"green"}[c]; }
     
     // compute total for each state.
-    bData.forEach(function(d){d.total=d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead;});
+    bData.forEach(function(d){
+      d.total = (d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead).toFixed(3);});
     
     // function to handle histogram.
     function histoGram(fD){
         var hG={},    hGDim = {t: 60, r: 0, b: 30, l: 0};
-        hGDim.w = 500 - hGDim.l - hGDim.r, 
-        hGDim.h = 300 - hGDim.t - hGDim.b;
+        // hGDim.w = 500 - hGDim.l - hGDim.r, 
+        hGDim.w = (100 * fD.length) - hGDim.l - hGDim.r, 
+        hGDim.h = 250 - hGDim.t - hGDim.b;
             
         //create svg for histogram.
         var hGsvg = d3.select(id).append("svg")
@@ -158,7 +160,7 @@ function projectBudgetDashboard(id, bData){
 
         // create the third column for each segment.
         tr.append("td").attr("class",'legendCosts')
-            .text(function(d){ return d3.format(",")(d.costs);});
+            .text(function(d){ return d3.format(",")((d.costs).toFixed(3));});
 
         // create the fourth column for each segment.
         tr.append("td").attr("class",'legendPerc')
@@ -170,7 +172,7 @@ function projectBudgetDashboard(id, bData){
             var l = legend.select("tbody").selectAll("tr").data(nD);
 
             // update the costs.
-            l.select(".legendCosts").text(function(d){ return d3.format(",")(d.costs);});
+            l.select(".legendCosts").text(function(d){ return d3.format(",")((d.costs).toFixed(3));});
 
             // update the percentage column.
             l.select(".legendPerc").text(function(d){ return getLegend(d,nD);});        

@@ -22,6 +22,10 @@ $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USE
 # Handle GET options
 if (isset($_REQUEST['view'])) {
   switch($_REQUEST['view']) {
+    case 'budget-graphs':
+      $templateArgs['view'] = 'budget-graphs.html';
+      $view = $templateArgs['view'];
+      break;
     case 'people':
       $templateArgs = peopleView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -459,10 +463,13 @@ function costsSummaryView ($pbdb, $templateArgs) {
                  ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
                  $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
         $subtotals[$currFy] += $cost;
-        $overhead[$currFy] += $cost * ($currOver * .01);
+        // $overhead[$currFy] += $cost * ($currOver * .01);
+        $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
         $totals[$currFy] += $cost * (1 + ($currOver * .01));
-        $templateArgs['budgets'][$i]['staffing'][$currFy] += $cost;
-        $templateArgs['budgets'][$i]['overhead'][$currFy] += $cost * ($currOver * .01);
+        $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
+        $templateArgs['budgets'][$i]['FY'][$currFy]['staffing'] += $cost;
+        // $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver * .01);
+        $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
       }
     }
   
@@ -471,7 +478,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
     ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
       $templateArgs['costs'][$i]['staffing'] .= " $fy " . money_format('%(#8n', $cost);
-      $templateArgs['budgets'][$i]['staffing'][$fy] += $cost;
       $subtotal += $cost;
     }
     
@@ -491,10 +497,13 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
       $subtotals[$currFy] += $cost;
-      $overhead[$currFy] += $cost * ($currOver * .01);
+      // $overhead[$currFy] += $cost * ($currOver * .01);
+      $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
       $totals[$currFy] += $cost * (1 + ($currOver * .01));
-      $templateArgs['budgets'][$i]['travel'][$currFy] += $cost;
-      $templateArgs['budgets'][$i]['overhead'][$currFy] += $cost * ($currOver * .01);
+      $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
+      $templateArgs['budgets'][$i]['FY'][$currFy]['travel'] += $cost;
+      // $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver * .01);
+      $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings ";
     ksort($subtotals);
@@ -513,10 +522,13 @@ function costsSummaryView ($pbdb, $templateArgs) {
                     $templateArgs['proposals'][$i]['expenses'][$j]['fiscalyear']);
       $cost = $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
       $subtotals[$currFy] += $cost;
-      $overhead[$currFy]  += $cost * ($currOver * .01);
+      // $overhead[$currFy]  += $cost * ($currOver * .01);
+      $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
       $totals[$currFy]    += $cost * (1 + ($currOver * .01));
-      $templateArgs['budgets'][$i]['expenses'][$currFy] += $cost;
-      $templateArgs['budgets'][$i]['overhead'][$currFy] += $cost * ($currOver * .01);
+      $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
+      $templateArgs['budgets'][$i]['FY'][$currFy]['expenses'] += $cost;
+      // $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver * .01);
+      $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['expenses'] = "Expenses ";
     ksort($subtotals);

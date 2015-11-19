@@ -1,5 +1,10 @@
 {"draw":0,"recordsTotal":{{ proposals[0].funding|length }},"recordsFiltered":{{ proposals[0].funding|length }},"data":[
 {% for fund in proposals[0].funding %}
-["<a href='javascript:void(0)' onclick='editFundingDialog({{ fund.fundingid }})'>{{ fund.FY }}</a>", "${{ fund.newfunding|number_format(2,'.',',') }}", "${{ fund.carryover|number_format(2,'.',',') }}"]{% if loop.last !=true %},{% endif %}
+  {% if remote_user[0].admin == 't' %}
+["<a href='javascript:void(0)' onclick='editFundingDialog({{ fund.fundingid }})'>{{ fund.FY }}</a>",
+  {% else %}
+["{{ fund.FY }}",
+  {% endif %}
+"${{ fund.newfunding|number_format(2,'.',',') }}", "${{ fund.carryover|number_format(2,'.',',') }}"]{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

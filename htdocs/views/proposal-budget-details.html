@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proposal Budget Details</title>
+        <link rel="stylesheet" href="css/budgetdetails.css"/>
+    </head>
+    {% for error in debug %}
+      <pre>error.msg</pre>
+    {% endfor %}
+    <body>
+      <div class="container">
+        <div id="title">
+          <h1>DETAILED BUDGETARY INFORMATION</h1>
+          <h2>PRINCIPAL INVESTIGATOR:</h2>
+          <h3>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
+          {% endfor %}</h3>
+          <h2>PROJECT NAME:</h2>
+          <h3>{{ proposals[0].projectname }}</h3>
+        </div>
+      </div>
+    </body>
+</html>

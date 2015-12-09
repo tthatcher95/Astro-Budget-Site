@@ -16,6 +16,50 @@
           {% endfor %}</h3>
           <h2>PROJECT NAME:</h2>
           <h3>{{ proposals[0].projectname }}</h3>
+
+          <table width=80%><tr><th align="left" width="50%">A + B SALARIES/WAGES/BENEFITS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">C EQUIPMENT</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">D1 DOMESTIC TRAVEL</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">D2 FOREIGN TRAVEL</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">E PARTICIPANT/TRAINEE SUPPORT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">F OTHER DIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">G TOTAL DIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">H INDIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">I DIRECT AND INDIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">J FEE</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
+
+          <table width=80%><tr><th align="left" width="50%">K TOTAL COST</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          </table>
         </div>
       </div>
     </body>

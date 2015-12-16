@@ -11,13 +11,13 @@
       <div class="container">
         <div id="title">
           <h1>DETAILED BUDGETARY INFORMATION</h1>
-          <h2>PRINCIPAL INVESTIGATOR:</h2>
-          <h3>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
-          {% endfor %}</h3>
-          <h2>PROJECT NAME:</h2>
-          <h3>{{ proposals[0].projectname }}</h3>
+          <h3>PRINCIPAL INVESTIGATOR:</h3>
+          <p>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
+          {% endfor %}</p>
+          <h3>PROJECT NAME:</h3>
+          <p>{{ proposals[0].projectname }}</p>
 
-          <table width=100%><tr><th align="left" width="50%">A + B SALARIES/WAGES/BENEFITS</th>
+          <table width=100%><tr><th align="left" width="35%">A + B SALARIES/WAGES/BENEFITS</th>
           {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           {% for person in proposals[0].people %}
           <tr><th>{{ person.name }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
@@ -35,45 +35,71 @@
             </td>{% endfor %}<td>${{ person['ALL'].estbenefits|number_format(2, '.', ',') }}</tr>
           {% endfor %}
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">C EQUIPMENT</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">C EQUIPMENT</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">D1 DOMESTIC TRAVEL</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">D1 DOMESTIC TRAVEL</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          {% for conference in proposals[0].conferenceattendees %}
+          {% if conference.conferencerate[0].country == 'USA' %}
+          <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th>Per Diem (includes lodging)</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th>Registration/abstract fee</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th>Transportation (Rental Car, etc.) per person</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th>Airfare</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th>Number of trips/travelers</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          {% endif %}
+          {% endfor %}
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">D2 FOREIGN TRAVEL</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">D2 FOREIGN TRAVEL</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          {% for conference in proposals[0].conferenceattendees %}
+          {% if conference.conferencerate[0].country != 'USA' %}
+          <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+
+          {% endif %}
+          {% endfor %}
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">E PARTICIPANT/TRAINEE SUPPORT COSTS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">E PARTICIPANT/TRAINEE SUPPORT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">F OTHER DIRECT COSTS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">F OTHER DIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">G TOTAL DIRECT COSTS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">G TOTAL DIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">H INDIRECT COSTS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">H INDIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">I DIRECT AND INDIRECT COSTS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">I DIRECT AND INDIRECT COSTS</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">J FEE</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">J FEE</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
+          <p/><hr/>
 
-          <table width=100%><tr><th align="left" width="50%">K TOTAL COST</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}</tr>
+          <table width=100%><tr><th align="left" width="35%">K TOTAL COST</th>
+          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           </table>
         </div>
       </div>

@@ -520,14 +520,20 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $currFy = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['FY'];
       array_push ($fiscalyears, $currFy);
       $cost = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
-               $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
+               ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] +
+                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays']) *
                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
       $cost += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
                 $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
                 $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']));
 
-      $meeting = $templateArgs['proposals'][$i]['conferenceattendees']['meeting'];
+      $meeting = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meeting'];
+      if (strcasecmp($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'],
+          'USA') == 0) { $traveltype = 'D1'; }
+      else { $traveltype = 'D2'; }
+      $templateArgs['proposals'][$i]['conferences'][$meeting]['meeting'] = $meeting;
+      $templateArgs['proposals'][$i]['conferences'][$meeting]['section'] = $traveltype;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] =
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] =
@@ -537,9 +543,27 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] =
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['travelers'] +=
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['travelers'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['travelers'] +=
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['travelers'];
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['traveldays'] +=
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['meetingdays'] +=
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['city'] =
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['city'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['state'] =
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['state'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['country'] =
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] *
+         ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] + 
+          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays']) * 
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'] +
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'];
+
 
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);

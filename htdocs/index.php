@@ -521,7 +521,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       array_push ($fiscalyears, $currFy);
       $cost = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] +
-                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays']) *
+                ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75)) *
                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
       $cost += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
@@ -556,7 +556,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] *
-         ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] + 
+         (($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75) + 
           $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays']) * 
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=

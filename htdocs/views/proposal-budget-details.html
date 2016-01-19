@@ -48,15 +48,15 @@
           {% if conference.section == 'D1' %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th>Per Diem (includes lodging)</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].perdiem }}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].perdiem|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Registration/abstract fee</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].registration }}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].registration|number_format(2,'.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Transportation (Rental Car, etc.) per person</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].groundtransportation }}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].groundtransportation|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Airfare</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].airfare }} </td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].airfare|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Number of trips/travelers</th>{% for year in budgets[1].FYs %}
-            <td align="right">{{ conference[year].travelers * (conference[year].traveldays + conference[year].meetingdays) }}</td>{% endfor %}<td></td></tr>
+            <td align="right">{{ conference[year].travelers * (conference[year].traveldays + conference[year].meetingdays)|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           {% endif %}
           {% endfor %}
           </table>
@@ -68,7 +68,7 @@
           {% if conference.section == 'D2' %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th>Per Diem (includes lodging)</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].perdiem }}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].perdiem }}{% if conference[year].perdiem is empty %}0{% endif %}</td>{% endfor %}<td></td></tr>
           <tr><th>Registration/abstract fee</th>{% for year in budgets[1].FYs %}
             <td align="right">${{ conference[year].registration }}</td>{% endfor %}<td></td></tr>
           <tr><th>Transportation (Rental Car, etc.) per person</th>{% for year in budgets[1].FYs %}

@@ -480,6 +480,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q4hours'] +
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['hours'] += $taskhours;
+        $laf = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['laf'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estsalary'] =
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estbenefits'] =
@@ -493,7 +494,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estbenefits'] +=
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'] * $taskhours;
           
-        $cost = ($taskhours) * ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
+        $cost = ($taskhours * $laf) * 
+                ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
                  $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
         $subtotals[$currFy] += $cost;
         $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));

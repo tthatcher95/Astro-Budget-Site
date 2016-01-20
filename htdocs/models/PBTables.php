@@ -177,8 +177,11 @@ class PBTables {
   }
 
   function getAmount ($money) {
-    $cleanString = preg_replace('/([^0-9\.,])/i', '', $money);
-    $onlyNumbersString = preg_replace('/([^0-9])/i', '', $money);
+    $cleanString = preg_replace('/([^0-9\.])/i', '', $money);
+
+    error_log("Amount is $cleanString");
+    return $cleanString;
+    $onlyNumbersString = preg_replace('/([^0-9\.])/i', '', $money);
 
     $separatorsCountToBeErased = strlen($cleanString) - strlen($onlyNumbersString) - 1;
 
@@ -186,7 +189,8 @@ class PBTables {
     $removedThousendSeparator = preg_replace('/(\.|,)(?=[0-9]{3,}$)/', '',  $stringWithCommaOrDot);
     # error_log("getAmount for $money returning " . (float) str_replace(',', '.', $removedThousendSeparator));
 
-    return (float) str_replace(',', '.', $removedThousendSeparator);
+    return (float) $cleanString;
+    # return (float) str_replace(',', '.', $removedThousendSeparator);
   }
 
   function getEffectiveSalary ($peopleid, $targetdate) {

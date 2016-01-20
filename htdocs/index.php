@@ -490,16 +490,17 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['hours'] += 
           $templateArgs['proposals'][$i]['people'][$peopleid][$currFY]['hours'];
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estsalary'] +=
-          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] * $taskhours;
+          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] * $taskhours * $laf;
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estbenefits'] +=
-          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'] * $taskhours;
+          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'] * $taskhours * $laf;
           
         $cost = ($taskhours * $laf) * 
                 ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
                  $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
         $subtotals[$currFy] += $cost;
         $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
-        $totals[$currFy] += $cost * (1 + ($currOver * .01));
+        $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
+error_log("Adding $cost for $currFy for $peopleid, total is now " . $subtotals[$currFy]);
         $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
         $templateArgs['budgets'][$i]['FY'][$currFy]['staffing'] += $cost;
         $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));

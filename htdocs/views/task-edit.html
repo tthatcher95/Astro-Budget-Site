@@ -99,11 +99,11 @@
         if (staffingid == 'new') {
           $("#staffingpeopleid").val(0);
           $("#fiscalyear").val('');
-          $("#q1hours").val('');
-          $("#q2hours").val('');
-          $("#q3hours").val('');
-          $("#q4hours").val('');
-          $("#flexhours").val('');
+          $("#q1hours").val('0');
+          $("#q2hours").val('0');
+          $("#q3hours").val('0');
+          $("#q4hours").val('0');
+          $("#flexhours").val('0');
         }
         else {
           $.getJSON( "index.php?view=staffing-edit-json&taskid=" + taskid + "&staffingid=" + staffingid, function( data ) {

@@ -605,6 +605,7 @@ class PBTables {
 
     $needAnd = false;
     if (isset($fundingid)) {
+      if ($fundingid == 'new') { $fundingid=0; }
       $query .= " WHERE fundingid=$fundingid";
       $needAnd = true;
     }

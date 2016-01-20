@@ -411,13 +411,14 @@ function proposalView ($pbdb, $templateArgs) {
   $expenseid = (isset($_REQUEST['expenseid'])? $_REQUEST['expenseid'] : null);
 
   $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null, null);
+  $fundingid  = (isset($_REQUEST['fundingid'])? $_REQUEST['fundingid'] : null);
 
   $conferenceattendeeid = (isset($_REQUEST['conferenceattendeeid'])? $_REQUEST['conferenceattendeeid'] : null);
   # Add in the tasks, FBMS accounts, conferences/attendees, and expenses too
   for ($i = 0; $i < count($templateArgs['proposals']); $i++) {
     $proposalid = $templateArgs['proposals'][$i]['proposalid'];
     $templateArgs['proposals'][$i]['FBMSaccounts'] = $pbdb->getFBMSAccounts (null, null, $proposalid);
-    $templateArgs['proposals'][$i]['funding'] = $pbdb->getFunding (null, $proposalid);
+    $templateArgs['proposals'][$i]['funding'] = $pbdb->getFunding ($fundingid, $proposalid);
     $templateArgs['proposals'][$i]['conferenceattendees'] = $pbdb->getConferenceAttendees ($conferenceattendeeid, null, $proposalid, null);
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
       $templateArgs['debug'] = 'looking up conference rate for ' .
@@ -727,7 +728,7 @@ function fundingSave($pbdb, $templateArgs) {
     $pbdb->addFunding ($proposalid, $fiscalyear, $newfunding, $carryover);
   }
   else {
-    $pbdb->addFunding ($fundingid, $proposalid, $fiscalyear, $newfunding, $carryover);
+    $pbdb->updateFunding ($fundingid, $proposalid, $fiscalyear, $newfunding, $carryover);
   }
 
   $templateArgs['proposalid'] = $proposalid;

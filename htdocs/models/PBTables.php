@@ -605,7 +605,7 @@ class PBTables {
 
     $needAnd = false;
     if (isset($fundingid)) {
-      $query .= "WHERE fundingid=$fundingid";
+      $query .= " WHERE fundingid=$fundingid";
       $needAnd = true;
     }
     if (isset($proposalid)) {

@@ -585,7 +585,7 @@ class PBTables {
     }
     if (isset($newfunding)) {
       if ($needComma) { $query .= ", "; }
-      $query .= " newfunding=" . $this->getAmount($newfinding);
+      $query .= " newfunding=" . $this->getAmount($newfunding);
       $needComma = true;
     }
     if (isset($carryover)) {

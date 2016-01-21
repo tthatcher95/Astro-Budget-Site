@@ -501,7 +501,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $subtotals[$currFy] += $cost;
         $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
         $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
-error_log("Adding $cost for $currFy for $peopleid, total is now " . $subtotals[$currFy]);
         $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
         $templateArgs['budgets'][$i]['FY'][$currFy]['staffing'] += $cost;
         $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
@@ -725,9 +724,11 @@ function fundingSave($pbdb, $templateArgs) {
   $carryover  = (isset($_REQUEST['carryover'])? $_REQUEST['carryover'] : null);
 
   if ($fundingid == 'new') {
+  error_log ("Calling addFunding");
     $pbdb->addFunding ($proposalid, $fiscalyear, $newfunding, $carryover);
   }
   else {
+  error_log ("Calling updateFunding");
     $pbdb->updateFunding ($fundingid, $proposalid, $fiscalyear, $newfunding, $carryover);
   }
 
@@ -941,7 +942,6 @@ function taskSave ($pbdb, $templateArgs) {
   
   if ($taskid == 'new') {
     $taskid = $pbdb->addTask ($proposalid, $taskname);
-    error_log("taskSave: taskid was new now is $taskid");
   }
   else {
     $pbdb->updateTask ($taskid, $proposalid, $taskname);

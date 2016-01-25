@@ -12,10 +12,10 @@
         <div id="title">
           <h1>DETAILED BUDGETARY INFORMATION</h1>
           <h3>PRINCIPAL INVESTIGATOR:</h3>
-          <p>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
-          {% endfor %}</p>
+          <h4>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
+          {% endfor %}</h4>
           <h3>PROJECT NAME:</h3>
-          <p>{{ proposals[0].projectname }}</p>
+          <h4>{{ proposals[0].projectname }}</h4>
 
           <table width=100%><tr><th align="left" width="35%">A + B SALARIES/WAGES/BENEFITS</th>
           {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
@@ -28,10 +28,10 @@
             <td align="right">{{ (person[year].hours/person[year].authhours)|number_format(2,'.',',') }}
             </td>{% endfor %}<td></td></tr>
           <tr><th><i>Est Salary</i></th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ (person[year].hours * person[year].estsalary)|number_format(2,'.',',') }}
+            <td align="right">${{ (person[year].hours * person[year].laf * person[year].estsalary)|number_format(2,'.',',') }}
             </td>{% endfor %}<td>${{ person['ALL'].estsalary|number_format(2, '.', ',') }}</tr>
           <tr><th><i>Est Benefits</i></th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ (person[year].hours * person[year].estbenefits)|number_format(2,'.',',') }}
+            <td align="right">${{ (person[year].hours * person[year].laf * person[year].estbenefits)|number_format(2,'.',',') }}
             </td>{% endfor %}<td>${{ person['ALL'].estbenefits|number_format(2, '.', ',') }}</tr>
           {% endfor %}
           </table>
@@ -68,15 +68,15 @@
           {% if conference.section == 'D2' %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th>Per Diem (includes lodging)</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].perdiem }}{% if conference[year].perdiem is empty %}0{% endif %}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].perdiem|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Registration/abstract fee</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].registration }}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].registration|number_format(2,'.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Transportation (Rental Car, etc.) per person</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].groundtransportation }}</td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].groundtransportation|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Airfare</th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ conference[year].airfare }} </td>{% endfor %}<td></td></tr>
+            <td align="right">${{ conference[year].airfare|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           <tr><th>Number of trips/travelers</th>{% for year in budgets[1].FYs %}
-            <td align="right">{{ conference[year].travelers * (conference[year].traveldays + conference[year].meetingdays) }}</td>{% endfor %}<td></td></tr>
+            <td align="right">{{ conference[year].travelers * (conference[year].traveldays + conference[year].meetingdays)|number_format(2, '.', ',') }}</td>{% endfor %}<td></td></tr>
           {% endif %}
           {% endfor %}
           </table>

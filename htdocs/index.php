@@ -462,7 +462,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$x]['salary'] = 
           $pbdb->getEffectiveSalary ($peopleid, 
             $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$x]['fiscalyear']);
-            #$date = date('m/d/Y', time()));
         $templateArgs['proposals'][$i]['people'][$peopleid]['name'] = 
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$x]['name'];
         
@@ -510,9 +509,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $subtotal = 0;
     $templateArgs['costs'][$i]['staffing'] = "Tasks - ";
     ksort($subtotals);
-    foreach ($subtotals as $fy => $cost) {
-      $templateArgs['costs'][$i]['staffing'] .= " $fy " . money_format('%(#8n', $cost);
-      $subtotal += $cost;
+    foreach ($subtotals as $fy => $subcost) {
+      $templateArgs['costs'][$i]['staffing'] .= " $fy " . money_format('%(#8n', $subcost);
+      $subtotal += $subcost;
     }
     
     $templateArgs['costs'][$i]['staffing'] .= " Total " . money_format('%(#8n', $subtotal);
@@ -543,6 +542,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] =
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['rentalcars'] =
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['rentalcars'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] =
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['travelers'] +=
@@ -564,7 +565,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'] +
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
+         ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] *
+         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['rentalcars'] ) +
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'];
 
 
@@ -886,13 +888,15 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
   $meetingdays  = (isset($_REQUEST['meetingdays'])? $_REQUEST['meetingdays'] : null);
   $traveldays   = (isset($_REQUEST['traveldays'])? $_REQUEST['traveldays'] : null);
   $startdate    = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
+  $rentalcars   = (isset($_REQUEST['rentalcars'])? $_REQUEST['rentalcars'] : null);
 
   if ($conferenceattendeeid == 'new') {
-    $pbdb->addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate);
+    $pbdb->addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate,
+      $rentalcars);
   }
   else {
     $pbdb->updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $travelers, $meetingdays,
-                                     $traveldays, $startdate);
+                                     $traveldays, $startdate, $rentalcars);
   }
 
   $templateArgs['conferenceattendeeid'] = $conferenceattendeeid;
@@ -902,6 +906,7 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
   $templateArgs['meetingdays'] = $meetingdays;
   $templateArgs['traveldays'] = $traveldays;
   $templateArgs['startdate'] = $startdate;
+  $templateArgs['rentalcars'] = $rentalcars;
 
   $templateArgs['view'] = 'conference-attendee-save-result.html';
 

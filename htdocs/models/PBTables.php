@@ -868,21 +868,24 @@ class PBTables {
   #  airfare REAL,
   
   # ConferenceAttendee
-  function addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate) {
+  function addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate,
+  $rentalcars) {
     if (!(isset($conferenceid) and isset($proposalid) and isset($travelers))) {
       return "Missing required information to add conference attendee";
     }
 
-    $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, travelers, meetingdays, traveldays, startdate)".
+    $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, travelers, meetingdays, traveldays, " .
+             "startdate, rentalcars)".
              " VALUES ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, ";
-    if (isset($startdate)) { $query .= "'" . $this->formatDate($startdate) . "')"; }
-    else { $query .= "now())"; }
+    if (isset($startdate)) { $query .= "'" . $this->formatDate($startdate) . "'"; }
+    else { $query .= "now()"; }
+    $query .= "$rentalcars)";
 
     $this->db->query($query);
   }
 
   function updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $travelers, $meetingdays, 
-                                    $traveldays, $startdate) {
+                                    $traveldays, $startdate, $rentalcars) {
     if (!isset($conferenceattendeeid)) { return "A conference attendee ID must be provided for an update"; }
     if (!(isset($conferenceid) or isset($proposalid) or isset($travelers) or isset($meetingdays)
        or isset($traveldays) or isset($startdate))) { return "No changes provided for conference attendee update"; }
@@ -919,6 +922,11 @@ class PBTables {
       $needComma = true;
       $query .= "startdate='" . $this->formatDate($startdate) . "'";
     }
+    if (isset($rentalcars)) {
+      if ($needComma) { $query .= ", "; }
+      $needComma = true;
+      $query .= "rentalcars=$rentalcars";
+    }
 
     $query .= " WHERE conferenceattendeeid=$conferenceattendeeid";
 
@@ -927,7 +935,7 @@ class PBTables {
     
   function getConferenceAttendees ($conferenceattendeeid, $conferenceid, $proposalid, $travelers) {
     $query = "SELECT c.conferenceattendeeid, c.conferenceid, c.proposalid, c.travelers, c.meetingdays, " .
-             "c.traveldays, to_char(c.startdate, 'MM/DD/YYYY') as startdate, m.meeting " .
+             "c.traveldays, to_char(c.startdate, 'MM/DD/YYYY') as startdate, c.rentalcars, m.meeting " .
              "FROM conferenceattendee c JOIN conferences m ON (c.conferenceid=m.conferenceid)";
 
     $needAnd = false;

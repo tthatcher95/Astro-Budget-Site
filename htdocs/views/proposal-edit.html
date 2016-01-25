@@ -293,11 +293,11 @@
         function saveFunding() {
           $.post("index.php", $("#fundingForm").serialize());
 
-          loadFundingTable(true);
-
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#fiscalyear").val() + "]</p>");
           $("#warningDiv").show();
+
+          loadFundingTable(true);
         }
 
         function editFBMSDialog(fbmsid) {

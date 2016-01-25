@@ -122,6 +122,8 @@
 
       <script type="text/javascript" charset="utf-8">
         function figureCosts(proposalid) {
+          $('#budgetDashboard').html('');
+          deleteProjectBudgetDashboard('#budgetDashboard');
           $.getJSON( "index.php?view=proposal-cost-titles-json&proposalid=" + proposalid, function( data ) {
             var items = [];
             $.each( data.data[0], function( key, val ) {
@@ -393,13 +395,13 @@
         function saveAttendee() {
           $.post("index.php", $("#conferenceAttendeeForm").serialize());
 
-          loadConferencesTable(true);
-
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
           $("#warningDiv").show();
 
           figureCosts({{ proposals[0].proposalid }});
+
+          loadConferencesTable(true);
         }
 
         function editExpenseDialog(expenseid) {
@@ -425,13 +427,13 @@
         function saveExpense() {
           $.post("index.php", $("#expenseForm").serialize());
 
-          loadExpensesTable(true);
-
           dialog.dialog("close");
           $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
           $("#warningDiv").show();
 
           figureCosts({{ proposals[0].proposalid }});
+
+          loadExpensesTable(true);
         }
 
       </script>

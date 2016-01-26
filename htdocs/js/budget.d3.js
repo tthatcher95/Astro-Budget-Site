@@ -203,4 +203,6 @@ function deleteProjectBudgetDashboard(id){
   var hG = [];
   var pC = [];
   var leg = [];
+
+  d3.select("svg").remove();
 }

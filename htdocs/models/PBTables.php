@@ -879,7 +879,7 @@ class PBTables {
              " VALUES ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, ";
     if (isset($startdate)) { $query .= "'" . $this->formatDate($startdate) . "'"; }
     else { $query .= "now()"; }
-    $query .= "$rentalcars)";
+    $query .= ", $rentalcars)";
 
     $this->db->query($query);
   }

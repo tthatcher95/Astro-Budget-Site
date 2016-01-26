@@ -3,7 +3,7 @@ function projectBudgetDashboard(id, bData){
     // function segColor(c){ return {low:"#807dba", mid:"#e08214",high:"#41ab5d"}[c]; }
     function segColor(c){ return {expenses:"yellow", staffing:"aqua",travel:"purple", overhead:"green"}[c]; }
     
-    // compute total for each state.
+    // compute total for each expense type.
     bData.forEach(function(d){
       d.total = (d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead).toFixed(3);});
     
@@ -196,4 +196,11 @@ function projectBudgetDashboard(id, bData){
     var hG = histoGram(sF), // create the histogram.
         pC = pieChart(tF), // create the pie-chart.
         leg= legend(tF);  // create the legend.
+}
+
+function deleteProjectBudgetDashboard(id){
+  var tF = [];
+  var hG = [];
+  var pC = [];
+  var leg = [];
 }

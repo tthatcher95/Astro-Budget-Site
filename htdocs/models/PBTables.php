@@ -858,6 +858,20 @@ class PBTables {
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
+    if (isset($effectivedate)) {
+      for ($e=0; $e < count($results); $e++) {
+        $tgtDate = new DateTime($effectivedate);
+        $effDate = new DateTime($results[$e]['effectivedate']);
+        $dateDifference = $tgtDate->diff($effDate);
+  
+        for ($i=0; $i < $dateDifference->y; $i++) {
+          $results[$e]['perdiem'] = $results[$e]['perdiem'] * 1.04;
+          $results[$e]['groundtransport'] = $results[$e]['groundtransport'] * 1.04;
+          $results[$e]['airfare'] = $results[$e]['airfare'] * 1.04;
+        }
+      }
+    }
+
     return ($results);
   }
 

@@ -14,7 +14,7 @@
    {% else %}
 ["{{ task.taskname }}",
    {% endif %}
-"{{ staff.name }}", {{ staff.taskhours }}, "${{ staff.staffcosts|number_format(2,'.',',') }}", "{{ staff.FY }}"]{% if loop.last !=true %},{% endif %}
+"{{ staff.name }}", {{ staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours }}, "${{ staff.staffcosts|number_format(2,'.',',') }}", "{{ staff.FY }}"]{% if loop.last !=true %},{% endif %}
   {% endfor %}{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

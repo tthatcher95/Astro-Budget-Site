@@ -6,7 +6,7 @@
      {% else %}
 ["{{ task.taskname }}",
      {% endif %}
-"N/A", 0, "$0.00", ""]{% if loop.last !=true %},{% endif %}
+"N/A", 0, "$0.00", ""]
   {% endif %}
   {% for staff in task.staffing %}
    {% if remote_user[0].admin == 't' %}

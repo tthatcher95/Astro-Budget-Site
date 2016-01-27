@@ -434,7 +434,8 @@ function proposalView ($pbdb, $templateArgs) {
                                    null,
                                    $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
     }
-    $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks (null, $proposalid, null);
+    $taskid = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+    $templateArgs['proposals'][$i]['tasks'] = $pbdb->getTasks ($taskid, $proposalid, null);
     $templateArgs['proposals'][$i]['expenses'] = $pbdb->getExpenses ($expenseid, $proposalid, null, null);
   }
 

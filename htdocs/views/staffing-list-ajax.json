@@ -1,5 +1,5 @@
 {"draw":0,"recordsTotal":{{ tasks|length }},"recordsFiltered":{{ tasks|length }},"data":[
-{% for task in tasks %}
+{% for task in proposals[0].tasks %}
   {% if task.staffing is empty %}
      {% if remote_user[0].admin == 't' %}
 ["<a href='javascript:void(0)' onclick=\"staffingEdit({{ task.taskid }}, 'new')\">{{ task.taskname }}</a>",
@@ -14,7 +14,7 @@
    {% else %}
 ["{{ task.taskname }}",
    {% endif %}
-"{{ staff.name }}", {{ staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours }}, "${{ ((staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours) * staff.salary[0].laf * (staff.salary[0].estsalary + staff.salary[0].estbenefits))|number_format(2,'.',',') }}", "{{ staff.FY }}"]{% if loop.last !=true %},{% endif %}
+"{{ staff.name }}", {{ staff.taskhours }}, "${{ staff.staffcosts|number_format(2,'.',',') }}", "{{ staff.FY }}"]{% if loop.last !=true %},{% endif %}
   {% endfor %}{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

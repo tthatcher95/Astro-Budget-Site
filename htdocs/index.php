@@ -169,6 +169,7 @@ if (isset($_REQUEST['view'])) {
       break;
     case 'conference-attendee-list-json':
       $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'conference-attendee-list-ajax.json';
       $view = $templateArgs['view'];
       break;
@@ -481,22 +482,24 @@ function costsSummaryView ($pbdb, $templateArgs) {
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['hours'] += $taskhours;
         $laf = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['laf'];
-        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estsalary'] =
-          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'];
-        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estbenefits'] =
-          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'];
+        $lafhours = intval($taskhours * $laf);
+        if ($lafhours != ($taskhours * $laf)) { $lafhours += 1; }
+        $estsalary = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'];
+        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estsalary'] = $estsalary;
+        $estbenefits = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'];
+        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estbenefits'] = $estbenefits;
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['authhours'] =
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['authhours'];
-        $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['hours'] += 
-          $templateArgs['proposals'][$i]['people'][$peopleid][$currFY]['hours'];
-        $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estsalary'] +=
-          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] * $taskhours * $laf;
-        $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estbenefits'] +=
-          $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'] * $taskhours * $laf;
+        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['staffcosts'] +=
+          ($estsalary * $lafhours) + ($estbenefits * $lafhours);
+        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['salaryreqcosts'] += $taskhours * $estsalary;
+        $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['benefitsreqcosts'] += 
+          (($estsalary * $lafhours) + ($estbenefits * $lafhours)) - ($taskhours * $estsalary);
+        $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['hours'] += $taskhours;
+        $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estsalary'] += $estsalary * $lafhours;
+        $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estbenefits'] += $estbenefits * $lafhours;
           
-        $cost = ($taskhours * $laf) * 
-                ($templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'] +
-                 $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits']);
+        $cost = ($estsalary * $lafhours) + ($estbenefits * $lafhours);
         $subtotals[$currFy] += $cost;
         $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
         $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
@@ -521,14 +524,25 @@ function costsSummaryView ($pbdb, $templateArgs) {
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['conferenceattendees']); $j++) {
       $currFy = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['FY'];
       array_push ($fiscalyears, $currFy);
-      $cost = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
-               ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] +
-                ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75)) *
-               $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
-      $cost += ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
-               ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] +
-                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'] +
-                $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']));
+      $perdiem = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+                 ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] +
+                 ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75)) *
+                 $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiemcosts'] = $perdiem;
+      $groundtransport = 
+        ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] *
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['rentalcars']);
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransportcosts'] =
+        $groundtransport;
+      $airfare = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare']);
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfarecosts'] = $airfare;
+      $registration = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']);
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registrationcosts'] =
+        $registration;
+      $cost = $perdiem + $groundtransport + $airfare + $registration;
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['totalcost'] = $cost;
 
       $meeting = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meeting'];
       if (strcasecmp($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'],
@@ -536,16 +550,11 @@ function costsSummaryView ($pbdb, $templateArgs) {
       else { $traveltype = 'D2'; }
       $templateArgs['proposals'][$i]['conferences'][$meeting]['meeting'] = $meeting;
       $templateArgs['proposals'][$i]['conferences'][$meeting]['section'] = $traveltype;
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] =
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] =
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] =
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['rentalcars'] =
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['rentalcars'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] =
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'];
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] = $perdiem;
+      error_log ("Set per diem to $perdiem");
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] = $registration;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] = $groundtransport;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] = $airfare;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['travelers'] +=
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['traveldays'] +=
@@ -558,27 +567,15 @@ function costsSummaryView ($pbdb, $templateArgs) {
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['state'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['country'] =
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] *
-         (($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75) + 
-          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays']) * 
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem'];
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] +=
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration'] +
-         ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] *
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['rentalcars'] ) +
-         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['airfare'];
-
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] += $cost;
 
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
       $subtotals[$currFy] += $cost;
-      // $overhead[$currFy] += $cost * ($currOver * .01);
       $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
-      $totals[$currFy] += $cost * (1 + ($currOver * .01));
+      $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['travel'] += $cost;
-      // $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver * .01);
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings ";

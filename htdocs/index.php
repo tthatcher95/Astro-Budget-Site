@@ -557,7 +557,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['conferences'][$meeting]['meeting'] = $meeting;
       $templateArgs['proposals'][$i]['conferences'][$meeting]['section'] = $traveltype;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] = $perdiem;
-      error_log ("Set per diem to $perdiem");
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] = $registration;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] = $groundtransport;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] = $airfare;
@@ -633,7 +632,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $fyfunding = 0;
       foreach ($templateArgs['proposals'][$i]['funding'] as $funds) {
         if ($funds['FY'] == $fy) {
-        error_log ("Matched on $fy and " . $funds['FY'] . " adding funding");
           $fyfunding += $funds['newfunding'] + $funds['carryover'];
         }
       }
@@ -748,11 +746,9 @@ function fundingSave($pbdb, $templateArgs) {
   $carryover  = (isset($_REQUEST['carryover'])? $_REQUEST['carryover'] : null);
 
   if ($fundingid == 'new') {
-  error_log ("Calling addFunding");
     $pbdb->addFunding ($proposalid, $fiscalyear, $newfunding, $carryover);
   }
   else {
-  error_log ("Calling updateFunding");
     $pbdb->updateFunding ($fundingid, $proposalid, $fiscalyear, $newfunding, $carryover);
   }
 
@@ -781,7 +777,6 @@ function fbmsSave ($pbdb, $templateArgs) {
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $accountno  = (isset($_REQUEST['accountno'])? $_REQUEST['accountno'] : null);
 
-  error_log("fbmsSave: $fbmsid - $proposalid - $accountno ");
   if ($fbmsid == 'new') {
     $pbdb->addFBMSAccount ($accountno, $proposalid);
   }

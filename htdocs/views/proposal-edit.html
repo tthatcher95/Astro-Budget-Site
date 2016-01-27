@@ -95,7 +95,7 @@
               </form>
               <div id="tasksTableDiv">
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
-                <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th></tr></thead>
+                <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Salary/Hr</th><th>Benefits/Hr</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th></tr></thead>
               </table>
               </div>
             </div>
@@ -197,7 +197,7 @@
           }
 
           $('#tasksTableDiv').html("<table id='tasksTable' class='display' cellspacing='0' width='100%'>" +
-            "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
+            "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Salary/Hr</th><th>Benefits/Hr</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
             "<th>FY</th></tr></thead></table>");
           $('#tasksTable').dataTable( {
             'processing': true,

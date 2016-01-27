@@ -212,6 +212,17 @@ class PBTables {
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
+    for ($e=0; $e < count($results); $e++) {
+      $tgtDate = new DateTime($targetdate);
+      $effDate = new DateTime($results[$e]['effectivedate']);
+      $dateDifference = $tgtDate->diff($effDate);
+
+      for ($i=0; $i < $dateDifference->y; $i++) {
+        $results[$e]['estsalary'] = $results[$e]['estsalary'] * 1.04;
+        $results[$e]['estbenefits'] = $results[$e]['estbenefits'] * 1.04;
+      }
+    }
+
     return ($results);
   }
 

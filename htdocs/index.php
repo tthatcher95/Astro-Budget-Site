@@ -624,12 +624,31 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['budgets'][$i]['projectname'] = $templateArgs['proposals'][$i]['projectname'];
     $templateArgs['budgets'][$i]['status'] = $templateArgs['proposals'][$i]['status'];
     $subtotal = 0;
+    $templateArgs['costs'][$i]['funding'] = "Funding";
     ksort($totals);
     foreach ($totals as $fy => $cost) {
       $templateArgs['costs'][$i]['proposal'] .= " - $fy " . money_format('%(#8n', $cost);
       $subtotal += $cost;
+
+      $fyfunding = 0;
+      foreach ($templateArgs['proposals'][$i]['funding'] as $funds) {
+        if ($funds['FY'] == $fy) {
+        error_log ("Matched on $fy and " . $funds['FY'] . " adding funding");
+          $fyfunding += $funds['newfunding'] + $funds['carryover'];
+        }
+      }
+      $templateArgs['costs'][$i]['funding'] .= " - $fy ";
+      if ($fyfunding < $cost) {
+       # do nothing for now, need to style heading to be red if underfunded
+      }
+      $templateArgs['costs'][$i]['funding'] .= money_format('%(#8n', $fyfunding);
+        
     }
     $templateArgs['costs'][$i]['proposal'] .= " - Totals " . money_format('%(#8n', $subtotal);
+
+    # Simple over-ride for now
+    $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " .  $templateArgs['proposals'][$i]['projectname'];
+
     $templateArgs['costs'][$i]['overhead'] = "Overhead ";
     ksort($overhead);
     $subtotal = 0;

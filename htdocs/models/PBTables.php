@@ -1267,6 +1267,8 @@ class PBTables {
       return "Missing required fields to add a new expense";
     }
 
+    if (empty($description)) { $description = 'Expense'; }
+
     $query = "INSERT INTO expenses (proposalid, expensetypeid, description, amount, fiscalyear) VALUES " .
              "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", '" . 
               $this->formatDate($fiscalyear) . "')";

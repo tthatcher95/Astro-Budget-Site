@@ -603,10 +603,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $subtotals[$currFy] += $cost;
       // $overhead[$currFy]  += $cost * ($currOver * .01);
       $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
-      $totals[$currFy]    += $cost * (1 + ($currOver * .01));
+      $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['expenses'] += $cost;
-      // $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver * .01);
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['expenses'] = "Expenses ";
@@ -640,6 +639,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
        # do nothing for now, need to style heading to be red if underfunded
       }
       $templateArgs['costs'][$i]['funding'] .= money_format('%(#8n', $fyfunding);
+      $templateArgs['budgets'][$i]['FY'][$fy]['funding'] += $fyfunding;
         
     }
     $templateArgs['costs'][$i]['proposal'] .= " - Totals " . money_format('%(#8n', $subtotal);

@@ -5,7 +5,7 @@
 {% for project in budgets %}
 {"project":"{{ project.projectname }}", "status":"{{  statuscodes[project.status] }}", "budget":[
 {% for fy in project.FY|sort %}
-{"fy": "{{ fy.fy }}", "costs": {"expenses": {% if not fy.expenses %}0{% else %}{{ fy.expenses }}{% endif %}, "staffing": {% if not fy.staffing %}0{% else %}{{ fy.staffing }}{% endif %}, "travel": {% if not fy.travel %}0{% else %}{{ fy.travel }}{% endif %}, "overhead": {% if not fy.overhead %}0{% else %}{{ fy.overhead|number_format(2, '.', '') }}{% endif %}}}
+{"fy": "{{ fy.fy }}", "costs": {"expenses": {{ fy.expenses|number_format(2,'.','') }}, "staffing": {{ fy.staffing|number_format(2,'.','') }}, "travel": {{ fy.travel|number_format(2,'.','') }}, "overhead": {{ fy.overhead|number_format(2,'.','') }} }, "funding": {{ fy.funding|number_format(2,'.','') }} }
 {% if loop.last != true %}, {%endif %}{% endfor %}]}
 {% if loop.last != true %}, {%endif %}{% endfor %}]
 }

@@ -89,6 +89,24 @@
 
           <table width=100%><tr><th align="left" width="35%">F OTHER DIRECT COSTS</th>
           {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          <tr><th>Materials and Supplies</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Materials and Supplies']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Publication Costs</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Publication Costs']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Consultant Services</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Consultant Services']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>ADP/Computer Services</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['ADP/Computer Services']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Subawards/Consortium/Contractual Costs</th>{% for year in budgets[1].FYs %} <td>
+            ${{ budgets[0].FY[year]['Subawards/Consortium/Contractual Costs']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Directed Funded Contracts (no USGS overhead)</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Directed Funded Contracts']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Equipment or Facilities Rental/User Fees</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Equipment or Facilities Rental/User Fees']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Alterations and Renovations</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Alterations and Renovations']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
+          <tr><th>Other</th>{% for year in budgets[1].FYs %}<td>
+            ${{ budgets[0].FY[year]['Other']|number_format(2,'.',',') }}</td>{% endfor %}<td></td></tr>
           </table>
           <p/><hr/>
 

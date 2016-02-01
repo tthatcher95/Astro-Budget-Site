@@ -606,6 +606,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['expenses'] += $cost;
+      $expensetype = $templateArgs['proposals'][$i]['expenses'][$j]['type'];
+      $templateArgs['budgets'][$i]['FY'][$currFy][$expensetype] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['expenses'] = "Expenses ";

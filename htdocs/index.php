@@ -516,7 +516,10 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
         $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
         $templateArgs['budgets'][$i]['FY'][$currFy]['staffing'] += $cost;
+        $templateArgs['budgets'][$i]['FY']['ALL']['staffing'] += $cost;
+        $templateArgs['budgets'][$i]['ALL']['total'] += $cost;
         $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
+        $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
       }
     }
   
@@ -590,7 +593,10 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['travel'] += $cost;
+      $templateArgs['budgets'][$i]['FY']['ALL']['travel'] += $cost;
+      $templateArgs['budgets'][$i]['ALL']['total'] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
+      $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings ";
     ksort($subtotals);
@@ -610,7 +616,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
                     $templateArgs['proposals'][$i]['expenses'][$j]['fiscalyear']);
       $cost = $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
       $subtotals[$currFy] += $cost;
-      // $overhead[$currFy]  += $cost * ($currOver * .01);
       $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
       $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
@@ -618,9 +623,12 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $expensetype = $templateArgs['proposals'][$i]['expenses'][$j]['type'];
       $templateArgs['budgets'][$i]['FY'][$currFy][$expensetype] += $cost;
       $templateArgs['budgets'][$i]['ALL'][$expensetype] += $cost;
+      $templateArgs['budgets'][$i]['FY'][$currFy]['expensestotal'] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['total'] += $cost;
+      $templateArgs['budgets'][$i]['ALL']['expensestotal'] += $cost;
       $templateArgs['budgets'][$i]['ALL']['total'] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
+      $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
     $templateArgs['costs'][$i]['expenses'] = "Expenses ";
     ksort($subtotals);

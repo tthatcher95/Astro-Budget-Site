@@ -17,8 +17,11 @@
           <h3>PROJECT NAME:</h3>
           <h4>{{ proposals[0].projectname }}</h4>
 
-          <table width=100%><tr><th align="left" width="35%">A + B SALARIES/WAGES/BENEFITS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          <table width=100%>
+          <tr><th></th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          <tr><th align="left" width="35%">A + B SALARIES/WAGES/BENEFITS</th>
+          {% for year in budgets[1].FYs %}<th>${{ proposals[0].peopletotals[year].total|number_format(2,'.',',') }}</th>{% endfor %}
+          <th>${{ proposals[0].peopletotals['ALL'].total|number_format(2,'.',',') }}</th></tr>
           {% for person in proposals[0].people %}
           <tr><th>{{ person.name }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th><i>Total Hours</i></th>{% for year in budgets[1].FYs %}
@@ -28,11 +31,11 @@
             <td align="right">{{ (person[year].hours/person[year].authhours)|number_format(2,'.',',') }}
             </td>{% endfor %}<td></td></tr>
           <tr><th><i>Est Salary</i></th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ (person[year].hours * person[year].laf * person[year].estsalary)|number_format(2,'.',',') }}
-            </td>{% endfor %}<td>${{ person['ALL'].estsalary|number_format(2, '.', ',') }}</tr>
+            <td align="right">${{ person[year].salaryreqcosts|number_format(2,'.',',') }}
+            </td>{% endfor %}<td>${{ person['ALL'].salaryreqcosts|number_format(2, '.', ',') }}</tr>
           <tr><th><i>Est Benefits</i></th>{% for year in budgets[1].FYs %}
-            <td align="right">${{ (person[year].hours * person[year].laf * person[year].estbenefits)|number_format(2,'.',',') }}
-            </td>{% endfor %}<td>${{ person['ALL'].estbenefits|number_format(2, '.', ',') }}</tr>
+            <td align="right">${{ person[year].benefitsreqcosts|number_format(2,'.',',') }}
+            </td>{% endfor %}<td>${{ person['ALL'].benefitsreqcosts|number_format(2, '.', ',') }}</tr>
           {% endfor %}
           <tr class="bordered"><td></td>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr class="bordered"><th align="left" width="35%">C EQUIPMENT</th>

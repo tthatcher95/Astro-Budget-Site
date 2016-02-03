@@ -42,8 +42,10 @@
           {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
 
           <tr class="bordered"><td></td>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th></th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" width="35%">D1 DOMESTIC TRAVEL</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          {% for year in budgets[1].FYs %}<th>${{ proposals[0].conferencetotals['D1'][year]|number_format(2,'.',',') }}</th>
+          {% endfor %}<th>${{ proposals[0].conferencetotals['D1']['ALL']|number_format(2,'.',',') }}<th></tr>
           {% for conference in proposals[0].conferences %}
           {% if conference.section == 'D1' %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
@@ -61,8 +63,10 @@
           {% endfor %}
 
           <tr class="bordered"><td></td>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th></th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" width="35%">D2 FOREIGN TRAVEL</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          {% for year in budgets[1].FYs %}<th>${{ proposals[0].conferencetotals['D2'][year]|number_format(2,'.',',') }}</th>
+          {% endfor %}<th>${{ proposals[0].conferencetotals['D2']['ALL']|number_format(2,'.',',') }}<th></tr>
           {% for conference in proposals[0].conferences %}
           {% if conference.section == 'D2' %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>

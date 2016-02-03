@@ -578,6 +578,10 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['country'] =
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] += $cost;
+      $templateArgs['proposals'][$i]['conferencetotals'][$traveltype][$currFy] += 
+        $perdiem + $registration + $groundtransport + $airfare;
+      $templateArgs['proposals'][$i]['conferencetotals'][$traveltype]['ALL'] += 
+        $perdiem + $registration + $groundtransport + $airfare;
 
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);

@@ -20,13 +20,24 @@
 {% if nspires == true %}
           <h4>Table of FTE</h4>
           <table width=100%>
-          <tr><th>Person</th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>TOTAL</th></tr>
+          <tr><th align="left" width="35%">Person</th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>TOTAL</th></tr>
           {% for person in proposals[0].people %}
           {% set total = 0 %}
           <tr><td>{{ person.name }}</td>{% for year in budgets[1].FYs %}<th>{{ (person[year].taskhours/person[year].authhours)|number_format(2,'.','') }}{% set total = total + (person[year].taskhours/person[year].authhours)|number_format(2,'.','') %}</th>{% endfor %}
           <th>{{ total|number_format(2,'.','') }}</th></tr>
           {% endfor %}
           </table>
+          <p/>
+          <h4>Table of Work Weeks</h4>
+          <table width=100%>
+          <tr><th align="left" width="35%">Person</th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>TOTAL</th></tr>
+          {% for person in proposals[0].people %}
+          {% set total = 0 %}
+          <tr><td>{{ person.name }}</td>{% for year in budgets[1].FYs %}<th>{{ (person[year].taskhours/40)|number_format(2,'.','') }}{% set total = total + (person[year].taskhours/40)|number_format(2,'.','') %}</th>{% endfor %}
+          <th>{{ total|number_format(2,'.','') }}</th></tr>
+          {% endfor %}
+          </table>
+          <p/><p/>
 {% endif %}
           <table width=100%>
           <tr><th></th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>

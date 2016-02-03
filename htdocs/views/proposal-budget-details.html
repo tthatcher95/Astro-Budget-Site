@@ -100,8 +100,10 @@
           <td>0</td></tr>
 
           <tr class="bordered"><td></td>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th></th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" width="35%">F OTHER DIRECT COSTS</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          {% for year in budgets[1].FYs %}<th>${{ budgets[0].FY[year].total|number_format(2,'.',',') }}</th>{% endfor %}
+          <th>${{ budgets[0].ALL.total|number_format(2,'.',',') }}<th></tr>
           <tr><th>Materials and Supplies</th>{% for year in budgets[1].FYs %}<td>
             ${{ budgets[0].FY[year]['Materials and Supplies']|number_format(2,'.',',') }}</td>{% endfor %}
             <td>${{ budgets[0]['ALL']['Materials and Supplies']|number_format(2,'.',',') }}</td></tr>
@@ -143,8 +145,9 @@
           {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
 
           <tr class="bordered"><td></td>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
+          <tr><th></th>{% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" width="35%">J FEE</th>
-          {% for year in budgets[1].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
+          {% for year in budgets[1].FYs %}<th>$0.00</th>{% endfor %}<th>$0.00</th></tr>
 
           <tr class="bordered"><td></td>{% for year in budgets[1].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr class="bordered"><th align="left" width="35%">K TOTAL COST</th>

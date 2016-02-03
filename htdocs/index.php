@@ -83,6 +83,8 @@ if (isset($_REQUEST['view'])) {
       $templateArgs = proposalSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'proposal-nspires':
+      $templateArgs['nspires'] = true;
     case 'proposal-budget-details':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown

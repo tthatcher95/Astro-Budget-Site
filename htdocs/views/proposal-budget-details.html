@@ -64,6 +64,13 @@
           <tr class="bordered"><th align="left" width="35%">C EQUIPMENT</th>
           {% for year in budgets[0].FYs %}<th>${{ budgets[0].FY[year].equipmenttotal|number_format(2,'.',',') }}</th>
           {% endfor %}<th>${{ budgets[0].ALL['Section C Equipment']|number_format(2,'.',',') }}</th></tr>
+          {% for equipment in budgets[0].equipmentlist %}
+          <tr><th>{{ equipment }}</th>{% set eqtotal = 0 %}
+          {% for year in budgets[0].FYs %}
+          <td>${{ budgets[0].FY[year].equipment[equipment]|number_format(2,'.',',') }}</td>
+          {% set eqtotal = eqtotal + budgets[0].FY[year].equipment[equipment] %}{% endfor %}
+          <td>${{ eqtotal|number_format(2,'.',',') }}</td></tr>
+          {% endfor %}
 
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>

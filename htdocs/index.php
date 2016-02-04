@@ -611,6 +611,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $total += $subtotal;
     $subtotal = 0;
     $subtotals = array();
+    $equipmentlist = array();
     for ($j = 0; $j < count($templateArgs['proposals'][$i]['expenses']); $j++) {
       $currFy = $templateArgs['proposals'][$i]['expenses'][$j]['FY'];
       array_push ($fiscalyears, $currFy);
@@ -625,6 +626,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $expensetype = $templateArgs['proposals'][$i]['expenses'][$j]['type'];
       if ($expensetype == 'Section C Equipment') {
         $description = $templateArgs['proposals'][$i]['expenses'][$j]['description'];
+        array_push ($equipmentlist, $description);
         $templateArgs['budgets'][$i]['FY'][$currFy]['equipment'][$description] += $cost;
         $templateArgs['budgets'][$i]['FY'][$currFy]['equipmenttotal'] += $cost;
       }
@@ -639,6 +641,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
       $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
     }
+    $templateArgs['budgets'][$i]['equipmentlist'] = array_unique($equipmentlist);
+    ksort ($templateArgs['budgets'][$i]['equipmentlist']);
     $templateArgs['costs'][$i]['expenses'] = "Expenses ";
     ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {

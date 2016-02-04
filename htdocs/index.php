@@ -623,11 +623,18 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['expenses'] += $cost;
       $expensetype = $templateArgs['proposals'][$i]['expenses'][$j]['type'];
+      if ($expensetype == 'Section C Equipment') {
+        $description = $templateArgs['proposals'][$i]['expenses'][$j]['description'];
+        $templateArgs['budgets'][$i]['FY'][$currFy]['equipment'][$description] += $cost;
+        $templateArgs['budgets'][$i]['FY'][$currFy]['equipmenttotal'] += $cost;
+      }
+      else {
+        $templateArgs['budgets'][$i]['ALL']['expensestotal'] += $cost;
+        $templateArgs['budgets'][$i]['FY'][$currFy]['expensestotal'] += $cost;
+      }
       $templateArgs['budgets'][$i]['FY'][$currFy][$expensetype] += $cost;
       $templateArgs['budgets'][$i]['ALL'][$expensetype] += $cost;
-      $templateArgs['budgets'][$i]['FY'][$currFy]['expensestotal'] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['total'] += $cost;
-      $templateArgs['budgets'][$i]['ALL']['expensestotal'] += $cost;
       $templateArgs['budgets'][$i]['ALL']['total'] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
       $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));

@@ -5,7 +5,7 @@ function projectBudgetDashboard(id, bData){
     
     // compute total for each expense type.
     bData.forEach(function(d){
-        d.total = (d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead).toFixed(3);});
+        d.total = (d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead+d.costs.equipment).toFixed(3);});
     
     // function to handle histogram.
     function histoGram(fD){
@@ -186,7 +186,7 @@ function projectBudgetDashboard(id, bData){
     }
     
     // calculate total frequency by segment for all state.
-    var tF = ['expenses','staffing','travel','overhead'].map(function(d){ 
+    var tF = ['expenses','staffing','travel','overhead','equipment'].map(function(d){ 
         return {type:d, costs: d3.sum(bData.map(function(t){ return t.costs[d];}))}; 
     });    
     

@@ -7,7 +7,7 @@
   {% for fy in project.FYs %}
     {% for projfy in project.FY %}
       {% if projfy.fy == fy %}
-        {"fy": "{{ fy }}", "costs": {"expenses": {{ projfy.expenses|number_format(2,'.','') }}, "staffing": {{ projfy.staffing|number_format(2,'.','') }}, "travel": {{ projfy.travel|number_format(2,'.','') }}, "overhead": {{ projfy.overhead|number_format(2,'.','') }} }, "funding": {{ projfy.funding|number_format(2,'.','') }} }
+        {"fy": "{{ fy }}", "costs": {"expenses": {{ projfy.expenses|number_format(2,'.','') }}, "staffing": {{ projfy.staffing|number_format(2,'.','') }}, "travel": {{ projfy.travel|number_format(2,'.','') }}, "overhead": {{ projfy.overhead|number_format(2,'.','') }}, "equipment": {{ projfy.equipmenttotal|number_format(2,'.','') }}}, "funding": {{ projfy.funding|number_format(2,'.','') }} }
       {% endif %}
     {% endfor %}
     {% if loop.last != true %}, {% endif %}{% endfor %}]}

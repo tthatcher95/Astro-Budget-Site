@@ -5,7 +5,7 @@ function projectBudgetDashboard(id, bData){
     
     // compute total for each expense type.
     bData.forEach(function(d){
-      d.total = (d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead).toFixed(3);});
+        d.total = (d.costs.expenses+d.costs.staffing+d.costs.travel+d.costs.overhead).toFixed(3);});
     
     // function to handle histogram.
     function histoGram(fD){

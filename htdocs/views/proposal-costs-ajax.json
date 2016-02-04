@@ -3,9 +3,13 @@
 {% endfor %}
 {"draw":0,"recordsTotal":{{ budgets|length }},"recordsFiltered":{{ budgets|length }},"data":[
 {% for project in budgets %}
-{"project":"{{ project.projectname }}", "status":"{{  statuscodes[project.status] }}", "budget":[
-{% for fy in project.FY|sort %}
-{"fy": "{{ fy.fy }}", "costs": {"expenses": {{ fy.expenses|number_format(2,'.','') }}, "staffing": {{ fy.staffing|number_format(2,'.','') }}, "travel": {{ fy.travel|number_format(2,'.','') }}, "overhead": {{ fy.overhead|number_format(2,'.','') }} }, "funding": {{ fy.funding|number_format(2,'.','') }} }
-{% if loop.last != true %}, {%endif %}{% endfor %}]}
-{% if loop.last != true %}, {%endif %}{% endfor %}]
+  {"project":"{{ project.projectname }}", "status":"{{  statuscodes[project.status] }}", "budget":[
+  {% for fy in project.FYs %}
+    {% for projfy in project.FY %}
+      {% if projfy.fy == fy %}
+        {"fy": "{{ fy }}", "costs": {"expenses": {{ projfy.expenses|number_format(2,'.','') }}, "staffing": {{ projfy.staffing|number_format(2,'.','') }}, "travel": {{ projfy.travel|number_format(2,'.','') }}, "overhead": {{ projfy.overhead|number_format(2,'.','') }} }, "funding": {{ projfy.funding|number_format(2,'.','') }} }
+      {% endif %}
+    {% endfor %}
+    {% if loop.last != true %}, {% endif %}{% endfor %}]}
+{% if loop.last != true %}, {% endif %}{% endfor %}]
 }

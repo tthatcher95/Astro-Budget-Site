@@ -679,9 +679,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $subtotal += $cost;
     }
     $templateArgs['costs'][$i]['overhead'] .= " - Total " . money_format('%(#8n', $subtotal);
+    $templateArgs['budgets'][$i]['FYs'] = array_unique($fiscalyears);
+    sort ($templateArgs['budgets'][$i]['FYs']);
   }
-  $templateArgs['budgets'][$i]['FYs'] = array_unique($fiscalyears);
-  sort ($templateArgs['budgets'][$i]['FYs']);
   
   return ($templateArgs);
 }

@@ -262,7 +262,7 @@
 
           $('#accordions').accordion( {heightStyle: 'content' });
 
-          figureCosts({{ proposals[0].proposalid }});
+          setTimeout(figureCosts({{ proposals[0].proposalid }}), 500);
         } );
 
         function saveProposal() {
@@ -369,7 +369,7 @@
           $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
           $("#warningDiv").show();
 
-          figureCosts({{ proposals[0].proposalid }});
+          setTimeout(figureCosts({{ proposals[0].proposalid }}), 500);
         }
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {
@@ -399,7 +399,7 @@
           $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
           $("#warningDiv").show();
 
-          figureCosts({{ proposals[0].proposalid }});
+          setTimeout(figureCosts({{ proposals[0].proposalid }}), 500);
 
           loadConferencesTable(true);
         }
@@ -431,11 +431,12 @@
           $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
           $("#warningDiv").show();
 
-          figureCosts({{ proposals[0].proposalid }});
+          setTimeout(figureCosts({{ proposals[0].proposalid }}), 750);
 
           loadExpensesTable(true);
         }
 
+        
       </script>
     </body>
 </html>

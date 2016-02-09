@@ -114,15 +114,17 @@
       }
 
       function conferenceRateSave() {
-        $.post("index.php", $("#rateForm").serialize());
+        $.post("index.php", $("#rateForm").serialize())
+          .always( function () {
 
-        $("#peopleedittabs").tabs( "option", "active", 0 );
-        $("#warningDiv").html("<p>Updated [" + $("#conferencerateid").val() + "]</p>");
-        $("#warningDiv").show();
+            $("#peopleedittabs").tabs( "option", "active", 0 );
+            $("#warningDiv").html("<p>Updated [" + $("#conferencerateid").val() + "]</p>");
+            $("#warningDiv").show();
+    
+            loadRateTable(true);
 
-        loadRateTable(true);
-
-        $("#conferenceedittabs").tabs( "option", "active", 0 );
+            $("#conferenceedittabs").tabs( "option", "active", 0 );
+          });
       }
     </script>
 

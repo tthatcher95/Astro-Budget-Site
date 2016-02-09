@@ -141,14 +141,16 @@
       }
 
       function salarySave() {
-        $.post("index.php", $("#salaryForm").serialize());
+        $.post("index.php", $("#salaryForm").serialize())
+          .always (function () {
 
-        loadSalaryTable(true);
+            loadSalaryTable(true);
 
-        $("#peopleedittabs").tabs( "option", "active", 0 );
-        $("#warningDiv").html("<p>Updated [" + $("#salaryid").val() + "] " + $("#saltitle").val() +
-                              " (" + $("#payplan").val() +")</p>");
-        $("#warningDiv").show();
+            $("#peopleedittabs").tabs( "option", "active", 0 );
+            $("#warningDiv").html("<p>Updated [" + $("#salaryid").val() + "] " + $("#saltitle").val() +
+                                  " (" + $("#payplan").val() +")</p>");
+            $("#warningDiv").show();
+          });
     }
 
     </script>

@@ -66,13 +66,15 @@
         }
 
         function saveConference() {
-          $.post("index.php", $("#conferenceForm").serialize());
+          $.post("index.php", $("#conferenceForm").serialize())
+            .always( function() {
 
-          loadConferencesTable(true);
+              loadConferencesTable(true);
 
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#conferenceid").val() + "] " + $("#meeting").val() + "</p>");
-          $("#warningDiv").show();
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated [" + $("#conferenceid").val() + "] " + $("#meeting").val() + "</p>");
+              $("#warningDiv").show();
+            });
         }
 
         $(document).ready(function() {

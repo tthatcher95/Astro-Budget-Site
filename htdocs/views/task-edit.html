@@ -120,19 +120,21 @@
       }
 
       function staffingSave() {
-        $.post("index.php", $("#staffingForm").serialize());
+        $.post("index.php", $("#staffingForm").serialize())
+          .always (function() {
 
-        loadStaffingTable(true);
+            loadStaffingTable(true);
 
-        loadTasksTable(true);
+            loadTasksTable(true);
 
-        $("#peopleedittabs").tabs( "option", "active", 0 );
-        $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +
-                              " (" + $("#fiscalyear").val() +")</p>");
-        $("#warningDiv").show();
+            $("#peopleedittabs").tabs( "option", "active", 0 );
+            $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +
+                                  " (" + $("#fiscalyear").val() +")</p>");
+            $("#warningDiv").show();
 
-        $("#taskedittabs").tabs( "option", "active", 0 );
-        figureCosts({{ task.proposalid }});
+            $("#taskedittabs").tabs( "option", "active", 0 );
+            figureCosts({{ task.proposalid }});
+          });
     }
 
     </script>

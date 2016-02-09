@@ -19,12 +19,32 @@
         </div>
         <div id="warningDiv" class="ui-corner-all ui-state-highlight" style="width=100px;align=right;"></div>
         <div id="editDialog" class="ui-widget"></div>
+        <div id="expensetypesTableDiv">
         <table id="expensetypesTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>Description</th></tr></thead>
         </table>
+        </div>
       </div>
 
       <script type="text/javascript" charset="utf-8">
+        function loadExpenseTypeTable(reload) {
+          if (reload) {
+            $('#expensetypesTable').dataTable().fnDestroy();
+          }
+
+          $('#expensetypesTableDiv').html("<table id='expensetypesTable' class='display' cellspacing='0' width='100%'>"+
+                                          "<thead><tr><th>Description</th></tr></thead></table>");
+
+          $('#expensetypesTable').dataTable( {
+            "processing": true,
+            "serverSide": false,
+            "autowidth": false,
+            "ajax": "index.php?view=expensetypes-list-json",
+            "lengthMenu": [[20, 40, 100, -1], [20, 40, 100, "All"]]
+          } );
+        }
+
+
         function editExpenseTypeDialog(expensetypeid) {
           $("#editDialog").load("index.php?view=expensetype-edit&expensetypeid=" + expensetypeid);
 
@@ -46,32 +66,21 @@
         }
 
         function saveExpensetype() {
-          $.post("index.php", $("#expensetypeForm").serialize());
+          $.post("index.php", $("#expensetypeForm").serialize())
+            .always (function() {
 
-          $('#expensetypesTable').dataTable().fnDestroy();
-          $('#expensetypesTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autowidth": false,
-            "ajax": "index.php?view=expensetypes-list-json",
-            "lengthMenu": [[20, 40, 100, -1], [20, 40, 100, "All"]]
-          } );
-
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated</p>");
-          $("#warningDiv").show();
+              loadExpenseTypeTable(true);
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated</p>");
+              $("#warningDiv").show();
+            });
         }
 
         $(document).ready(function() {
           $("#newButton").button();
           $("#warningDiv").hide();
-          $('#expensetypesTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autowidth": false,
-            "ajax": "index.php?view=expensetypes-list-json",
-            "lengthMenu": [[20, 40, 100, -1], [20, 40, 100, "All"]]
-          } );
+
+          loadExpenseTypeTable(false);
         } );
       </script>
     </body>

@@ -161,8 +161,8 @@
             ${{ budgets[0].FY[year]['Subawards/Consortium/Contractual Costs']|number_format(2,'.',',') }}</td>{% endfor %}
             <td>${{ budgets[0]['ALL']['Subawards/Consortium/Contractual Costs']|number_format(2,'.',',') }}</td></tr>
           <tr><th>Directed Funded Contracts (no USGS overhead)</th>{% for year in budgets[0].FYs %}<td>
-            ${{ budgets[0].FY[year]['Directed Funded Contracts']|number_format(2,'.',',') }}</td>{% endfor %}
-            <td>${{ budgets[0]['ALL']['Directed Funded Contracts']|number_format(2,'.',',') }}</td></tr>
+            ${{ budgets[0].FY[year]['Directed Funded Contracts (no USGS overhead)']|number_format(2,'.',',') }}</td>
+            {% endfor %}<td>${{ budgets[0]['ALL']['Directed Funded Contracts (no USGS overhead)']|number_format(2,'.',',') }}</td></tr>
           <tr><th>Equipment or Facilities Rental/User Fees</th>{% for year in budgets[0].FYs %}<td>
             ${{ budgets[0].FY[year]['Equipment or Facilities Rental/User Fees']|number_format(2,'.',',') }}</td>{% endfor %}
             <td>${{ budgets[0]['ALL']['Equipment or Facilities Rental/User Fees']|number_format(2,'.',',') }}</td></tr>

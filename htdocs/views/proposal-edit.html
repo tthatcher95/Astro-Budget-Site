@@ -262,7 +262,7 @@
 
           $('#accordions').accordion( {heightStyle: 'content' });
 
-          setTimeout(figureCosts({{ proposals[0].proposalid }}), 500);
+          figureCosts({{ proposals[0].proposalid }});
         } );
 
         function saveProposal() {
@@ -293,13 +293,15 @@
         }
 
         function saveFunding() {
-          $.post("index.php", $("#fundingForm").serialize());
+          $.post("index.php", $("#fundingForm").serialize())
+            .always (function() {
 
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#fiscalyear").val() + "]</p>");
-          $("#warningDiv").show();
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated [" + $("#fiscalyear").val() + "]</p>");
+              $("#warningDiv").show();
 
-          loadFundingTable(true);
+              loadFundingTable(true);
+            });
         }
 
         function editFBMSDialog(fbmsid) {
@@ -323,13 +325,15 @@
         }
 
         function saveFBMS() {
-          $.post("index.php", $("#fbmsForm").serialize());
+          $.post("index.php", $("#fbmsForm").serialize())
+            .always(function(){
 
-          loadFbmsTable(true);
+              loadFbmsTable(true);
 
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#fbmsid").val() + "] (" + $("#accountno").val() + ")</p>");
-          $("#warningDiv").show();
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated [" + $("#fbmsid").val() + "] (" + $("#accountno").val() + ")</p>");
+              $("#warningDiv").show();
+            });
         }
 
         function editTaskDialog (taskid) {
@@ -361,15 +365,17 @@
         }
 
         function saveTask () {
-          $.post("index.php", $("#taskForm").serialize());
+          $.post("index.php", $("#taskForm").serialize())
+            .always (function() {
 
-          loadTasksTable(true);
+              loadTasksTable(true);
 
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
-          $("#warningDiv").show();
-
-          setTimeout(figureCosts({{ proposals[0].proposalid }}), 500);
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
+              $("#warningDiv").show();
+    
+              figureCosts({{ proposals[0].proposalid }});
+           });
         }
 
         function editAttendeeDialog(proposalid, conferenceattendeeid) {
@@ -393,15 +399,17 @@
         }
 
         function saveAttendee() {
-          $.post("index.php", $("#conferenceAttendeeForm").serialize());
+          $.post("index.php", $("#conferenceAttendeeForm").serialize())
+            .always (function() {
 
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
-          $("#warningDiv").show();
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
+              $("#warningDiv").show();
 
-          setTimeout(figureCosts({{ proposals[0].proposalid }}), 500);
+              figureCosts({{ proposals[0].proposalid }});
 
-          loadConferencesTable(true);
+              loadConferencesTable(true);
+            });
         }
 
         function editExpenseDialog(expenseid) {
@@ -425,15 +433,17 @@
         }
 
         function saveExpense() {
-          $.post("index.php", $("#expenseForm").serialize());
+          $.post("index.php", $("#expenseForm").serialize())
+            .always (function () {
 
-          dialog.dialog("close");
-          $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
-          $("#warningDiv").show();
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
+              $("#warningDiv").show();
 
-          setTimeout(figureCosts({{ proposals[0].proposalid }}), 750);
+              figureCosts({{ proposals[0].proposalid }});
 
-          loadExpensesTable(true);
+              loadExpensesTable(true);
+          });
         }
 
         

@@ -638,8 +638,11 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['budgets'][$i]['ALL'][$expensetype] += $cost;
       $templateArgs['budgets'][$i]['FY'][$currFy]['total'] += $cost;
       $templateArgs['budgets'][$i]['ALL']['total'] += $cost;
-      $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
-      $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
+      if ($expensetype != 'Directed Funded Contracts (no USGS overhead)') {
+        # No overhead for these expenses
+        $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
+        $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
+      }
     }
     $templateArgs['budgets'][$i]['equipmentlist'] = array_unique($equipmentlist);
     ksort ($templateArgs['budgets'][$i]['equipmentlist']);

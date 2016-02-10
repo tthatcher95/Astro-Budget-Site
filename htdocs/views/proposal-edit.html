@@ -346,10 +346,9 @@
         function editTaskDialog (taskid) {
           if (taskid == 'new') {
             $.post("index.php", $("#newTaskForm").serialize())
-              .always( function() {
+              .always( function(data) {
               console.log("Inside post: " + data);
               return (editTaskDialog(data));
-
             });
           }
           console.log("Result is " + taskid);

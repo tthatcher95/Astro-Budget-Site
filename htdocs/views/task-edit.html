@@ -11,12 +11,13 @@
         <li><a href="#stafftab">Staffing</a></li>
       </ul>
     <div id="tasktab">
+        {% set taskid = 0 %}
         {% for task in tasks %}
           <form id="taskForm" action="index.php" method="GET">
             <input type="hidden" name="act" value="save"/>
             <input type="hidden" name="view" value="task-save"/>
             <input type="hidden" id="proposalid" name="proposalid" value="{{ task.proposalid }}"/>
-            <input type="hidden" id="taskid" name="taskid" value="{{ task.taskid }}"/>
+            <input type="hidden" id="taskid" name="taskid" value="{{ task.taskid }}"/>{% set taskid = task.taskid %}
             <table><tr><th>Task Name</th>
             <td><input type="text" name="taskname" id="taskname" value="{{ task.taskname }}" size="40"/></td></tr>
             <tr><td><a href='javascript:void(0)' onClick="staffingEdit({{ task.taskid }}, 'new')" id='newStaffButton'>New Staffing</a></td><td></td></tr>
@@ -79,7 +80,7 @@
           "processing": true,
           "serverSide": false,
           'autoWidth': false,
-          "ajax": "index.php?view=staffing-list-json&proposalid={{ tasks[0].proposalid }}&taskid={{ tasks[0].taskid }}"
+          "ajax": "index.php?view=staffing-list-json&proposalid={{ proposalid }}&taskid={{ taskid }}"
         } );
       }
       

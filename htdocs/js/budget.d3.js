@@ -9,7 +9,7 @@ function projectBudgetDashboard(id, bData){
     
     // function to handle histogram.
     function histoGram(fD){
-        var hG={},    hGDim = {t: 60, r: 0, b: 30, l: 0};
+        var hG={},    hGDim = {t: 80, r: 0, b: 30, l: 0};
         // hGDim.w = 500 - hGDim.l - hGDim.r, 
         hGDim.w = (100 * fD.length) - hGDim.l - hGDim.r, 
         hGDim.h = 250 - hGDim.t - hGDim.b;

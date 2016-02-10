@@ -991,6 +991,7 @@ function tasksView ($pbdb, $templateArgs) {
   }
 
   $templateArgs['view'] = 'tasks.html'; # TBD? probably will just be part of overall proposal view or JSON
+  $templateArgs['proposalid'] = $proposalid;
 
   return ($templateArgs);
 }

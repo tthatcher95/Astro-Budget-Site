@@ -1416,7 +1416,7 @@ class PBTables {
 
     # If $proposalid isset, search first with that $proposalid, if no results, do the search again 
     # where the proposalid is null (default rate for everything) and return that instead.
-    if (isset($proposalid)) {
+    if (is_numeric($proposalid)) {
       $proposalquery = $query . " WHERE proposalid=$proposalid order by effectivedate desc";
       $this->db->query($proposalquery);
       $results = $this->db->getResultArray();

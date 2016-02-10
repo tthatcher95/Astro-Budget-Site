@@ -1436,9 +1436,14 @@ class PBTables {
   }
 
   function formatDate ($effectivedate) {
-    $newtime = strtotime($effectivedate);
-    if ($newtime) {
-      $effectivedate = date('Y-m-d H:i:s', $newtime);
+    if (!isset($effectivedate) or $effectivedate == '') {
+      $effectivedate = date('Y-m-d H:i:s');
+    }
+    else {
+      $newtime = strtotime($effectivedate);
+      if ($newtime) {
+        $effectivedate = date('Y-m-d H:i:s', $newtime);
+      }
     }
 
     return $effectivedate;

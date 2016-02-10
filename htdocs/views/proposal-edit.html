@@ -18,6 +18,11 @@
         <div id="accordions">
           <h3 id='proposalTitle'>Proposal Details - {{ proposals[0].projectname }}</h3>
             <div>
+              <a href="index.php?view=proposal-budget-details&proposalid={{ proposals[0].proposalid }}" 
+                target='report' id="budgetDetailsButton">Budget Details</a>
+              <a href="index.php?view=proposal-nspires&proposalid={{ proposals[0].proposalid }}" 
+                target='report' id="nspiresButton">NSPIRES</a>
+              <p/>
               <form id="proposalForm" action="index.php" method="GET">
               <input type='hidden' name='proposalid' value='{{ proposals[0].proposalid }}'/>
               <input type='hidden' name='view' value='proposal-save'/>
@@ -252,6 +257,8 @@
           $('#newFBMSButton').button();
           $('#newConferenceButton').button();
           $('#newExpenseButton').button();
+          $('#budgetDetailsButton').button();
+          $('#nspiresButton').button();
 
           loadFundingTable(false);
           loadFbmsTable(false);

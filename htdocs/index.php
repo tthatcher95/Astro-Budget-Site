@@ -526,14 +526,14 @@ function costsSummaryView ($pbdb, $templateArgs) {
     }
   
     $subtotal = 0;
-    $templateArgs['costs'][$i]['staffing'] = "Tasks - ";
+    $templateArgs['costs'][$i]['staffing'] = "Tasks ";
     ksort($subtotals);
     foreach ($subtotals as $fy => $subcost) {
-      $templateArgs['costs'][$i]['staffing'] .= " $fy " . money_format('%(#8n', $subcost);
+      $templateArgs['costs'][$i]['staffing'] .= " - $fy " . money_format('%.2n', $subcost);
       $subtotal += $subcost;
     }
     
-    $templateArgs['costs'][$i]['staffing'] .= " Total " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['staffing'] .= " Total " . money_format('%.2n', $subtotal);
     $total += $subtotal;
     $subtotal = 0;
     $subtotals = array ();
@@ -603,11 +603,11 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['costs'][$i]['conferences'] = "Conferences/Training/Meetings ";
     ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
-      $templateArgs['costs'][$i]['conferences'] .= " - $fy " . money_format('%(#8n', $cost);
+      $templateArgs['costs'][$i]['conferences'] .= " - $fy " . money_format('%.2n', $cost);
       $subtotal += $cost;
     }
     
-    $templateArgs['costs'][$i]['conferences'] .= " - Total " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['conferences'] .= " - Total " . money_format('%.2n', $subtotal);
     $total += $subtotal;
     $subtotal = 0;
     $subtotals = array();
@@ -649,11 +649,11 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['costs'][$i]['expenses'] = "Expenses ";
     ksort($subtotals);
     foreach ($subtotals as $fy => $cost) {
-      $templateArgs['costs'][$i]['expenses'] .= " - $fy " . money_format('%(#8n', $cost);
+      $templateArgs['costs'][$i]['expenses'] .= " - $fy " . money_format('%.2n', $cost);
       $subtotal += $cost;
     }
     
-    $templateArgs['costs'][$i]['expenses'] .= " - Totals " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['expenses'] .= " - Totals " . money_format('%.2n', $subtotal);
     $total += $subtotal;
     $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " . 
                                              $templateArgs['proposals'][$i]['projectname'];
@@ -663,7 +663,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['costs'][$i]['funding'] = "Funding";
     ksort($totals);
     foreach ($totals as $fy => $cost) {
-      $templateArgs['costs'][$i]['proposal'] .= " - $fy " . money_format('%(#8n', $cost);
+      $templateArgs['costs'][$i]['proposal'] .= " - $fy " . money_format('%.2n', $cost);
       $subtotal += $cost;
 
       $fyfunding = 0;
@@ -676,11 +676,11 @@ function costsSummaryView ($pbdb, $templateArgs) {
       if ($fyfunding < $cost) {
        # do nothing for now, need to style heading to be red if underfunded
       }
-      $templateArgs['costs'][$i]['funding'] .= money_format('%(#8n', $fyfunding);
+      $templateArgs['costs'][$i]['funding'] .= money_format('%.2n', $fyfunding);
       $templateArgs['budgets'][$i]['FY'][$fy]['funding'] += $fyfunding;
         
     }
-    $templateArgs['costs'][$i]['proposal'] .= " - Totals " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['proposal'] .= " - Totals " . money_format('%.2n', $subtotal);
 
     # Simple over-ride for now
     $templateArgs['costs'][$i]['proposal'] = "Proposal Details - " .  $templateArgs['proposals'][$i]['projectname'];
@@ -689,10 +689,10 @@ function costsSummaryView ($pbdb, $templateArgs) {
     ksort($overhead);
     $subtotal = 0;
     foreach ($overhead as $fy => $cost) {
-      $templateArgs['costs'][$i]['overhead'] .= " - $fy " . money_format('%(#8n', $cost);
+      $templateArgs['costs'][$i]['overhead'] .= " - $fy " . money_format('%.2n', $cost);
       $subtotal += $cost;
     }
-    $templateArgs['costs'][$i]['overhead'] .= " - Total " . money_format('%(#8n', $subtotal);
+    $templateArgs['costs'][$i]['overhead'] .= " - Total " . money_format('%.2n', $subtotal);
     $templateArgs['budgets'][$i]['FYs'] = array_unique($fiscalyears);
     sort ($templateArgs['budgets'][$i]['FYs']);
   }

@@ -745,6 +745,8 @@ class PBTables {
       $query .= "meeting='$meeting'";
     }
 
+    $query .= " ORDER BY meeting";
+
     $this->db->query($query);
     $results = $this->db->getResultArray();
 

@@ -125,7 +125,6 @@
           .always (function() {
 
             loadStaffingTable(true);
-
             loadTasksTable(true);
 
             $("#peopleedittabs").tabs( "option", "active", 0 );
@@ -134,7 +133,7 @@
             $("#warningDiv").show();
 
             $("#taskedittabs").tabs( "option", "active", 0 );
-            figureCosts({{ task.proposalid }});
+            figureCosts({{ proposalid }});
           });
     }
 

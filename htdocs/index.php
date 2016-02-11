@@ -285,8 +285,8 @@ if (isset($_REQUEST['view'])) {
 }
 
 Twig_Autoloader::register();
-// $loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
-$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/dev/htdocs/views'); // dev
+$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
+// $loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/dev/htdocs/views'); // dev
 $twig = new Twig_Environment ($loader, 
   array ('cache' => '/var/www/budgetprops-dev/htdocs/views/cache',
          'auto_reload' => true));
@@ -619,8 +619,6 @@ function costsSummaryView ($pbdb, $templateArgs) {
                     $templateArgs['proposals'][$i]['expenses'][$j]['fiscalyear']);
       $cost = $templateArgs['proposals'][$i]['expenses'][$j]['amount'];
       $subtotals[$currFy] += $cost;
-      $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
-      $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['expenses'] += $cost;
       $expensetype = $templateArgs['proposals'][$i]['expenses'][$j]['type'];
@@ -640,8 +638,13 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['budgets'][$i]['ALL']['total'] += $cost;
       if ($expensetype != 'Directed Funded Contracts (no USGS overhead)') {
         # No overhead for these expenses
+        $totals[$currFy] += $cost;
+        $overhead[$currFy] += $cost * ($currOver / (100 - $currOver));
         $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
         $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
+      }
+      else {
+        $totals[$currFy] += $cost + ($cost * ($currOver / (100 - $currOver)));
       }
     }
     $templateArgs['budgets'][$i]['equipmentlist'] = array_unique($equipmentlist);
@@ -695,6 +698,14 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['costs'][$i]['overhead'] .= " - Total " . money_format('%.2n', $subtotal);
     $templateArgs['budgets'][$i]['FYs'] = array_unique($fiscalyears);
     sort ($templateArgs['budgets'][$i]['FYs']);
+
+    $templateArgs['costs'][$i]['overhead'] = "Overhead ";
+    foreach ($templateArgs['budgets'][$i]['FYs'] as $budgetFy) {
+      $templateArgs['costs'][$i]['overhead'] .= " - $budgetFy " .
+        money_format('%.2n', $templateArgs['budgets'][$i]['FY'][$budgetFy]['overhead']);
+    }
+    $templateArgs['costs'][$i]['overhead'] .= " - Total " .
+        money_format('%.2n', $templateArgs['budgets'][$i]['FY']['ALL']['overhead']);
   }
   
   return ($templateArgs);

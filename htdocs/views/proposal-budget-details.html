@@ -196,9 +196,9 @@
           <tr class="bordered"><th align="left" width="35%">G TOTAL DIRECT COSTS</th>
           {% for year in budgets[0].FYs %}
           <th>${{ (budgets[0].FY[year].staffing + budgets[0].FY[year].travel + 
-          budgets[0].FY[year].expensestotal)|number_format(2,'.',',') }}</th>{% endfor %}
-          <th>${{ (budgets[0].FY['ALL'].staffing + budgets[0].FY['ALL'].travel +
-          budgets[0].ALL.expensestotal)|number_format(2,'.',',') }}</th></tr>
+          budgets[0].FY[year].expensestotal + budgets[0].FY[year].equipmenttotal)|number_format(2,'.',',') }}</th>
+          {% endfor %}<th>${{ (budgets[0].FY['ALL'].staffing + budgets[0].FY['ALL'].travel +
+          budgets[0].ALL.expensestotal + budgets[0].ALL['Section C Equipment'])|number_format(2,'.',',') }}</th></tr>
 
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
@@ -210,9 +210,9 @@
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" width="35%">I DIRECT AND INDIRECT COSTS</th>
           {% for year in budgets[0].FYs %}<th>${{ (budgets[0].FY[year].staffing + budgets[0].FY[year].travel +
-                    budgets[0].FY[year].expensestotal + budgets[0].FY[year].overhead)|number_format(2,'.',',') }}</th>
+                    budgets[0].FY[year].expensestotal + budgets[0].FY[year].equipmenttotal + budgets[0].FY[year].overhead)|number_format(2,'.',',') }}</th>
           {% endfor %}<th>${{ (budgets[0].FY['ALL'].staffing + budgets[0].FY['ALL'].travel +
-                    budgets[0].ALL.expensestotal + budgets[0].FY['ALL'].overhead)|number_format(2,'.',',') }}</th></tr>
+                    budgets[0].ALL.expensestotal + budgets[0].ALL['Section C Equipment'] + budgets[0].FY['ALL'].overhead)|number_format(2,'.',',') }}</th></tr>
 
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
@@ -223,9 +223,10 @@
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" width="35%">K TOTAL COSTS</th>
           {% for year in budgets[0].FYs %}<th>${{ (budgets[0].FY[year].staffing + budgets[0].FY[year].travel +
-                    budgets[0].FY[year].expensestotal + budgets[0].FY[year].overhead)|number_format(2,'.',',') }}</th>
+                    budgets[0].FY[year].expensestotal + budgets[0].FY[year].overhead +
+                    budgets[0].FY[year].equipmenttotal)|number_format(2,'.',',') }}</th>
           {% endfor %}<th>${{ (budgets[0].FY['ALL'].staffing + budgets[0].FY['ALL'].travel +
-                    budgets[0].ALL.expensestotal + budgets[0].FY['ALL'].overhead)|number_format(2,'.',',') }}</th></tr>
+                    budgets[0].ALL.expensestotal + budgets[0].FY['ALL'].overhead + budgets[0].ALL['Section C Equipment'])|number_format(2,'.',',') }}</th></tr>
           </table>
         </div>
       </div>

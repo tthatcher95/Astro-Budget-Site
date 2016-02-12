@@ -48,9 +48,10 @@ function projectBudgetDashboard(id, bData){
             .on("mouseout",mouseout);// mouseout is defined below.
             
         //Create the costs labels above the rectangles.
-        bars.append("text").text(function(d){ return d3.format(",")(d[1])})
+        bars.append("text").text(function(d){ return "$" + d3.format(",.2f")(d[1])})
             .attr("x", function(d) { return x(d[0])+x.rangeBand()/2; })
             .attr("y", function(d) { return y(d[1])-5; })
+            .style("font-size", "13px")
             .attr("text-anchor", "middle");
         
         function mouseover(d){  // utility function to be called on mouseover.
@@ -85,7 +86,7 @@ function projectBudgetDashboard(id, bData){
 
             // transition the frequency labels location and change value.
             bars.select("text").transition().duration(500)
-                .text(function(d){ return d3.format(",")(d[1])})
+                .text(function(d){ return "$" + d3.format(",.2f")(d[1])})
                 .attr("y", function(d) {return y(d[1])-5; });            
         }        
         return hG;
@@ -160,7 +161,7 @@ function projectBudgetDashboard(id, bData){
 
         // create the third column for each segment.
         tr.append("td").attr("class",'legendCosts')
-            .text(function(d){ return d3.format(",")((d.costs).toFixed(3));});
+            .text(function(d){ return "$" + d3.format(",.2f")((d.costs).toFixed(3));});
 
         // create the fourth column for each segment.
         tr.append("td").attr("class",'legendPerc')
@@ -172,7 +173,7 @@ function projectBudgetDashboard(id, bData){
             var l = legend.select("tbody").selectAll("tr").data(nD);
 
             // update the costs.
-            l.select(".legendCosts").text(function(d){ return d3.format(",")((d.costs).toFixed(3));});
+            l.select(".legendCosts").text(function(d){ return "$" + d3.format(",.2f")((d.costs).toFixed(3));});
 
             // update the percentage column.
             l.select(".legendPerc").text(function(d){ return getLegend(d,nD);});        

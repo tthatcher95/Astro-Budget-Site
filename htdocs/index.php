@@ -285,8 +285,8 @@ if (isset($_REQUEST['view'])) {
 }
 
 Twig_Autoloader::register();
-$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
-// $loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/dev/htdocs/views'); // dev
+// $loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
+$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/dev/htdocs/views'); // dev
 $twig = new Twig_Environment ($loader, 
   array ('cache' => '/var/www/budgetprops-dev/htdocs/views/cache',
          'auto_reload' => true));

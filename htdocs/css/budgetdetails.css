@@ -15,6 +15,10 @@ tr.bordered td {
   border-bottom: 2px solid #000;
 }
 
+th.bordered {
+  border-bottom: 2px solid #000;
+}
+
 .blank {
   height: 25px;
 }

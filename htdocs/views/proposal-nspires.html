@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Proposal Budget Details</title>
-        <link rel="stylesheet" href="css/budgetdetails.css"/>
+        <title>Proposal NSPIRES Report</title>
+        <link rel="stylesheet" href="css/budgetnspires.css"/>
     </head>
     {% for error in debug %}
       <pre>error.msg</pre>
@@ -16,6 +16,27 @@
           {% endfor %}</h4>
           <h3>PROJECT NAME:</h3>
           <h4>{{ proposals[0].projectname }}</h4>
+
+          <h4>Table of FTE</h4>
+          <table width=100%>
+          <tr class="splits"><th align="left" >Person</th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>TOTAL</th></tr>
+          {% for person in proposals[0].people %}
+          {% set total = 0 %}
+          <tr class="splits"><td>{{ person.name }}</td>{% for year in budgets[0].FYs %}<th>{{ (person[year].taskhours/person[year].authhours)|number_format(2,'.','') }}{% set total = total + (person[year].taskhours/person[year].authhours)|number_format(2,'.','') %}</th>{% endfor %}
+          <th>{{ total|number_format(2,'.','') }}</th></tr>
+          {% endfor %}
+          </table>
+          <p/>
+          <h4>Table of Work Weeks</h4>
+          <table width=100%>
+          <tr class="splits"><th align="left" >Person</th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>TOTAL</th></tr>
+          {% for person in proposals[0].people %}
+          {% set total = 0 %}
+          <tr class="splits"><td>{{ person.name }}</td>{% for year in budgets[0].FYs %}<th>{{ (person[year].taskhours/40)|number_format(2,'.','') }}{% set total = total + (person[year].taskhours/40)|number_format(2,'.','') %}</th>{% endfor %}
+          <th>{{ total|number_format(2,'.','') }}</th></tr>
+          {% endfor %}
+          </table>
+          <p/><p/>
 
           <table width=100%>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>

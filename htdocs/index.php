@@ -84,7 +84,13 @@ if (isset($_REQUEST['view'])) {
       $view = $templateArgs['view'];
       break;
     case 'proposal-nspires':
-      $templateArgs['nspires'] = true;
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'proposal-nspires.html';
+      $view = $templateArgs['view'];
+      break;
     case 'proposal-budget-details':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown

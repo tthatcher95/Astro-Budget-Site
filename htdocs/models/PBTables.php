@@ -1187,7 +1187,7 @@ class PBTables {
       $needAnd = true;
     }
 
-    $query .= " ORDER BY s.fiscalyear ASC";
+    $query .= " ORDER BY p.name, s.fiscalyear ASC";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();

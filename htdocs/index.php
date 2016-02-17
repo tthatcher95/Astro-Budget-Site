@@ -453,6 +453,12 @@ function proposalView ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function peopleCompare ($a, $b) {
+  if ($a['name'] === $b['name']) { return 0; }
+
+  return ($a['name'] < $b['name']) ? -1: 1;
+}
+
 function costsSummaryView ($pbdb, $templateArgs) {
   error_reporting( error_reporting() & ~E_NOTICE );
   setlocale(LC_MONETARY, 'en_US');
@@ -530,6 +536,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
       }
     }
+
+    usort ($templateArgs['proposals'][$i]['people'], "peopleCompare");
   
     $subtotal = 0;
     $templateArgs['costs'][$i]['staffing'] = "Tasks ";

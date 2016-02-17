@@ -9,7 +9,7 @@ $pbdb = new PBTables();
 $view = 'default.html'; # Change to default landing page
 
 $templateArgs = array('navigation' => array (
-  array ('caption' => 'Home', 'href' => 'index.php'),
+  # array ('caption' => 'Home', 'href' => 'index.php'),
   array ('caption' => 'Projects', 'href' => 'index.php?view=proposals'),
   array ('caption' => 'People', 'href' => 'index.php?view=people'),
   array ('caption' => 'Conferences/Travel', 'href' => 'index.php?view=conferences'),
@@ -20,8 +20,12 @@ $templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Reje
 $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
 
 # Handle GET options
-if (isset($_REQUEST['view'])) {
-  switch($_REQUEST['view']) {
+$viewSwitch = 'proposals';
+if (isset($_REQUEST['view'])) { $viewSwitch = $_REQUEST['view']; }
+
+if (true) {
+  # switch($_REQUEST['view']) {
+  switch($viewSwitch) {
     case 'budget-graphs':
       $templateArgs['view'] = 'budget-graphs.html';
       $view = $templateArgs['view'];

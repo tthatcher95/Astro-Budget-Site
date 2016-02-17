@@ -10,7 +10,7 @@
     <body>
       <div class="container">
         <div id="title">
-          <h1>DETAILED BUDGETARY INFORMATION</h1>
+          <h2>NSPIRES BUDGETARY INFORMATION</h2>
           <h3>PRINCIPAL INVESTIGATOR:</h3>
           <h4>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
           {% endfor %}</h4>
@@ -38,30 +38,27 @@
           </table>
           <p/><p/>
 
-          <table width=100%>
-          <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
-          <tr><th align="left" >A + B SALARIES/WAGES/BENEFITS</th>
-          {% for year in budgets[0].FYs %}<th>${{ proposals[0].peopletotals[year].total|number_format(2,'.',',') }}</th>{% endfor %}
-          <th>${{ proposals[0].peopletotals['ALL'].total|number_format(2,'.',',') }}</th></tr>
+          <table>
+          <col>{% for year in budgets[0].FYs %}<col class="divide"><col><col><col><col>{% endfor %}
+          <tr><th></th>{% set budgetPeriod=1 %}{% for year in budgets[0].FYs %}<td>&nbsp;&nbsp;</td><th>Budget Period {{ budgetPeriod}}</th>
+          <th>({{ year }})</th><td></td><td></td>{% set budgetPeriod = budgetPeriod + 1 %}{% endfor %}</tr>
+          <tr><th align="left" >A Senior/Key People</th>
+          {% for year in budgets[0].FYs %}<td></td><td></td><td></td><td></td>
+          <td>${{ proposals[0].peopletotals[year].total|number_format(2,'.',',') }}</td>{% endfor %}</tr>
+          <tr><th align="left" ><em>Name (Role)</em></th>
+          {% for year in budgets[0].FYs %}<td></td><th>Months</th><th>Requested Salary</th><th>Fringe Benefits</th><th>Funds Requested</th>
+          {% endfor %}</tr>
           {% for person in proposals[0].people %}
-          <tr><th class="bordered">{{ person.name }}</th>{% for year in budgets[0].FYs %}<td></td>{% endfor %}
-          <td></td></tr>
-          <tr><th><i>Total Hours</i></th>{% for year in budgets[0].FYs %}
-            <td align="right">{{ person[year].hours }}</td>{% endfor %}
-            <td>{{ person['ALL'].hours }}</td></tr>
-          <tr><th><i>(FTE)</i></th>{% for year in budgets[0].FYs %}
-            <td align="right">{{ (person[year].hours/person[year].authhours)|number_format(2,'.',',') }}
-            </td>{% endfor %}<td></td></tr>
-          <tr><th><i>Est Salary</i></th>{% for year in budgets[0].FYs %}
-            <td align="right">${{ person[year].salaryreqcosts|number_format(2,'.',',') }}
-            </td>{% endfor %}<td>${{ person['ALL'].salaryreqcosts|number_format(2, '.', ',') }}</tr>
-          <tr><th><i>Est Benefits</i></th>{% for year in budgets[0].FYs %}
-            <td align="right">${{ person[year].benefitsreqcosts|number_format(2,'.',',') }}
-            </td>{% endfor %}<td>${{ person['ALL'].benefitsreqcosts|number_format(2, '.', ',') }}</tr>
-          <tr><th><i>Total</i></th>{% for year in budgets[0].FYs %}
-            <td align="right">${{ (person[year].benefitsreqcosts + person[year].salaryreqcosts)|number_format(2,'.',',') }}
-            </td>{% endfor %}<td>${{ (person['ALL'].benefitsreqcosts + person['ALL'].salaryreqcosts)|number_format(2,'.',',') }}</td></tr>
+          <tr class="splits"><th>{{ person.name }}</th>{% for year in budgets[0].FYs %}<td></td>
+          <td>{{ person[year].taskhours/160|number_format(2,'.',',') }}</td><td>${{ person[year].salaryreqcosts|number_format(2,'.',',') }}</td>
+          <td>${{ person[year].benefitsreqcosts|number_format(2,'.',',') }}</td>
+          <td>${{ (person[year].salaryreqcosts + person[year].benefitsreqcosts)|number_format(2,'.',',') }}</td>
           {% endfor %}
+          </tr>
+          {% endfor %}
+          </table>
+          <p/><p/>
+          <table>
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" >C EQUIPMENT</th>

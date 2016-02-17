@@ -27,6 +27,7 @@
           {% endfor %}
           </table>
           <p/>
+
           <h4>Table of Work Weeks</h4>
           <table width=100%>
           <tr class="splits"><th align="left" >Person</th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>TOTAL</th></tr>
@@ -42,7 +43,7 @@
           <col>{% for year in budgets[0].FYs %}<col class="divide"><col><col><col><col>{% endfor %}
           <tr><th></th>{% set budgetPeriod=1 %}{% for year in budgets[0].FYs %}<td>&nbsp;&nbsp;</td><th>Budget Period {{ budgetPeriod}}</th>
           <th>({{ year }})</th><td></td><td></td>{% set budgetPeriod = budgetPeriod + 1 %}{% endfor %}</tr>
-          <tr><th align="left" >A Senior/Key People</th>
+          <tr><th align="left" style="width: 400px;" >A Senior/Key People</th>
           {% for year in budgets[0].FYs %}<td></td><td></td><td></td><td></td>
           <td>${{ proposals[0].peopletotals[year].total|number_format(2,'.',',') }}</td>{% endfor %}</tr>
           <tr><th align="left" ><em>Name (Role)</em></th>
@@ -56,21 +57,15 @@
           {% endfor %}
           </tr>
           {% endfor %}
-          </table>
-          <p/><p/>
-          <table>
-          <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
-          <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
-          <tr class="bordered"><th align="left" >C EQUIPMENT</th>
-          {% for year in budgets[0].FYs %}<th>${{ budgets[0].FY[year].equipmenttotal|number_format(2,'.',',') }}</th>
-          {% endfor %}<th>${{ budgets[0].ALL['Section C Equipment']|number_format(2,'.',',') }}</th></tr>
+          <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td><td></td><td></td><td></td><td></td>{% endfor %}</tr>
+          <tr class="bordered"><th>C. Equipment Description</th>{% for year in budgets[0].FYs %}<td></td><td></td><td></td><td></td>
+          <th class="bordered">${{ budgets[0].FY[year].equipmenttotal|number_format(2,'.',',') }}</th>{% endfor %}</tr>
           {% for equipment in budgets[0].equipmentlist %}
-          <tr><th>{{ equipment }}</th>{% set eqtotal = 0 %}
-          {% for year in budgets[0].FYs %}
-          <td>${{ budgets[0].FY[year].equipment[equipment]|number_format(2,'.',',') }}</td>
-          {% set eqtotal = eqtotal + budgets[0].FY[year].equipment[equipment] %}{% endfor %}
-          <td>${{ eqtotal|number_format(2,'.',',') }}</td></tr>
+          <tr class="splits"><th>{{ equipment }}</th>{% for year in budgets[0].FYs %}
+          <td></td><td></td><td></td><td></td><td>${{ budgets[0].FY[year].equipment[equipment]|number_format(2,'.',',') }}</td>{% endfor %}</tr>
           {% endfor %}
+
+          </table><table>
 
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>

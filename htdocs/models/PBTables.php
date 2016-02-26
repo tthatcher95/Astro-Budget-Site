@@ -539,6 +539,58 @@ class PBTables {
     return ($results);
   }
 
+  function copyProposal ($proposalid) {
+    # Get current proposal
+    $proposals = $this->getProposals ($proposalid, null, null, null, null, null, null);
+
+    $newproposalid = $this->addProposal ($proposals[0]['peopleid'], 'Copy of ' . $proposals[0]['projectname'], 
+                                         $proposals[0]['proposalnumber'], $proposals[0]['awardnumber'], 
+                                         $proposals[0]['programid'], $proposals[0]['perfperiodstart'], 
+                                         $proposals[0]['perfperiodend'], 6);
+
+    # Conferences/travel
+    $conferences = $this->getConferenceAttendees (null, null, $proposalid, null);
+    for ($i = 0; $i < count($conferences); $i++) {
+      $this->addConferenceAttendee ($conferences[$i]['conferenceid'], $newproposalid, $conferences[$i]['travelers'], 
+                                    $conferenecs[$i]['meetingdays'], $conferences[$i]['traveldays'], 
+                                    $conferences[$i]['startdate'], $conferences[$i]['rentalcars']);
+    }
+
+    # Expenses
+    $expenses = $this->getExpenses (null, $proposalid, null, null);
+    for ($i = 0; $i < count($expenses); $i++) {
+      $this->addExpense ($newproposalid, $expenses[$i]['expensetypeid'], $expenses[$i]['description'], 
+                         $expenses[$i]['amount'], $expenses[$i]['fiscalyear']);
+    }
+
+    # Tasks/Staffing
+    $tasks = $this->getTasks (null, $proposalid, null);
+    for ($i = 0; $i < count($tasks); $i++) {
+      $newtaskid = $this->addTask ($newproposalid, $tasks[$i]['taskname']);
+      $staffing = $this->getStaffing (null, $tasks[$i]['taskid'], null, null);
+      for ($j = 0; $j < count($staffing); $j++) {
+        $this->addStaffing ($newtaskid, $staffing[$j]['peopleid'], $staffing[$j]['fiscalyear'], 
+                            $staffing[$j]['q1hours'], $staffing[$j]['q2hours'], $staffing[$j]['q3hours'], 
+                            $staffing[$j]['q4hours'], $staffing[$j]['flexhours']);
+      }
+    }
+
+    # Funding
+    $funding = $this->getFunding (null, $proposalid);
+    for ($i = 0; $i < count($funding); $i++) {
+      $this->addFunding ($newproposalid, $funding[$i]['fiscalyear'], $funding[$i]['newfunding'], 
+                         $funding[$i]['carryover']);
+    }
+
+    # FBMS
+    $fbms = $this->getFBMSAccounts (null, null, $proposalid);
+    for ($i = 0; $i < count($fbms); $i++) {
+      $this->addFBMSAccount ($fbms[$i]['accountno'], $newproposalid);
+    }
+
+    return ($newproposalid);
+  }
+
   function deleteProposal ($proposalid) {
     if (!isset($proposalid)) { return "A proposal ID is required to delete a proposal"; }
     $query = "DELETE FROM proposals WHERE proposalid=$proposalid";

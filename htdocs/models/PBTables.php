@@ -552,7 +552,7 @@ class PBTables {
     $conferences = $this->getConferenceAttendees (null, null, $proposalid, null);
     for ($i = 0; $i < count($conferences); $i++) {
       $this->addConferenceAttendee ($conferences[$i]['conferenceid'], $newproposalid, $conferences[$i]['travelers'], 
-                                    $conferenecs[$i]['meetingdays'], $conferences[$i]['traveldays'], 
+                                    $conferences[$i]['meetingdays'], $conferences[$i]['traveldays'], 
                                     $conferences[$i]['startdate'], $conferences[$i]['rentalcars']);
     }
 

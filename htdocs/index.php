@@ -76,6 +76,8 @@ if (true) {
       $templateArgs['view'] = 'proposal-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'proposal-copy':
+      $templateArgs = proposalCopy($pbdb, $templateArgs);
     case 'proposal-edit':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
@@ -759,6 +761,21 @@ function proposalSave ($pbdb, $templateArgs) {
   $templateArgs['perfperiodstart'] = $perfperiodstart;
   $templateArgs['perfperiodend']   = $perfperiodend;
   $templateArgs['status']          = $status;
+
+  return ($templateArgs);
+}
+
+function proposalCopy ($pbdb, $templateArgs) {
+  $oldproposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+
+  if ($oldproposalid == null) {
+    return ($templateArgs);
+  }
+
+  $proposalid = $pbdb->copyProposal ($oldproposalid);
+
+  $_REQUEST['proposalid'] = $proposalid;
+  $templateArgs['proposalid'] = $proposalid;
 
   return ($templateArgs);
 }

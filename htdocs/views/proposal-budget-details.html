@@ -10,12 +10,12 @@
     <body>
       <div class="container">
         <div id="title">
-          <h1>DETAILED BUDGETARY INFORMATION</h1>
-          <h3>PRINCIPAL INVESTIGATOR:</h3>
-          <h4>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
-          {% endfor %}</h4>
-          <h3>PROJECT NAME:</h3>
-          <h4>{{ proposals[0].projectname }}</h4>
+          <p>DETAILED BUDGETARY INFORMATION</p>
+          <p>PRINCIPAL INVESTIGATOR:</p>
+          <p>{% for person in people %}{% if person.peopleid == proposals[0].peopleid %}{{ person.name }}{% endif %}
+          {% endfor %}</p>
+          <p>PROJECT NAME:</p>
+          <p>{{ proposals[0].projectname }}</p>
 
           <table width=100%>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>

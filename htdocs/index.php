@@ -492,12 +492,15 @@ function costsSummaryView ($pbdb, $templateArgs) {
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$x]['name'];
         
       }
+      $templateArgs['proposals'][$i]['tasks'][$j]['stafflist'] = array();
+      $templateArgs['proposals'][$i]['tasks'][$j]['fylist'] = array();
       for ($k = 0; $k < count($templateArgs['proposals'][$i]['tasks'][$j]['staffing']); $k++) {
         $currOver = getOverhead ($pbdb, $templateArgs,
                       $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['fiscalyear']);
         $currFy = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['FY'];
         array_push ($fiscalyears, $currFy);
         $peopleid = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['peopleid'];
+        $name = $templateArgs['proposals'][$i]['people'][$peopleid]['name'];
 
         $taskhours = 
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['q1hours'] +
@@ -517,6 +520,10 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['taskhours'] += $taskhours;
         $staffcosts = ($estsalary * $lafhours) + ($estbenefits * $lafhours);
         $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['staffcosts'] = $staffcosts;
+        array_push($templateArgs['proposals'][$i]['tasks'][$j]['stafflist'], $name);
+        $templateArgs['proposals'][$i]['tasks'][$j]['taskhourlist'] += $taskhours;
+        $templateArgs['proposals'][$i]['tasks'][$j]['tasktotalcost'] += $staffcosts;
+        array_push($templateArgs['proposals'][$i]['tasks'][$j]['fylist'], $currFy);
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['staffcosts'] += $staffcosts;
         $currSalary = $taskhours * $estsalary;
         $currBenefits = $staffcosts - $currSalary;
@@ -541,6 +548,12 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['budgets'][$i]['FY'][$currFy]['overhead'] += $cost * ($currOver / (100 - $currOver));
         $templateArgs['budgets'][$i]['FY']['ALL']['overhead'] += $cost * ($currOver / (100 - $currOver));
       }
+      $stafflist = array_unique($templateArgs['proposals'][$i]['tasks'][$j]['stafflist']);
+      sort($stafflist);
+      $templateArgs['proposals'][$i]['tasks'][$j]['stafflist'] = join (' / ', $stafflist);
+      $fylist = array_unique($templateArgs['proposals'][$i]['tasks'][$j]['fylist']);
+      sort($fylist);
+      $templateArgs['proposals'][$i]['tasks'][$j]['fylist'] = join(', ', $fylist);
     }
 
     usort ($templateArgs['proposals'][$i]['people'], "peopleCompare");

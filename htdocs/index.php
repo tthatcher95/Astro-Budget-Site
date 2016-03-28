@@ -118,6 +118,10 @@ if (true) {
       $templateArgs = fbmsSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'fbms-delete':
+      $templateArgs = fbmsDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'overhead-list-json':
       $templateArgs = overheadView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -197,6 +201,10 @@ if (true) {
       $templateArgs = conferenceAttendeeSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'conference-attendee-delete':
+      $templateArgs = conferenceAttendeeDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'expensetypes':
       $templateArgs = expensetypesView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -229,6 +237,10 @@ if (true) {
       $templateArgs = fundingSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'funding-delete':
+      $templateArgs = fundingDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'tasks-list-json':
       $templateArgs = proposalView($pbdb, $templateArgs);
       $templateArgs = tasksView($pbdb, $templateArgs);
@@ -248,6 +260,10 @@ if (true) {
       $templateArgs = taskSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'task-delete':
+      $templateArgs = taskDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'staffing-edit-json':
       $templateArgs = staffingView($pbdb, $templateArgs);
       $templateArgs['view'] = 'staffing-edit-ajax.json';
@@ -264,6 +280,10 @@ if (true) {
       $templateArgs = staffingSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'staffing-delete':
+      $templateArgs = staffingDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'expense-list-json':
       $templateArgs = expensetypesView($pbdb, $templateArgs);
       $templateArgs = proposalView($pbdb, $templateArgs);
@@ -278,6 +298,10 @@ if (true) {
       break;
     case 'expense-save':
       $templateArgs = expenseSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'expense-delete':
+      $templateArgs = expenseDelete($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'proposal-cost-titles-json':
@@ -889,6 +913,22 @@ function fbmsSave ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function fbmsDelete ($pbdb, $templateArgs) {
+  $fbmsid     = (isset($_REQUEST['fbmsid'])? $_REQUEST['fbmsid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  
+  if ($fbmsid != null) {
+    $pbdb->deleteFBMSAccount ($fbmsid);
+  }
+
+  $templateArgs['fbmsid'] = $fbmsid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['deleteid'] = $fbmsid;
+  $templateArgs['view'] = 'delete-result.html';
+
+  return ($templateArgs);
+}
+
 function overheadView ($pbdb, $templateArgs) {
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $overheadid = (isset($_REQUEST['overheadid'])? $_REQUEST['overheadid'] : null);
@@ -1027,6 +1067,22 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function conferenceAttendeeDelete ($pbdb, $templateArgs) {
+  $conferenceattendeeid = (isset($_REQUEST['conferenceattendeeid'])? $_REQUEST['conferenceattendeeid'] : null);
+  $proposalid   = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+
+  if ($conferenceattendeeid != null) {
+    $pbdb->deleteConferenceAttendee ($conferenceattendeeid);
+  }
+
+  $templateArgs['conferenceattendeeid'] = $conferenceattendeeid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['deleteid'] = $conferenceattendeeid;
+  $templateArgs['view'] = 'delete-result.html';
+
+  return ($templateArgs);
+}
+
 function tasksView ($pbdb, $templateArgs) {
   $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
@@ -1076,6 +1132,24 @@ function taskSave ($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function taskDelete ($pbdb, $templateArgs) {
+  $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+
+  # TBD - need to loop through staffing and delete it first
+
+  if ($taskid != null) {
+    $pbdb->deleteTask($taskid);
+  }
+
+  $templateArgs['taskid'] = $taskid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['deleteid'] = $taskid;
+  $templateArgs['view'] = 'delete-result.html';
+
+  return ($templateArgs);
+}
+
 function staffingView ($pbdb, $templateArgs) {
   $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
   $staffingid = (isset($_REQUEST['staffingid'])? $_REQUEST['staffingid'] : null);
@@ -1116,6 +1190,22 @@ function staffingSave ($pbdb, $templateArgs) {
   $templateArgs['flexhours']  = $flexhours;
 
   $templateArgs['view'] = 'staffing-save-result.html';
+
+  return ($templateArgs);
+}
+
+function staffingDelete ($pbdb, $templateArgs) {
+  $staffingid = (isset($_REQUEST['staffingid'])? $_REQUEST['staffingid'] : null);
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+
+  if ($staffingid != null) {
+    $pbdb->deleteStaffing($staffingid);
+  }
+
+  $templateArgs['staffingid'] = $staffingid;
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['deleteid'] = $staffingid;
+  $templateArgs['view'] = 'delete-result.html';
 
   return ($templateArgs);
 }
@@ -1185,6 +1275,22 @@ function expenseSave ($pbdb, $templateArgs) {
   $templateArgs['fiscalyear']   = $fiscalyear;
 
   $templateArgs['view'] = 'expense-save-result.html';
+
+  return ($templateArgs);
+}
+
+function expenseDelete ($pbdb, $templateArgs) {
+  $proposalid    = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $expenseid     = (isset($_REQUEST['expenseid'])? $_REQUEST['expenseid'] : null);
+
+  if ($expenseid != null) {
+    $pbdb->deleteExpense($expenseid);
+  }
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['expenseid'] = $expenseid;
+  $templateArgs['deleteid'] = $expenseid;
+  $templateArgs['view'] = 'delete-result.html';
 
   return ($templateArgs);
 }

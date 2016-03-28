@@ -880,6 +880,22 @@ function fundingSave($pbdb, $templateArgs) {
   return ($templateArgs);
 }
 
+function fundingDelete ($pbdb, $templateArgs) {
+  $proposalid    = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $fundingid     = (isset($_REQUEST['fundingid'])? $_REQUEST['fundingid'] : null);
+
+  if ($fundingid != null) {
+    $pbdb->deleteFunding($fundingid);
+  }
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['fundingid'] = $fundingid;
+  $templateArgs['deleteid'] = $fundingid;
+  $templateArgs['view'] = 'delete-result.html';
+
+  return ($templateArgs);
+}
+
 function fbmsView ($pbdb, $templateArgs) {
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $fbmsid     = (isset($_REQUEST['fbmsid'])? $_REQUEST['fbmsid'] : null);

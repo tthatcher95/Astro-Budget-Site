@@ -23,7 +23,7 @@ function loadFundingTable (reload, proposalid) {
   }
 
   $('#fundingTableDiv').html("<table id='fundingTable' class='display' cellspacing='0' width='100%'>" +
-    "<thead><tr><th>FY</th><th>New Funding</th><th>Carryover</th></tr></thead></table>");
+    "<thead><tr><th>FY</th><th>New Funding</th><th>Carryover</th><th>&nbsp;</th></tr></thead></table>");
 
   $('#fundingTable').dataTable( {
     "processing": true,
@@ -157,6 +157,32 @@ function saveFunding(proposalid) {
 
       loadFundingTable(true, proposalid);
     });
+}
+
+function deleteFundingDialog(fundingid, proposalid) {
+  var fy;
+
+  $.getJSON( "index.php?view=funding-list-json&proposalid=" + proposalid + "&fundingid=" + fundingid, function( data ) {
+    var pattern = />(.+)<\/a>/i;
+    fy = pattern.exec(data.data[0][0])[1];
+    $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+                        "<body><h2>Are you sure you want to delete funding for " + fy + "?</h2></body></html>");
+  });
+
+  dialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 200,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Delete Funding": function () { deleteFunding(fundingid, proposalid); },
+      Cancel: function () {
+        dialog.dialog("close");
+      }
+    }
+  });
+
+  dialog.dialog("open");
 }
 
 function deleteFunding(fundingid, proposalid) {

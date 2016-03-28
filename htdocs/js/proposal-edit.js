@@ -92,7 +92,7 @@ function loadConferencesTable (reload, proposalid) {
   $('#conferencesTableDiv').html("<table id='conferencesTable' class='display' cellspace='0' width='100%'>" +
     "<thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>FY</th>" +
     "<th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th>" +
-    "<th>Registration</th><th>per diem<br/>w/ Lodging</th><th>Total</th></tr></thead></table>");
+    "<th>Registration</th><th>per diem<br/>w/ Lodging</th><th>Total</th><th>&nbsp;</th></tr></thead></table>");
 
   $('#conferencesTable').dataTable( {
     'processing': true,
@@ -302,8 +302,36 @@ function saveAttendee(proposalid) {
     });
 }
 
+function deleteAttendeeDialog(conferenceattendeeid, proposalid) {
+  var description;
+
+  $.getJSON( "index.php?view=conference-attendee-list-json&proposalid=" + proposalid + 
+      "&conferenceattendeeid=" + conferenceattendeeid, function( data ) {
+    var pattern = />(.+)<\/a>/i;
+    description = pattern.exec(data.data[0][0])[1];
+    $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+                        "<body><h2>Are you sure you want to delete trip " + description + "?</h2></body></html>");
+  });
+
+  dialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 200,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Delete Trip": function () { deleteAttendee(conferenceattendeeid, proposalid); },
+      Cancel: function () {
+        dialog.dialog("close");
+      }
+    }
+  });
+
+  dialog.dialog("open");
+}
+
+
 function deleteAttendee(attendeeid, proposalid) {
-  $.get("index.php?view=attendee-delete&attendeeid=" + attendeeid + "&proposalid=" + proposalid)
+  $.get("index.php?view=conference-attendee-delete&conferenceattendeeid=" + attendeeid + "&proposalid=" + proposalid)
     .always (function() {
       dialog.dialog("close");
       $("#warningDiv").html("<p>Deleted [" + attendeeid + "]</p>");

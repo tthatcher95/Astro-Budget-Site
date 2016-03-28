@@ -4,6 +4,7 @@
         <title>Proposal Budget for {{ proposals[0].projectname }} </title>
         {% include 'menu-header.html' %}
         {% include 'graphs-header.html' %}
+        <script src="js/proposal-edit.js"></script>
     </head>
     {% for error in debug %}
       <pre>error.msg</pre>
@@ -65,7 +66,7 @@
             </div>
           <h3 id='fundingTitle' >Funding</h3>
             <div id='fundingDiv' style='height: 400px;'>
-              <a href='javascript:void(0)' onClick="editFundingDialog('new')" id='newFundingButton'>New</a><p/>
+              <a href='javascript:void(0)' onClick="editFundingDialog('new', {{ proposals[0].proposalid }})" id='newFundingButton'>New</a><p/>
               <div id="fundingTableDiv">
               <table id='fundingTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>FY</th><th>New Funding</th><th>Carryover</th></tr></thead>
@@ -74,7 +75,7 @@
             </div>
           <h3 id='fbmsTitle' >FMBS Accounts</h3>
             <div id='accountingDiv' style='height: 400px;'>
-              <a href='javascript:void(0)' onClick="editFBMSDialog('new')" id='newFBMSButton'>New</a><p/>
+              <a href='javascript:void(0)' onClick="editFBMSDialog('new', {{ proposals[0].proposalid }})" id='newFBMSButton'>New</a><p/>
               <div id="fbmsTableDiv">
               <table id='fbmsTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>Account No.</th></tr></thead>
@@ -96,7 +97,7 @@
               <input type='hidden' name='view' value='task-save'/></td>
               <input type='hidden' name='taskid' value='new'/></td>
               <input type='text' name='taskname' value='New Task'/></td>
-              <a href='javascript:void(0)' onClick="editTaskDialog('new')" id='newTaskButton'>New</a><p/>
+              <a href='javascript:void(0)' onClick="editTaskDialog('new', {{ proposals[0].proposalid }})" id='newTaskButton'>New</a><p/>
               </form>
               <div id="tasksTableDiv">
               <table id='tasksTable' class='display' cellspacing='0' width='100%'>
@@ -116,7 +117,7 @@
             </div>
           <h3 id='expensesTitle'>Expenses</h3>
             <div>
-              <a href='javascript:void(0)' onClick="editExpenseDialog('new')" id='newExpenseButton'>New</a><p/>
+              <a href='javascript:void(0)' onClick="editExpenseDialog('new', {{ proposals[0].proposalid }})" id='newExpenseButton'>New</a><p/>
               <div id="expensesTableDiv">
               <table id='expensesTable' class='display' cellspace='0' width='100%'>
                 <thead><tr><th>Expense</th><th>Type</th><th>Amount</th><th>Fiscal</th></tr></thead>
@@ -126,128 +127,6 @@
         </div>
 
       <script type="text/javascript" charset="utf-8">
-        function figureCosts(proposalid) {
-          $('#budgetDashboard').html('');
-          deleteProjectBudgetDashboard('#budgetDashboard');
-          $.getJSON( "index.php?view=proposal-cost-titles-json&proposalid=" + proposalid, function( data ) {
-            var items = [];
-            $.each( data.data[0], function( key, val ) {
-              $.each( val, function( title, mesg ) {
-                $(title).html(mesg);
-              });
-            });
-          });
-          $('#fbmsTitle').html('FBMS Accounts');
-
-          // Dashboard
-          $.getJSON( "index.php?view=proposal-costs-json&proposalid=" + proposalid, function( data ) {
-            projectBudgetDashboard('#budgetDashboard',data.data[0].budget);
-          });
-        }
-
-        function loadFundingTable (reload) {
-          if (reload) {
-            $('#fundingTable').dataTable().fnDestroy();
-          }
-
-          $('#fundingTableDiv').html("<table id='fundingTable' class='display' cellspacing='0' width='100%'>" +
-            "<thead><tr><th>FY</th><th>New Funding</th><th>Carryover</th></tr></thead></table>");
-
-          $('#fundingTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autoWidth": false,
-            'ajax': 'index.php?view=funding-list-json&proposalid={{ proposals[0].proposalid }}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          });
-        }
-
-        function loadFbmsTable (reload) {
-          if (reload) {
-            $('#fbmsTable').dataTable().fnDestroy();
-          }
-
-          $('fbmsTableDiv').html("<table id='fbmsTable' class='display' cellspacing='0' width='100%'>" +
-            "<thead><tr><th>Account No.</th></tr></thead></table>");
-
-          $('#fbmsTable').dataTable( {
-            "processing": true,
-            "serverSide": false,
-            "autoWidth": false,
-            'ajax': 'index.php?view=fbms-list-json&proposalid={{ proposals[0].proposalid }}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-        }
-
-        function loadOverheadTable (reload) {
-          if (reload) {
-            $('#overheadTable').dataTable().fnDestroy();
-          }
-
-          $('#overheadTableDiv').html("<table id='overheadTable' class='display' cellspacing='0' width='100%'>" +
-            "<thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th></tr></table>");
-
-          $('#overheadTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=overhead-list-json&proposalid={{ proposals[0].proposalid}}',
-            'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-        }
-
-        function loadTasksTable (reload) {
-          if (reload) {
-            $('#tasksTable').dataTable().fnDestroy();
-          }
-
-          $('#tasksTableDiv').html("<table id='tasksTable' class='display' cellspacing='0' width='100%'>" +
-            "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
-            "<th>FYs</th></tr></thead></table>");
-          $('#tasksTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=tasks-list-json&proposalid={{ proposals[0].proposalid}}'
-          } );
-        }
-
-        function loadConferencesTable (reload) {
-          if (reload) {
-            $('#conferencesTable').dataTable().fnDestroy();
-          }
-
-          $('#conferencesTableDiv').html("<table id='conferencesTable' class='display' cellspace='0' width='100%'>" +
-            "<thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>FY</th>" +
-            "<th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th>" +
-            "<th>Registration</th><th>per diem<br/>w/ Lodging</th><th>Total</th></tr></thead></table>");
-
-          $('#conferencesTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=conference-attendee-list-json&proposalid={{ proposals[0].proposalid}}'
-            // 'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-        }
-
-        function loadExpensesTable (reload) {
-          if (reload) {
-            $('#expensesTable').dataTable().fnDestroy();
-          }
-
-          $('#expensesTableDiv').html("<table id='expensesTable' class='display' cellspace='0' width='100%'>" +
-            "<thead><tr><th>Expense</th><th>Type</th><th>Amount</th><th>Fiscal</th></tr></thead></table>");
-
-          $('#expensesTable').dataTable( {
-            'processing': true,
-            'serverSide': false,
-            'autoWidth': false,
-            'ajax': 'index.php?view=expense-list-json&proposalid={{ proposals[0].proposalid}}'
-            // 'lengthMenu': [[5, 10, 20, -1], [5, 10, 20, 'All']]
-          } );
-        }
-
         $(document).ready(function() {
           $('#proposalperfperiodstart').datepicker();
           $('#proposalperfperiodend').datepicker();
@@ -260,201 +139,18 @@
           $('#budgetDetailsButton').button();
           $('#nspiresButton').button();
 
-          loadFundingTable(false);
-          loadFbmsTable(false);
-          loadOverheadTable(false);
-          loadTasksTable(false);
-          loadConferencesTable(false);
-          loadExpensesTable(false);
+          loadFundingTable(false, {{ proposals[0].proposalid }});
+          loadFbmsTable(false, {{ proposals[0].proposalid }});
+          loadOverheadTable(false, {{ proposals[0].proposalid }});
+          loadTasksTable(false, {{ proposals[0].proposalid }});
+          loadConferencesTable(false, {{ proposals[0].proposalid }});
+          loadExpensesTable(false, {{ proposals[0].proposalid }});
 
           $('#accordions').accordion( {heightStyle: 'content' });
 
           figureCosts({{ proposals[0].proposalid }});
         } );
 
-        function saveProposal() {
-          $.post("index.php", $("#proposalForm").serialize());
-          
-          $("#warningDiv").html("<p>Updated proposal details</p>");
-          $("#warningDiv").show();
-        }
-
-        function editFundingDialog(fundingid) {
-          $("#editDialog").load(
-            "index.php?view=funding-edit&proposalid=" + {{ proposals[0].proposalid }} + "&fundingid=" + fundingid);
-
-          dialog = $("#editDialog").dialog({
-            autoOpen: false,
-            height: 300,
-            width: 400,
-            modal: true,
-            buttons: {
-              "Save Funding": saveFunding,
-              Cancel: function () {
-                dialog.dialog("close");
-              }
-            }
-          });
-
-          dialog.dialog("open");
-        }
-
-        function saveFunding() {
-          $.post("index.php", $("#fundingForm").serialize())
-            .always (function() {
-
-              dialog.dialog("close");
-              $("#warningDiv").html("<p>Updated [" + $("#fiscalyear").val() + "]</p>");
-              $("#warningDiv").show();
-
-              loadFundingTable(true);
-            });
-        }
-
-        function editFBMSDialog(fbmsid) {
-          $("#editDialog").load(
-            "index.php?view=fbms-edit&proposalid=" + {{ proposals[0].proposalid }} + "&fbmsid=" + fbmsid);
-
-          dialog = $("#editDialog").dialog({
-            autoOpen: false,
-            height: 200,
-            width: 400,
-            modal: true,
-            buttons: {
-              "Save FBMS": saveFBMS,
-              Cancel: function () {
-                dialog.dialog("close");
-              }
-            }
-          });
-
-          dialog.dialog("open");
-        }
-
-        function saveFBMS() {
-          $.post("index.php", $("#fbmsForm").serialize())
-            .always(function(){
-
-              loadFbmsTable(true);
-
-              dialog.dialog("close");
-              $("#warningDiv").html("<p>Updated [" + $("#fbmsid").val() + "] (" + $("#accountno").val() + ")</p>");
-              $("#warningDiv").show();
-            });
-        }
-
-        function editTaskDialog (taskid) {
-          if (taskid == 'new') {
-            $.post("index.php", $("#newTaskForm").serialize())
-              .always( function(data) {
-              console.log("Inside post: " + data);
-              return (editTaskDialog(data));
-            });
-          }
-          console.log("Result is " + taskid);
-
-          $("#editDialog").load(
-            "index.php?view=task-edit&proposalid={{ proposals[0].proposalid }}&taskid=" + taskid);
-
-          dialog = $("#editDialog").dialog({
-            autoOpen: false,
-            height: 600,
-            width: 1000,
-            modal: true,
-            buttons: {
-              "Save Task": saveTask,
-              Cancel: function () {
-                dialog.dialog("close");
-              }
-            }
-          });
-
-          dialog.dialog("open");
-        }
-
-        function saveTask () {
-          $.post("index.php", $("#taskForm").serialize())
-            .always (function() {
-
-              loadTasksTable(true);
-
-              dialog.dialog("close");
-              $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
-              $("#warningDiv").show();
-    
-              figureCosts({{ proposals[0].proposalid }});
-           });
-        }
-
-        function editAttendeeDialog(proposalid, conferenceattendeeid) {
-          $("#editDialog").load(
-            "index.php?view=conference-attendee-edit&proposalid=" + proposalid + "&conferenceattendeeid=" + conferenceattendeeid);
-
-          dialog = $("#editDialog").dialog({
-            autoOpen: false,
-            height: 600,
-            width: 800,
-            modal: true,
-            buttons: {
-              "Save Attendee": saveAttendee,
-              Cancel: function () {
-                dialog.dialog("close");
-              }
-            }
-          });
-
-          dialog.dialog("open");
-        }
-
-        function saveAttendee() {
-          $.post("index.php", $("#conferenceAttendeeForm").serialize())
-            .always (function() {
-
-              dialog.dialog("close");
-              $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
-              $("#warningDiv").show();
-
-              figureCosts({{ proposals[0].proposalid }});
-
-              loadConferencesTable(true);
-            });
-        }
-
-        function editExpenseDialog(expenseid) {
-          $("#editDialog").load(
-            "index.php?view=expense-edit&proposalid={{ proposals[0].proposalid }}&expenseid=" + expenseid);
-
-          dialog = $("#editDialog").dialog({
-            autoOpen: false,
-            height: 600,
-            width: 800,
-            modal: true,
-            buttons: {
-              "Save Expense": saveExpense,
-              Cancel: function () {
-                dialog.dialog("close");
-              }
-            }
-          });
-
-          dialog.dialog("open");
-        }
-
-        function saveExpense() {
-          $.post("index.php", $("#expenseForm").serialize())
-            .always (function () {
-
-              dialog.dialog("close");
-              $("#warningDiv").html("<p>Updated [" + $("#expenseid").val() + "] (" + $("#description").val() + ")</p>");
-              $("#warningDiv").show();
-
-              figureCosts({{ proposals[0].proposalid }});
-
-              loadExpensesTable(true);
-          });
-        }
-
-        
       </script>
     </body>
 </html>

@@ -39,8 +39,8 @@ function loadFbmsTable (reload, proposalid) {
     $('#fbmsTable').dataTable().fnDestroy();
   }
 
-  $('fbmsTableDiv').html("<table id='fbmsTable' class='display' cellspacing='0' width='100%'>" +
-    "<thead><tr><th>Account No.</th></tr></thead></table>");
+  $('#fbmsTableDiv').html("<table id='fbmsTable' class='display' cellspacing='0' width='100%'>" +
+    "<thead><tr><th>Account No.</th><th>&nbsp;</th></tr></thead></table>");
 
   $('#fbmsTable').dataTable( {
     "processing": true,
@@ -228,6 +228,31 @@ function saveFBMS(proposalid) {
     });
 }
 
+function deleteFBMSDialog(fbmsid, proposalid) {
+  var account;
+
+  $.getJSON( "index.php?view=fbms-list-json&proposalid=" + proposalid + "&fbmsid=" + fbmsid, function( data ) {
+    var pattern = />(.+)<\/a>/i;
+    account = pattern.exec(data.data[0][0])[1];
+    $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+                        "<body><h2>Are you sure you want to delete FBMS account " + account + "?</h2></body></html>");
+  });
+
+  dialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 200,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Delete FBMS": function () { deleteFBMS(fbmsid, proposalid); },
+      Cancel: function () {
+        dialog.dialog("close");
+      }
+    }
+  });
+
+  dialog.dialog("open");
+}
 function deleteFBMS(fbmsid, proposalid) {
   $.get("index.php?view=fbms-delete&fbmsid=" + fbmsid + "&proposalid=" + proposalid)
     .always (function() {

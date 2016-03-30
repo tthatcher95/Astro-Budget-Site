@@ -1153,6 +1153,11 @@ function taskDelete ($pbdb, $templateArgs) {
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
 
   # TBD - need to loop through staffing and delete it first
+  $staffing = $pbdb->getStaffing(null, $taskid, null, null);
+
+  for ($i = 0; $i < count($staffing); $i++) {
+    $pbdb->deleteStaffing($staffing[$i]['staffingid']);
+  }
 
   if ($taskid != null) {
     $pbdb->deleteTask($taskid);

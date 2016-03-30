@@ -74,7 +74,7 @@
 
         $('#taskStaffingTableDiv').html("<table id='taskStaffingTable' class='display' cellspacing='0' width='100%'>" +
            "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
-           "<th>FY</th></tr></thead></table>");
+           "<th>FY</th><th>&nbsp;</th></tr></thead></table>");
 
         $('#taskStaffingTable').dataTable( {
           "processing": true,
@@ -125,7 +125,7 @@
           .always (function() {
 
             loadStaffingTable(true);
-            loadTasksTable(true);
+            loadTasksTable(true, {{ proposalid }});
 
             $("#peopleedittabs").tabs( "option", "active", 0 );
             $("#warningDiv").html("<p>Updated [" + $("#taskid").val() + "] " + $("#staffingid").val() +
@@ -136,6 +136,19 @@
             figureCosts({{ proposalid }});
           });
     }
+
+    function deleteStaffing(staffingid, proposalid) {
+      $.get("index.php?view=staffing-delete&staffingid=" + staffingid + "&proposalid=" + proposalid)
+        .always (function() {
+          $("#warningDiv").html("<p>Deleted [" + staffingid + "]</p>");
+          $("#warningDiv").show();
+    
+          loadStaffingTable(true);
+          loadTasksTable(true, proposalid);
+          figureCosts(proposalid);
+        });
+    }
+
 
     </script>
 

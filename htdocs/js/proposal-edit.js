@@ -75,7 +75,7 @@ function loadTasksTable (reload, proposalid) {
 
   $('#tasksTableDiv').html("<table id='tasksTable' class='display' cellspacing='0' width='100%'>" +
     "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
-    "<th>FYs</th></tr></thead></table>");
+    "<th>FYs</th><th>&nbsp;</th></tr></thead></table>");
   $('#tasksTable').dataTable( {
     'processing': true,
     'serverSide': false,
@@ -253,6 +253,7 @@ function deleteFBMSDialog(fbmsid, proposalid) {
 
   dialog.dialog("open");
 }
+
 function deleteFBMS(fbmsid, proposalid) {
   $.get("index.php?view=fbms-delete&fbmsid=" + fbmsid + "&proposalid=" + proposalid)
     .always (function() {
@@ -304,6 +305,33 @@ function saveTask (proposalid) {
     
       figureCosts(proposalid);
    });
+}
+
+function deleteTaskDialog(taskid, proposalid) {
+  var task;
+
+  $.getJSON( "index.php?view=tasks-list-json&proposalid=" + proposalid + "&taskid=" + taskid, function( data ) {
+    var pattern = />(.+)<\/a>/i;
+    task = pattern.exec(data.data[0][0])[1];
+    $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+                        "<body><h2>Are you sure you want to delete task " + task + 
+                        " and any staffing assigned to it?</h2></body></html>");
+  });
+
+  dialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 250,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Delete Task": function () { deleteTask(taskid, proposalid); },
+      Cancel: function () {
+        dialog.dialog("close");
+      }
+    }
+  });
+
+  dialog.dialog("open");
 }
 
 function deleteTask(taskid, proposalid) {

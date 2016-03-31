@@ -270,7 +270,7 @@ function editTaskDialog (taskid, proposalid) {
     $.post("index.php", $("#newTaskForm").serialize())
       .always( function(data) {
       console.log("Inside post: " + data);
-      return (editTaskDialog(data));
+      return (editTaskDialog(data, proposalid));
     });
   }
 

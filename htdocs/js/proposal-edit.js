@@ -92,7 +92,7 @@ function loadConferencesTable (reload, proposalid) {
   $('#conferencesTableDiv').html("<table id='conferencesTable' class='display' cellspace='0' width='100%'>" +
     "<thead><tr><th>Meeting</th><th>Number<br/>Travelers</th><th>Starting</th><th>FY</th>" +
     "<th>Meeting<br/>Days</th><th>Travel<br/>Days</th><th>Airfare</th><th>Ground<br/>Transport</th>" +
-    "<th>Registration</th><th>per diem<br/>w/ Lodging</th><th>Total</th><th>&nbsp;</th></tr></thead></table>");
+    "<th>Registration</th><th>per diem</th><th>Lodging</th><th>Total</th><th>&nbsp;</th></tr></thead></table>");
 
   $('#conferencesTable').dataTable( {
     'processing': true,

@@ -819,21 +819,22 @@ class PBTables {
   
   # ConferenceRates
   function addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare,
-                              $city, $state, $country) {
+                              $lodging, $city, $state, $country) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to add new conference rates"; }
 
     $query = "INSERT INTO conferencerates (conferenceid, effectivedate, perdiem, registration, " .
-             "groundtransport, airfare, city, state, country) VALUES ($conferenceid, ";
+             "groundtransport, airfare, lodging, city, state, country) VALUES ($conferenceid, ";
     if (isset($effectivedate)) { $query .= "'" . $this->formatDate($effectivedate) . "', "; }
     else { $query .= "now(), "; }
     $query .= $this->getAmount($perdiem) . ", " . $this->getAmount($registration) . ", " .
-              $this->getAmount($groundtransport) . ", " . $this->getAmount($airfare) . ", '$city', '$state', '$country')";
+              $this->getAmount($groundtransport) . ", " . $this->getAmount($airfare) . 
+              ", " . $this->getAmount($lodging) . ", '$city', '$state', '$country')";
 
     $this->db->query($query);
   }
 
   function updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem, 
-                                $registration, $groundtransport, $airfare, $city, $state, $country) {
+                                $registration, $groundtransport, $airfare, $lodging, $city, $state, $country) {
     if (!isset($conferencerateid)) { return "A conference rate ID must be provided for an update"; }
     if (!(isset($effectivedate) or isset($perdiem) or isset($registration) 
        or isset($groundtransport) or isset ($airfare))) { return "Nothing to change in conference rate update"; }
@@ -869,6 +870,11 @@ class PBTables {
       $query .= "airfare=" . $this->getAmount($airfare);
       $needComma = true;
     }
+    if (isset($lodging)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "lodging=" . $this->getAmount($lodging);
+      $needComma = true;
+    }
     if (isset($city)) {
       if ($needComma) { $query .= ", "; }
       $query .= "city='$city'";
@@ -898,8 +904,9 @@ class PBTables {
      $conferenceid=0;
     }
 
-    $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, registration, " .
-             "groundtransport, airfare, city, state, country FROM conferencerates WHERE conferenceid=$conferenceid";
+    $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, lodging, registration, " .
+             "groundtransport, airfare, city, state, country FROM conferencerates " .
+             "WHERE conferenceid=$conferenceid";
     if (isset($conferencerateid)) {
       $query .= " AND conferencerateid=$conferencerateid";
     }

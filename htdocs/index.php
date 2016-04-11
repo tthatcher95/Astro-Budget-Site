@@ -602,6 +602,10 @@ function costsSummaryView ($pbdb, $templateArgs) {
                  ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75)) *
                  $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiemcosts'] = $perdiem;
+      $lodging = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+                  $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
+                  $templateArgs['proposals'][$i]['conferenceattendees'][$j]['lodging']);
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['lodgingcosts'] = $lodging;
       $groundtransport = 
         ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] *
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['rentalcars']);
@@ -614,7 +618,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registration']);
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registrationcosts'] =
         $registration;
-      $cost = $perdiem + $groundtransport + $airfare + $registration;
+      $cost = $perdiem + $lodging + $groundtransport + $airfare + $registration;
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['totalcost'] = $cost;
 
       $meeting = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meeting'];
@@ -624,6 +628,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['conferences'][$meeting]['meeting'] = $meeting;
       $templateArgs['proposals'][$i]['conferences'][$meeting]['section'] = $traveltype;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] = $perdiem;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['lodging'] = $lodging;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] = $registration;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] = $groundtransport;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] = $airfare;
@@ -641,9 +646,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] += $cost;
       $templateArgs['proposals'][$i]['conferencetotals'][$traveltype][$currFy] += 
-        $perdiem + $registration + $groundtransport + $airfare;
+        $perdiem + $lodging + $registration + $groundtransport + $airfare;
       $templateArgs['proposals'][$i]['conferencetotals'][$traveltype]['ALL'] += 
-        $perdiem + $registration + $groundtransport + $airfare;
+        $perdiem + $lodging + $registration + $groundtransport + $airfare;
 
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
@@ -1103,7 +1108,7 @@ function tasksView ($pbdb, $templateArgs) {
   $taskid     = (isset($_REQUEST['taskid'])? $_REQUEST['taskid'] : null);
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $taskname   = (isset($_REQUEST['taskname'])? $_REQUEST['taskname'] : null);
-  $peopleid    = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $peopleid   = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
 
   if (isset($templateArgs['taskid'])) {
     $taskid = $templateArgs['taskid'];

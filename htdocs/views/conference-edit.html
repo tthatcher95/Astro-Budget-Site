@@ -29,7 +29,7 @@
           </form>
         <div id="rateTableDiv">
         <table id="rateTable" class="display" cellspacing="0" width="100%">
-          <thead><tr><th>Action</th><th>Per Diem</th><th>Registration</th><th>Ground<br/>Transport</th>
+          <thead><tr><th>Action</th><th>Per Diem</th><th>Lodging</th><th>Registration</th><th>Ground<br/>Transport</th>
                      <th>Airfare</th><th>City</th><th>State</th><th>Country</th><th>Effective<br/>Date</tr></thead>
         </table>
         </div>
@@ -44,6 +44,8 @@
             <table>
               <tr><th>Per Diem</th><td><input type="text" id="perdiem" name="perdiem" size="12"/></td>
                   <th>Registration</th><td><input type="text" id="registration" name="registration" size="12"/></td></tr>
+              <tr><th>Lodging</th><td><input type="text" id="lodging" name="lodging" size="12"/></td>
+                  <th>&nbsp;</th><td>&nbsp;</td></tr>
               <tr><th>Ground Transport</th><td><input type="text" id="groundtransport" name="groundtransport" size="12"/></td>
                   <th>Airfare</th><td><input type="text" id="airfare" name="airfare" size="12"/></td></tr>
               <tr><th>City</th><td><input type="text" id="city" name="city" size="30"/></td>
@@ -63,7 +65,7 @@
         }
 
         $("#rateTableDiv").html('<table id="rateTable" class="display" cellspacing="0" width="100%">' +
-          '<thead><tr><th>Action</th><th>Per Diem</th><th>Registration</th><th>Ground<br/>Transport</th>' +
+          '<thead><tr><th>Action</th><th>Per Diem</th><th>Lodging</th><th>Registration</th><th>Ground<br/>Transport</th>' +
           '<th>Airfare</th><th>City</th><th>State</th><th>Country</th><th>Effective<br/>Date</tr></thead></table>');
 
         $('#rateTable').dataTable( {
@@ -89,6 +91,7 @@
         if (conferencerateid == 'new') {
           $("#conferenceid").val({{ conferences[0].conferenceid }});
           $("#perdiem").val('');
+          $("#lodging").val('');
           $("#registration").val('');
           $("#groundtransport").val('');
           $("#airfare").val('');
@@ -102,13 +105,14 @@
             $("#conferencerateid").val(data.data[0][0]);
             $("#conferenceid").val(data.data[0][1]);
             $("#perdiem").val(data.data[0][2]);
-            $("#registration").val(data.data[0][3]);
-            $("#groundtransport").val(data.data[0][4]);
-            $("#airfare").val(data.data[0][5]);
-            $("#city").val(data.data[0][6]);
-            $("#state").val(data.data[0][7]);
-            $("#country").val(data.data[0][8]);
-            $("#effectivedate").val(data.data[0][9]);
+            $("#lodging").val(data.data[0][3]);
+            $("#registration").val(data.data[0][4]);
+            $("#groundtransport").val(data.data[0][5]);
+            $("#airfare").val(data.data[0][6]);
+            $("#city").val(data.data[0][7]);
+            $("#state").val(data.data[0][8]);
+            $("#country").val(data.data[0][9]);
+            $("#effectivedate").val(data.data[0][10]);
           });
         }
       }

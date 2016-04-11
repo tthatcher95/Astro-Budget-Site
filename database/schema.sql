@@ -55,13 +55,15 @@ CREATE TABLE fbmsaccounts (
 
 CREATE TABLE conferences (
   conferenceid SERIAL Primary Key,
-  meeting VARCHAR(256),
-  location VARCHAR(128)
+  meeting VARCHAR(256)
 );
 
 CREATE TABLE conferencerates (
   conferencerateid SERIAL Primary Key,
   conferenceid INTEGER,
+  city VARCHAR(120),
+  state VARCHAR (2),
+  country VARCHAR (40),
   effectivedate TIMESTAMP,
   perdiem REAL,
   registration REAL,
@@ -101,7 +103,7 @@ CREATE TABLE staffing (
   q4hours REAL,
   flexhours REAL,
   CONSTRAINT fk_staffing_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid),
-  CONSTRAINT fk_staffing_peopleid FOREIGN KEY (taskid) REFERENCES tasks(taskid)
+  CONSTRAINT fk_staffing_taskid FOREIGN KEY (taskid) REFERENCES tasks(taskid)
 );
 
 CREATE TABLE expensetypes (
@@ -120,9 +122,17 @@ CREATE TABLE expenses (
   CONSTRAINT fk_expenses_expensetypeid FOREIGN KEY (expensetypeid) REFERENCES expensetypes(expensetypeid)
 );
 
-CREATE TABLE administrators (
-  adminid SERIAL Primary Key,
-  peopleid INTEGER,
-  CONSTRAINT fk_staffing_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid)
+CREATE TABLE overheadrates (
+  overheadid SERIAL Primary Key,
+  proposalid INTEGER,
+  rate REAL,
+  description VARCHAR (80)
 );
+
+
+--CREATE TABLE administrators (
+--  adminid SERIAL Primary Key,
+--  peopleid INTEGER,
+--  CONSTRAINT fk_staffing_peopleid FOREIGN KEY (peopleid) REFERENCES people(peopleid)
+--);
 

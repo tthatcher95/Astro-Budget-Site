@@ -1,7 +1,6 @@
 <?php
 
 require_once '/usr/share/pear/Twig/Autoloader.php';
-# require_once '/var/www/budgetprops-dev/php_packages/Twig-1.18.2/lib/Twig/Autoloader.php';
 require_once(dirname(__FILE__) . '/models/PBTables.php');
 
 $pbdb = new PBTables();
@@ -320,11 +319,12 @@ if (true) {
   }
 }
 
+$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+
 Twig_Autoloader::register();
-// $loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/views');
-$loader = new Twig_Loader_Filesystem ('/var/www/budgetprops-dev/htdocs/dev/htdocs/views'); // dev
+$loader = new Twig_Loader_Filesystem ($basepath . '/views'); 
 $twig = new Twig_Environment ($loader, 
-  array ('cache' => '/var/www/budgetprops-dev/htdocs/views/cache',
+  array ('cache' => $basepath . '/views/cache',
          'auto_reload' => true));
 
 $template = $twig->loadTemplate($view);

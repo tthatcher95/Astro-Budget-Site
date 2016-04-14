@@ -1047,17 +1047,18 @@ function conferenceRateSave ($pbdb, $templateArgs) {
   $registration     = (isset($_REQUEST['registration'])? $_REQUEST['registration'] : null);
   $groundtransport  = (isset($_REQUEST['groundtransport'])? $_REQUEST['groundtransport'] : null);
   $airfare          = (isset($_REQUEST['airfare'])? $_REQUEST['airfare'] : null);
+  $lodging          = (isset($_REQUEST['lodging'])? $_REQUEST['lodging'] : null);
   $city             = (isset($_REQUEST['city'])? $_REQUEST['city'] : null);
   $state            = (isset($_REQUEST['state'])? $_REQUEST['state'] : null);
   $country          = (isset($_REQUEST['country'])? $_REQUEST['country'] : null);
 
   if ($conferencerateid == 'new') {
     $pbdb->addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare, 
-                              $city, $state, $country);
+                              $lodging, $city, $state, $country);
   }
   else {
     $pbdb->updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem, $registration,
-                                 $groundtransport, $airfare, $city, $state, $country);
+                                 $groundtransport, $airfare, $lodging, $city, $state, $country);
   }
 
   $templateArgs['conferenceid'] = $conferenceid;

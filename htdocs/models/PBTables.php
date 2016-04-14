@@ -954,6 +954,7 @@ class PBTables {
   
         for ($i=0; $i < $dateDifference->y; $i++) {
           $results[$e]['perdiem'] = $results[$e]['perdiem'] * 1.04;
+          $results[$e]['lodging'] = $results[$e]['lodging'] * 1.04;
           $results[$e]['groundtransport'] = $results[$e]['groundtransport'] * 1.04;
           $results[$e]['airfare'] = $results[$e]['airfare'] * 1.04;
         }

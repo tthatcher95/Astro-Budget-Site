@@ -5,6 +5,6 @@
   {% else %}
 ["{{ conference.meeting }}",
   {% endif %}
-"{{ conference.conferencerates[0].city }}, {{ conference.conferencerates[0].state }}, {{ conference.conferencerates[0].country }}", "${{ conference.conferencerates[0].perdiem|number_format(2,'.',',') }}", "${{ conference.conferencerate[0].lodging|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].registration|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].groundtransport|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].airfare|number_format(2,'.',',') }}"]{% if loop.last != true %},{% endif %}
+"{{ conference.conferencerates[0].city }}, {{ conference.conferencerates[0].state }}, {{ conference.conferencerates[0].country }}", "${{ conference.conferencerates[0].perdiem|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].lodging|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].registration|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].groundtransport|number_format(2,'.',',') }}", "${{ conference.conferencerates[0].airfare|number_format(2,'.',',') }}"]{% if loop.last != true %},{% endif %}
 {% endfor %}
 ]}

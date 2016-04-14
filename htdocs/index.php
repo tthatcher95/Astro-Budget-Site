@@ -88,6 +88,10 @@ if (true) {
       $templateArgs = proposalSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'proposal-delete':
+      $templateArgs = proposalDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'proposal-nspires':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
@@ -320,6 +324,7 @@ if (true) {
 }
 
 $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+# $basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views'); 
@@ -819,6 +824,20 @@ function proposalCopy ($pbdb, $templateArgs) {
   $_REQUEST['proposalid'] = $proposalid;
   $templateArgs['proposalid'] = $proposalid;
 
+  return ($templateArgs);
+}
+
+function proposalDelete ($pbdb, $templateArgs) {
+  $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+
+  if ($proposalid == null) {
+    return ($templateArgs);
+  }
+
+  $pbdb->deleteProposal ($proposalid);
+
+  $templateArgs['deleteid'] = $proposalid;
+  $templateArgs['view'] = 'delete-result.html';
   return ($templateArgs);
 }
 

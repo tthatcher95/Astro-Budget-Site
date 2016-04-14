@@ -5,7 +5,8 @@
   class Config {
     var $budget_db_host = 'spacely.wr.usgs.gov';
     var $budget_db_port = '3309';
-    var $budget_db_name = 'propbudgets_prd';
+    # var $budget_db_name = 'propbudgets_prd';
+    var $budget_db_name = 'propbudgets_dev';
     var $budget_db_user = 'budgetmgr';
     var $budget_db_pswd = '!MgrBudget$';
 

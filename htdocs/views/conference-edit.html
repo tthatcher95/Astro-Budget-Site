@@ -102,6 +102,8 @@
         }
         else {
           $.getJSON( "index.php?view=conference-rate-edit-json&conferenceid={{ conferences[0].conferenceid }}&conferencerateid=" + conferencerateid, function( data ) {
+          console.log ("Rateid " + data.data[0][0]);
+          console.log ("Lodging " + data.data[0][3]);
             $("#conferencerateid").val(data.data[0][0]);
             $("#conferenceid").val(data.data[0][1]);
             $("#perdiem").val(data.data[0][2]);
@@ -118,10 +120,10 @@
       }
 
       function conferenceRateSave() {
+        console.log($("#rateForm").serialize());
         $.post("index.php", $("#rateForm").serialize())
           .always( function () {
 
-            $("#peopleedittabs").tabs( "option", "active", 0 );
             $("#warningDiv").html("<p>Updated [" + $("#conferencerateid").val() + "]</p>");
             $("#warningDiv").show();
     

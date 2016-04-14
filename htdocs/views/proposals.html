@@ -51,9 +51,11 @@
         </div>
 
          <a href='javascript:void(0)' onClick="editProjectDialog()" id='newProjectButton'>New</a><p/>
+        <div id="proposalsTableDiv">
         <table id="proposalsTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>Proposal</th><th>Reports</th><th>PI</th><th>Program</th><th>Status</th><th>Proposal #</th><th>Award #</th><th>Start</th><th>End</th><th></th></tr></thead>
         </table>
+        </div>
       </div>
 
       <script type="text/javascript" charset="utf-8">
@@ -65,13 +67,23 @@
           $("#proposalperfperiodstart").datepicker();
           $("#proposalperfperiodend").datepicker();
 
+          loadProposalsTable(false);
+        } );
+
+        function loadProposalsTable (reload) {
+          if (reload) {
+            $('#proposalsTable').dataTable().fnDestroy();
+          }
+
+          $('#proposalsTableDiv').html('<table id="proposalsTable" class="display" cellspacing="0" width="100%"><thead><tr><th>Proposal</th><th>Reports</th><th>PI</th><th>Program</th><th>Status</th><th>Proposal #</th><th>Award #</th><th>Start</th><th>End</th><th></th></tr></thead></table>');
+
           $('#proposalsTable').dataTable( {
             "processing": true,
             "serverSide": false,
             "ajax": "index.php?view=proposal-list-json",
             "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]]
           } );
-        } );
+        }
 
         function editProjectDialog() {
           dialog = $("#editDialog").dialog({
@@ -99,6 +111,45 @@
 
         }
 
+        function deleteProposalDialog(proposalid) {
+          var description;
+
+          $.getJSON( "index.php?view=proposal-list-json&proposalid=" + proposalid, function( data ) {
+            var pattern = />(.+)<\/a>/i;
+            description = pattern.exec(data.data[0][0])[1];
+            $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+                                "<body><h2>Are you sure you want to delete the project <p/>'" + description + 
+                                "'?</h2></body></html>");
+          });
+        
+          dialog = $("#editDialog").dialog({
+            autoOpen: false,
+            height: 300,
+            width: 500,
+            modal: true,
+            buttons: {
+              "Delete Project": function () { deleteProposal(proposalid); },
+              Cancel: function () {
+                dialog.dialog("close");
+              }
+            }
+          });
+        
+          dialog.dialog("open");
+        }
+
+        function deleteProposal(proposalid) {
+          $.get("index.php?view=proposal-delete&proposalid=" + proposalid)
+            .always (function() {
+              dialog.dialog("close");
+              $("#warningDiv").html("<p>Deleted [" + proposalid + "]</p>");
+              $("#warningDiv").show();
+        
+              loadProposalsTable(true);
+            });
+        }
+        
+        
       </script>
     </body>
 </html>

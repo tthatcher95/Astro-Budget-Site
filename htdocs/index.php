@@ -609,7 +609,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiemcosts'] = $perdiem;
       $lodging = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                   $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] *
-                  $templateArgs['proposals'][$i]['conferenceattendees'][$j]['lodging']);
+                  $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['lodging']);
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['lodgingcosts'] = $lodging;
       $groundtransport = 
         ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['groundtransport'] *

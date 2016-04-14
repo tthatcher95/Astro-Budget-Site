@@ -593,8 +593,35 @@ class PBTables {
 
   function deleteProposal ($proposalid) {
     if (!isset($proposalid)) { return "A proposal ID is required to delete a proposal"; }
+
+    # Conference Attendees
+    $query = "DELETE FROM conferenceattendee WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # Expenses
+    $query = "DELETE FROM expenses WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # Custom overhead
+    $query = "DELETE FROM overheadrates WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # FBMS Accounts
+    $query = "DELETE FROM fbmsaccounts WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # Funding
+    $query = "DELETE FROM funding WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # Tasks and Staffing
+    $query = "DELETE FROM staffing WHERE taskid IN (SELECT taskid FROM tasks WHERE proposalid=$proposalid)";
+    $this->db->query($query);
+    $query = "DELETE FROM tasks WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # The proposal
     $query = "DELETE FROM proposals WHERE proposalid=$proposalid";
-    
     $this->db->query($query);
   }
 

@@ -251,6 +251,14 @@ if (true) {
       $templateArgs['view'] = 'tasks-list-ajax.json';
       $view = $templateArgs['view'];
       break;
+    case 'tasks-list-csv':
+      $startdate = '10/01/2016';
+      $enddate = '09/30/2017';
+      $statuses = array(0, 1, 2, 4);
+      $templateArgs['csv'] = $pbdb->getCsvTasks ($startdate, $enddate, $statuses);
+      serveCsv ($templateArgs);
+      return;
+      break;
     case 'task-edit':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = tasksView($pbdb, $templateArgs);
@@ -323,8 +331,8 @@ if (true) {
   }
 }
 
-$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-# $basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
+# $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+$basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views'); 
@@ -340,6 +348,17 @@ if (isset($_REQUEST['debug'])) {
 }
 
 echo $template->render($templateArgs);
+
+function  serveCsv ($templateArgs) {
+  header("Content-type: text/csv");
+  header("Content-Disposition: attachment; filename=tasks.csv");
+  header("Pragma: no-cache");
+  header("Expires: 0");
+
+  echo $templateArgs['csv'];
+
+  return;
+}
 
 function peopleView ($pbdb, $templateArgs) {
   $peopleid = null;
@@ -604,7 +623,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       array_push ($fiscalyears, $currFy);
       $perdiem = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
                  ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['meetingdays'] +
-                 ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * .75)) *
+                 ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['traveldays'] * 0.75)) *
                  $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiem']);
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['perdiemcosts'] = $perdiem;
       $lodging = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
@@ -632,11 +651,11 @@ function costsSummaryView ($pbdb, $templateArgs) {
       else { $traveltype = 'D2'; }
       $templateArgs['proposals'][$i]['conferences'][$meeting]['meeting'] = $meeting;
       $templateArgs['proposals'][$i]['conferences'][$meeting]['section'] = $traveltype;
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] = $perdiem;
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['lodging'] = $lodging;
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] = $registration;
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] = $groundtransport;
-      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] = $airfare;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] += $perdiem;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['lodging'] += $lodging;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] += $registration;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] += $groundtransport;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] += $airfare;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['travelers'] +=
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['traveldays'] +=

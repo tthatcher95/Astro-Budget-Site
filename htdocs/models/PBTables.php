@@ -1159,6 +1159,60 @@ class PBTables {
     return ($results);
   }
 
+  function getCsvTasks ($startdate, $enddate, $statuses) {
+
+    if (($startdate == null) or ($enddate == null) or ($statuses == null)) {
+      return "Missing required inputs";
+    }
+
+    $query = "SELECT u.name, u.username, p.projectname, f.programname, t.taskname, s.q1hours, s.q2hours, " .
+    "s.q3hours, s.q4hours, s.flexhours FROM people u JOIN staffing s ON (s.peopleid=u.peopleid) JOIN tasks t ON " .
+    "(t.taskid=s.taskid) JOIN proposals p ON (p.proposalid=t.proposalid) JOIN fundingprograms f ON " .
+    "(f.programid=p.programid) WHERE ";
+    
+    $query .= "s.fiscalyear >= '" . $this->formatDate($startdate) . "' AND s.fiscalyear < '" .
+              $this->formatDate($enddate) . "' AND p.status in (";
+    $query .= implode(',', $statuses);
+    $query .= ")";
+    # "TO STDOUT WITH CSV HEADER";
+
+    $this->db->query($query);
+    $firstRow = pg_fetch_assoc($this->db->result);
+
+    $results = '';
+    $csv = '';
+
+    if ($firstRow != null) {
+      # fputcsv ($csvfile, array_keys($firstRow));
+      $csv = implode (",", array_keys($firstRow));
+      $csv .= "\n";
+      # fputcsv ($csvfile, $firstRow);
+      $csv .= $this->encodeCsv ($firstRow);
+      while ($row = pg_fetch_assoc($this->db->result)) {
+        # fputcsv ($csvfile, $row);
+        $csv .= $this->encodeCsv ($row);
+      }
+      $results = $csv;
+    }
+
+    return ($results);
+  }
+
+  function encodeCsv ($row) {
+    $csvRow = '"' . $row['name'] . '",';
+    $csvRow .= '"' . $row['username'] . '",';
+    $csvRow .= '"' . $row['projectname'] . '",';
+    $csvRow .= '"' . $row['programname'] . '",';
+    $csvRow .= '"' . $row['taskname'] . '",';
+    $csvRow .= $row['q1hours'] . ',';
+    $csvRow .= $row['q2hours'] . ',';
+    $csvRow .= $row['q3hours'] . ',';
+    $csvRow .= $row['q4hours'] . ',';
+    $csvRow .= $row['flexhours'] . "\n";
+
+    return ($csvRow);
+  }
+
   function deleteTask ($taskid) {
     if (!isset($taskid)) { return "A task ID is required to delete a task"; }
 

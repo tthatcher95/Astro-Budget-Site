@@ -1183,13 +1183,11 @@ class PBTables {
     $csv = '';
 
     if ($firstRow != null) {
-      # fputcsv ($csvfile, array_keys($firstRow));
       $csv = implode (",", array_keys($firstRow));
+      $csv .= ",total";
       $csv .= "\n";
-      # fputcsv ($csvfile, $firstRow);
       $csv .= $this->encodeCsv ($firstRow);
       while ($row = pg_fetch_assoc($this->db->result)) {
-        # fputcsv ($csvfile, $row);
         $csv .= $this->encodeCsv ($row);
       }
       $results = $csv;
@@ -1208,7 +1206,8 @@ class PBTables {
     $csvRow .= $row['q2hours'] . ',';
     $csvRow .= $row['q3hours'] . ',';
     $csvRow .= $row['q4hours'] . ',';
-    $csvRow .= $row['flexhours'] . "\n";
+    $csvRow .= $row['flexhours'] . ",";
+    $csvRow .= $row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'] . "\n";
 
     return ($csvRow);
   }

@@ -332,10 +332,10 @@ if (true) {
 }
 
 # $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-$basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
+$basepath = '/var/www/budgetprops-dev';
 
 Twig_Autoloader::register();
-$loader = new Twig_Loader_Filesystem ($basepath . '/views'); 
+$loader = new Twig_Loader_Filesystem ($basepath . '/views');
 $twig = new Twig_Environment ($loader, 
   array ('cache' => $basepath . '/views/cache',
          'auto_reload' => true));

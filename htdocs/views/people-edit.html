@@ -43,7 +43,7 @@
         <table id="salaryTable" class="display" cellspacing="0" width="100%">
           <thead><tr><th>ID</th><th>Effective<br/>Date</th><th>Pay<br/>Plan</th><th>Title</th>
                      <th>Appt<br/>Type</th><th>Auth<br/>Hours</th><th>Est<br/>Salary</th>
-                     <th>Est<br/>Benefits</th><th>Leave<br/>Cat</th><th>LAF</th></tr></thead>
+                     <th>Est<br/>Benefits</th><th>Leave<br/>Cat</th><th>LAF</th><th>&nbsp;</th></tr></thead>
         </table>
         </div>
     </div>
@@ -84,7 +84,7 @@
         $('#salaryTableDiv').html('<table id="salaryTable" class="display" cellspacing="0" width="100%">' +
           "<thead><tr><th>ID</th><th>Effective<br/>Date</th><th>Pay<br/>Plan</th><th>Title</th>" +
           "<th>Appt<br/>Type</th><th>Auth<br/>Hours</th><th>Est<br/>Salary</th>" +
-          "<th>Est<br/>Benefits</th><th>Leave<br/>Cat</th><th>LAF</th></tr></thead></table>");
+          "<th>Est<br/>Benefits</th><th>Leave<br/>Cat</th><th>LAF</th><th>&nbsp;</th></tr></thead></table>");
 
         $('#salaryTable').dataTable( {
           "processing": true,
@@ -151,7 +151,18 @@
                                   " (" + $("#payplan").val() +")</p>");
             $("#warningDiv").show();
           });
+      }
+
+      function deleteSalary (salaryid) {
+        $.get("index.php?view=salary-delete&salaryid=" + salaryid)
+          .always (function() {
+            $("#warningDiv").html("<p>Deleted [" + salaryid + "]</p>");
+            $("#warningDiv").show();
+
+            loadSalaryTable(true);
+          });
     }
+
 
     </script>
 

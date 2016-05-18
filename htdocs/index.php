@@ -64,6 +64,10 @@ if (true) {
       $templateArgs = salarySave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'salary-delete':
+      $templateArgs = salaryDelete($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
     case 'proposals':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
@@ -332,7 +336,7 @@ if (true) {
 }
 
 # $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-$basepath = '/var/www/budgetprops-dev';
+$basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');
@@ -459,6 +463,20 @@ function salarySave ($pbdb, $templateArgs) {
   $templateArgs['salaryid'] = $salaryid;
   $templateArgs['payplan'] = $payplan;
   $templateArgs['title'] = $title;
+
+  return ($templateArgs);
+}
+
+function salaryDelete ($pbdb, $templateArgs) {
+  $salaryid = (isset($_REQUEST['salaryid'])? $_REQUEST['salaryid'] : null);
+
+  if ($salaryid != null) {
+    $pbdb->deleteSalary($salaryid);
+  }
+
+  $templateArgs['salaryid'] = $salaryid;
+  $templateArgs['deleteid'] = $salaryid;
+  $templateArgs['view'] = 'delete-result.html';
 
   return ($templateArgs);
 }

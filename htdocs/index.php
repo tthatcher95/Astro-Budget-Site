@@ -112,6 +112,14 @@ if (true) {
       $templateArgs['view'] = 'proposal-budget-details.html';
       $view = $templateArgs['view'];
       break;
+    case 'proposal-roses':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'proposal-roses.html';
+      $view = $templateArgs['view'];
+      break;
     case 'fbms-list-json':
       $templateArgs = fbmsView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -335,8 +343,8 @@ if (true) {
   }
 }
 
-# $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-$basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
+$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+# $basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');
@@ -599,6 +607,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['benefitsreqcosts'] += $currBenefits;
         $templateArgs['proposals'][$i]['peopletotals'][$currFy]['total'] += $currSalary + $currBenefits;
         $templateArgs['proposals'][$i]['peopletotals']['ALL']['total'] += $currSalary + $currBenefits;
+        $templateArgs['proposals'][$i]['peoplehrtotals'][$currFy]['total'] += $taskhours;
+        $templateArgs['proposals'][$i]['peoplehrtotals']['ALL']['total'] += $taskhours;
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['hours'] += $taskhours;
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estsalary'] += $estsalary * $lafhours;
         $templateArgs['proposals'][$i]['people'][$peopleid]['ALL']['estbenefits'] += $estbenefits * $lafhours;

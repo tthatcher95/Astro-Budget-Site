@@ -23,6 +23,8 @@
                 target='report' id="budgetDetailsButton">Budget Details</a>
               <a href="index.php?view=proposal-nspires&proposalid={{ proposals[0].proposalid }}" 
                 target='report' id="nspiresButton">NSPIRES</a>
+              <a href="index.php?view=proposal-roses&proposalid={{ proposals[0].proposalid }}" 
+                target='report' id="rosesButton">ROSES</a>
               <p/>
               <form id="proposalForm" action="index.php" method="GET">
               <input type='hidden' name='proposalid' value='{{ proposals[0].proposalid }}'/>
@@ -138,6 +140,7 @@
           $('#newExpenseButton').button();
           $('#budgetDetailsButton').button();
           $('#nspiresButton').button();
+          $('#rosesButton').button();
 
           loadFundingTable(false, {{ proposals[0].proposalid }});
           loadFbmsTable(false, {{ proposals[0].proposalid }});

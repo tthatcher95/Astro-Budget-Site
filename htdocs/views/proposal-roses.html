@@ -33,9 +33,7 @@
             </td>{% endfor %}<td></td></tr>
           {% endfor %}
 
-          {% set hascost=0 %}
-          {% for year in budgets[0].FYs %}{% set hascost = hascost + budgets[0].FY[year].equipment[equipment] %}{% endfor %}
-          {% if hascost > 0 %}
+          {% if budgets[0].ALL['Section C Equipment'] > 0 %}
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th></th>{% for year in budgets[0].FYs %}<th>{{ year }}</th>{% endfor %}<th>ALL YEARS</th></tr>
           <tr class="bordered"><th align="left" >C EQUIPMENT</th>
@@ -160,7 +158,7 @@
           <tr><th>Subawards/Consortium/Contractual Costs</th>{% for year in budgets[0].FYs %} <td>
             ${{ budgets[0].FY[year]['Subawards/Consortium/Contractual Costs']|number_format(2,'.',',') }}</td>{% endfor %}
             <td>${{ budgets[0]['ALL']['Subawards/Consortium/Contractual Costs']|number_format(2,'.',',') }}</td></tr>
-          {% endif %}{% if budgets[0]['ALL']['Direct Funded Contracts (no USGS overhead)'] > 0 %}
+          {% endif %}{% if budgets[0]['ALL']['Directed Funded Contracts (no USGS overhead)'] > 0 %}
           <tr><th>Directed Funded Contracts (no USGS overhead)</th>{% for year in budgets[0].FYs %}<td>
             ${{ budgets[0].FY[year]['Directed Funded Contracts (no USGS overhead)']|number_format(2,'.',',') }}</td>
             {% endfor %}<td>${{ budgets[0]['ALL']['Directed Funded Contracts (no USGS overhead)']|number_format(2,'.',',') }}</td></tr>

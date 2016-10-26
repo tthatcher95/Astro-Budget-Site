@@ -584,7 +584,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['hours'] += $taskhours;
         $laf = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['laf'];
-        $lafhours = round($taskhours * $laf);
+        // $lafhours = round($taskhours * $laf);
+        $lafhours = round($taskhours * $laf, 4);
         $estsalary = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estsalary'] = $estsalary;
         $estbenefits = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estbenefits'];

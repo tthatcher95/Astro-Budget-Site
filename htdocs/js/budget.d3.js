@@ -1,7 +1,9 @@
 function projectBudgetDashboard(id, bData){
     var barColor = 'steelblue';
+    var fundingColor = 'green';
     // function segColor(c){ return {low:"#807dba", mid:"#e08214",high:"#41ab5d"}[c]; }
-    function segColor(c){ return {expenses:"yellow", staffing:"aqua",travel:"purple", overhead:"green"}[c]; }
+    // function segColor(c){ return {expenses:"firebrick", staffing:"CornFlowerBlue",travel:"purple",equipment:"maroon",overhead:"OliveDrab"}[c]; }
+    function segColor(c){ return {expenses:"cadetblue", staffing:"chocolate",travel:"darkseagreen",equipment:"goldenrod",overhead:"OliveDrab"}[c]; }
     
     // compute total for each expense type.
     bData.forEach(function(d){
@@ -11,7 +13,7 @@ function projectBudgetDashboard(id, bData){
     function histoGram(fD){
         var hG={},    hGDim = {t: 80, r: 0, b: 30, l: 0};
         // hGDim.w = 500 - hGDim.l - hGDim.r, 
-        hGDim.w = (100 * fD.length) - hGDim.l - hGDim.r, 
+        hGDim.w = (120 * fD.length) - hGDim.l - hGDim.r, 
         hGDim.h = 250 - hGDim.t - hGDim.b;
             
         //create svg for histogram.
@@ -37,21 +39,46 @@ function projectBudgetDashboard(id, bData){
         var bars = hGsvg.selectAll(".bar").data(fD).enter()
                 .append("g").attr("class", "bar");
         
-        //create the rectangles.
+        //create the expense rectangles.
         bars.append("rect")
             .attr("x", function(d) { return x(d[0]); })
             .attr("y", function(d) { return y(d[1]); })
-            .attr("width", x.rangeBand())
+            .attr("width", x.rangeBand()/2)
             .attr("height", function(d) { return hGDim.h - y(d[1]); })
             .attr('fill',barColor)
             .on("mouseover",mouseover)// mouseover is defined below.
             .on("mouseout",mouseout);// mouseout is defined below.
             
         //Create the costs labels above the rectangles.
-        bars.append("text").text(function(d){ return "$" + d3.format(",.2f")(d[1])})
-            .attr("x", function(d) { return x(d[0])+x.rangeBand()/2; })
-            .attr("y", function(d) { return y(d[1])-5; })
-            .style("font-size", "13px")
+        // bars.append("text").text(function(d){ return "-$" + d3.format(",.2f")(d[1])})
+        bars.append("text").text(function(d){ return d3.format("$,.3s")(d[1])})
+            // .attr("transform", "rotate(90)")
+            .attr("x", function(d) { return x(d[0])+x.rangeBand()/4; })
+            .attr("y", function(d) { return y(d[1]/2); })
+            .style("font-size", "12px")
+            .attr('fill',"black")
+            .attr('font-weight', "bold")
+            .attr("text-anchor", "middle");
+        
+        //create the funding rectangles.
+        bars.append("rect")
+            .attr("x", function(d) { return x(d[0])+(x.rangeBand()/2); })
+            .attr("y", function(d) { return y(d[2]); })
+            .attr("width", x.rangeBand()/2)
+            .attr("height", function(d) { return hGDim.h - y(d[2]); })
+            .attr('fill', function(d) { if (d[1] > d[2]) { return 'firebrick';} else { return 'darkolivegreen'; }})
+            .on("mouseover",mouseover)// mouseover is defined below.
+            .on("mouseout",mouseout);// mouseout is defined below.
+            
+        //Create the funding labels above the rectangles.
+        // bars.append("text").text(function(d){ return "+$" + d3.format(",.2f")(d[2])})
+        bars.append("text").text(function(d){ return d3.format("$,.3s")(d[2])})
+            // .attr("transform", "rotate(90)")
+            .attr("x", function(d) { return x(d[0])+(0.75 * x.rangeBand()); })
+            .attr("y", function(d) { return y(d[2]/3); })
+            .style("font-size", "12px")
+            .attr('fill',"black")
+            .attr('font-weight', "bold")
             .attr("text-anchor", "middle");
         
         function mouseover(d){  // utility function to be called on mouseover.
@@ -73,7 +100,7 @@ function projectBudgetDashboard(id, bData){
         // create function to update the bars. This will be used by pie-chart.
         hG.update = function(nD, color){
             // update the domain of the y-axis map to reflect change in costs.
-            y.domain([0, d3.max(nD, function(d) { return d[1]; })]);
+            //y.domain([0, d3.max(nD, function(d) { return d[1]; })]);
             
             // Attach the new data to the bars.
             var bars = hGsvg.selectAll(".bar").data(nD);
@@ -86,8 +113,9 @@ function projectBudgetDashboard(id, bData){
 
             // transition the frequency labels location and change value.
             bars.select("text").transition().duration(500)
-                .text(function(d){ return "$" + d3.format(",.2f")(d[1])})
-                .attr("y", function(d) {return y(d[1])-5; });            
+             // .attr("y", function(d) {return y(d[1])-5; });            
+                .text(function(d){ return "$" + d3.format(",.3s")(d[1])})
+                .attr("y", function(d) { return y(d[1]/3); })
         }        
         return hG;
     }
@@ -185,6 +213,11 @@ function projectBudgetDashboard(id, bData){
 
         return leg;
     }
+
+    function netTable (sF) {
+      var tablecontents = "<TABLE>";
+      
+    }
     
     // calculate total frequency by segment for all state.
     var tF = ['expenses','staffing','travel','overhead','equipment'].map(function(d){ 
@@ -192,7 +225,7 @@ function projectBudgetDashboard(id, bData){
     });    
     
     // calculate total frequency by state for all segment.
-    var sF = bData.map(function(d){return [d.fy,d.total];});
+    var sF = bData.map(function(d){return [d.fy,d.total,d.funding];});
 
     var hG = histoGram(sF), // create the histogram.
         pC = pieChart(tF), // create the pie-chart.
@@ -206,4 +239,6 @@ function deleteProjectBudgetDashboard(id){
   var leg = [];
 
   d3.select("svg").remove();
+  d3.select(id + 'Table').innerHTML = "TEST";
+
 }

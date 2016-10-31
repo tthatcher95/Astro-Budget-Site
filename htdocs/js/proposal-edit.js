@@ -14,7 +14,43 @@ function figureCosts(proposalid) {
   // Dashboard
   $.getJSON( "index.php?view=proposal-costs-json&proposalid=" + proposalid, function( data ) {
     projectBudgetDashboard('#budgetDashboard',data.data[0].budget);
+    projectBudgetTable('#budgetTable', data.data[0].budget);
   });
+}
+
+function projectBudgetTable (id, data) {
+  var newTable = "<table class='display' width='100%'>";
+  newTable += "<tr><th>Year</th>";
+  $.each(data, function(i, item) {
+    newTable += "<td>" + item.fy + "</td>";
+  });
+
+  newTable += "</tr>\n<tr><th>Costs</th>";
+  $.each(data, function(i, item) {
+    newTable += "<td>$";
+    var costs = (item.costs.expenses + item.costs.staffing + item.costs.travel + item.costs.equipment + item.costs.overhead);
+    newTable += costs.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+    newTable += "</td>";
+  });
+
+  newTable += "</tr>\n<tr><th>Funding</th>";
+  $.each(data, function(i, item) {
+    newTable += "<td>$" + item.funding.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + "</td>";
+  });
+
+  newTable += "</tr>\n<tr><th>Total</th>";
+  $.each(data, function(i, item) {
+    totals = item.funding - (item.costs.expenses + item.costs.staffing + item.costs.travel + item.costs.equipment +
+      item.costs.overhead);
+    if (totals < 0) { newTable += "<td><font color='firebrick'>$"; }
+    else { newTable += "<td><font color='darkolivegreen'>$"; }
+    newTable += totals.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+    newTable += "</td>";
+  });
+
+  newTable += "</tr><tr></table>\n";
+
+  $(id).html(newTable);
 }
 
 function loadFundingTable (reload, proposalid) {

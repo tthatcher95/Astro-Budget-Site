@@ -14,9 +14,13 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'Conferences/Travel', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Expense Categories', 'href' => 'index.php?view=expensetypes'),
   array ('caption' => 'Programs', 'href' => 'index.php?view=programs')));
-$templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Rejected', 'Active', 'Completed', 'Scratch');
+$templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Rejected', 'Active', 'Completed', 'Scratch', 'Save');
 
 $templateArgs['remote_user'] = $pbdb->getPerson(null, null, $_SERVER['REMOTE_USER']);
+
+$templateArgs['currentDate'] = date('Y-m-d H:i:s');
+$templateArgs['currentFY'] = $pbdb->fiscalYear(date('Y-m-d H:i:s'));
+$templateArgs['FYOCT1'] = octoberFirst($templateArgs['currentFY']);
 
 # Handle GET options
 $viewSwitch = 'proposals';
@@ -35,6 +39,7 @@ if (true) {
       break;
     case 'people-edit':
       $templateArgs = peopleView($pbdb, $templateArgs);
+      $templateArgs = FYDefaults ($templateArgs);
       $templateArgs['view'] = 'people-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -72,6 +77,7 @@ if (true) {
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
       $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = FYDefaults ($templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'proposal-list-json':
@@ -85,6 +91,7 @@ if (true) {
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
       $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'proposal-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -156,6 +163,7 @@ if (true) {
       break;
     case 'program-edit':
       $templateArgs = programsView($pbdb, $templateArgs);
+      $templateArgs = FYDefaults ($templateArgs);
       $templateArgs['view'] = 'programs-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -188,6 +196,7 @@ if (true) {
       break;
     case 'conference-edit':
       $templateArgs = conferenceView($pbdb, $templateArgs);
+      $templateArgs = FYDefaults ($templateArgs);
       $templateArgs['view'] = 'conference-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -209,6 +218,7 @@ if (true) {
     case 'conference-attendee-edit':
       $templateArgs = conferenceView($pbdb, $templateArgs);
       $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'conference-attendee-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -240,6 +250,7 @@ if (true) {
       break;
     case 'funding-edit':
       $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'funding-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -274,8 +285,11 @@ if (true) {
     case 'task-edit':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = tasksView($pbdb, $templateArgs);
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'task-edit.html';
       $view = $templateArgs['view'];
+    error_log('First FY:' . $templateArgs['budgets'][0]['ddFYs'][0]);
       break;
     case 'task-save':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
@@ -289,6 +303,7 @@ if (true) {
       break;
     case 'staffing-edit-json':
       $templateArgs = staffingView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'staffing-edit-ajax.json';
       $view = $templateArgs['view'];
       break;
@@ -316,6 +331,7 @@ if (true) {
     case 'expense-edit':
       $templateArgs = expensetypesView($pbdb, $templateArgs);
       $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'expense-edit.html';
       $view = $templateArgs['view'];
       break;
@@ -343,8 +359,8 @@ if (true) {
   }
 }
 
-$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-# $basepath = '/var/www/budgetprops-dev/htdocs/dev/htdocs';
+# $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+$basepath = '/var/www/budgetprops-dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');
@@ -584,7 +600,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
           $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['flexhours'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['hours'] += $taskhours;
         $laf = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['laf'];
-        // $lafhours = round($taskhours * $laf);
+        # $lafhours = round($taskhours * $laf);
         $lafhours = round($taskhours * $laf, 4);
         $estsalary = $templateArgs['proposals'][$i]['tasks'][$j]['staffing'][$k]['salary'][0]['estsalary'];
         $templateArgs['proposals'][$i]['people'][$peopleid][$currFy]['estsalary'] = $estsalary;
@@ -633,7 +649,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['tasks'][$j]['fylist'] = join(', ', $fylist);
     }
 
-    usort ($templateArgs['proposals'][$i]['people'], "peopleCompare");
+    if (count($templateArgs['proposals'][$i]['people']) > 0) {
+      usort ($templateArgs['proposals'][$i]['people'], "peopleCompare");
+    }
   
     $subtotal = 0;
     $templateArgs['costs'][$i]['staffing'] = "Tasks ";
@@ -813,6 +831,33 @@ function costsSummaryView ($pbdb, $templateArgs) {
     $templateArgs['costs'][$i]['overhead'] .= " - Total " . money_format('%.2n', $subtotal);
     $templateArgs['budgets'][$i]['FYs'] = array_unique($fiscalyears);
     sort ($templateArgs['budgets'][$i]['FYs']);
+    
+    $templateArgs['budgets'][$i]['ddFYs'] = array();
+    $templateArgs['budgets'][$i]['ddOctOnes'] = array();
+
+    if (count($templateArgs['budgets'][$i]['FYs']) > 0) {
+      $loopFyYear = str_replace('FY', '', $templateArgs['budgets'][$i]['FYs'][0]);
+      $loopFyYear -= 1;
+      array_push ($templateArgs['budgets'][$i]['ddFYs'], 'FY' . $loopFyYear);
+      array_push ($templateArgs['budgets'][$i]['ddOctOnes'], octoberFirst('FY' . $loopFyYear));
+    }
+    foreach ($templateArgs['budgets'][$i]['FYs'] as $loopFy) {
+      array_push ($templateArgs['budgets'][$i]['ddFYs'], $loopFy);
+      array_push ($templateArgs['budgets'][$i]['ddOctOnes'], octoberFirst($loopFy));
+    }
+    if (count($templateArgs['budgets'][$i]['FYs']) > 0) {
+      // $loopFyYear = str_replace('FY', '', end($FYs));
+      $loopFyYear = str_replace('FY', '', end($templateArgs['budgets'][$i]['FYs']));
+      $loopFyYear += 1;
+      array_push ($templateArgs['budgets'][$i]['ddFYs'], 'FY' . $loopFyYear);
+      array_push ($templateArgs['budgets'][$i]['ddOctOnes'], octoberFirst('FY' . $loopFyYear));
+    }
+
+    if (count($templateArgs['budgets'][$i]['ddFYs']) < 1) {
+      # $templateArgs['budgets'][$i]['ddFYs'] = array ('FY17' , 'FY18', 'FY19', 'FY20');
+      # $templateArgs['budgets'][$i]['ddOctOnes'] = array ('10/01/2016' , '10/01/2017', '10/01/2018', '10/01/2019');
+      $templateArgs = FYDefaults($templateArgs);
+    }
 
     $templateArgs['costs'][$i]['overhead'] = "Overhead ";
     foreach ($templateArgs['budgets'][$i]['FYs'] as $budgetFy) {
@@ -1403,6 +1448,22 @@ function getOverhead ($pbdb, $templateArgs, $effectivedate) {
   }
 
   return $templateArgs['overheadrates'][0]['rate'];
+}
+
+function octoberFirst ($fy) {
+  $fyYear = str_replace('FY', '', $fy);
+  $fyYear -= 1;
+
+  return ("10/01/20" . $fyYear);
+}
+
+function FYDefaults ($templateArgs) {
+      $templateArgs['budgets'] = array();
+      $templateArgs['budgets'][0]['ddFYs'] = array ('FY13', 'FY14', 'FY15', 'FY16', 'FY17' , 'FY18', 'FY19', 'FY20',
+      'FY21');
+      $templateArgs['budgets'][0]['ddOctOnes'] = array ('10/01/2012', '10/01/2013', '10/01/2014', '10/01/2015', '10/01/2016' , '10/01/2017', '10/01/2018', '10/01/2019', '10/01/2020');
+
+      return ($templateArgs);
 }
 
 ?>

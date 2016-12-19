@@ -15,6 +15,8 @@ class PBTables {
     if (!isset($admin)) { $admin = 'false'; }
     if ($admin == 't') { $admin = 'true'; }
     if ($admin == 'f') { $admin = 'false'; }
+
+    $name = pg_escape_string($name);
     
     $query = "INSERT INTO people (name, username, admin) VALUES ('$name', '$username', $admin)";
 
@@ -27,6 +29,9 @@ class PBTables {
     if ((!isset($name)) and (!isset($username)) and !(isset($admin))) { 
       return "A name or username update must be provided"; 
     }
+
+    $name = pg_escape_string($name);
+    $username = pg_escape_string($username);
 
     $query = "UPDATE people SET ";
     if (isset($name)) {
@@ -66,6 +71,7 @@ class PBTables {
         $query .= " WHERE ";
         $needAnd = true;
       }
+      $name = pg_escape_string($name);
       $query .= "name='$name'";
     }
     if (isset($username)) {
@@ -74,6 +80,7 @@ class PBTables {
         $query .= " WHERE ";
         $needAnd = true;
       }
+      $username = pg_escape_string($username);
       $query .= "username='$username'";
     }
     $query .= " ORDER BY name";
@@ -105,6 +112,10 @@ class PBTables {
       $query .= "'" . $this->formatDate($effectivedate) . "', "; 
     }
 
+    $payplan = pg_escape_string($payplan);
+    $title = pg_escape_string($title);
+    $appttype = pg_escape_string($appttype);
+
     $query .= "'$payplan', '$title', '$appttype', $authhours, $estsalary, $estbenefits, $leavecategory, $laf)";
 
     $this->db->query($query);
@@ -132,16 +143,19 @@ class PBTables {
     }
     if (isset($payplan)) {
       if ($needComma) { $query .= ", "; }
+      $payplan = pg_escape_string($payplan);
       $query .= "payplan='$payplan'";
       $needComma = true;
     }
     if (isset($title)) {
       if ($needComma) { $query .= ", "; }
+      $title = pg_escape_string($title);
       $query .= "title='$title'";
       $needComma = true;
     }
     if (isset($appttype)) {
       if ($needComma) { $query .= ", "; }
+      $appttype = pg_escape_string($appttype);
       $query .= "appttype='$appttype'";
       $needComma = true;
     }
@@ -271,6 +285,11 @@ class PBTables {
     if (!isset($programname)) { return "The program name must be set to add a funding program"; }
     if (!isset($agency)) { return "The agency must be set to add a funding program"; }
 
+    $programname = pg_escape_string($programname);
+    $agency = pg_escape_string($agency);
+    $pocname = pg_escape_string($pocname);
+    $pocemail = pg_escape_string($pocemail);
+
     $query = "INSERT INTO fundingprograms (programname, agency, pocname, pocemail, startdate, enddate) " .
              "VALUES ('$programname', '$agency', '$pocname', '$pocemail', '" . $this->formatDate($startdate) . "', " .
              "'" . $this->formatDate($enddate) . "')";
@@ -291,21 +310,25 @@ class PBTables {
     $needComma = false;
     $query = "UPDATE fundingprograms SET ";
     if (isset($programname)) {
+      $programname = pg_escape_string($programname);
       $query .= "programname='$programname'";
       $needComma = true;
     }
     if (isset($agency)) {
       if ($needComma) { $query .= ", "; }
+      $agency = pg_escape_string($agency);
       $query .= "agency='$agency'";
       $needComma = true;
     }
     if (isset($pocname)) {
       if ($needComma) { $query .= ", "; }
+      $pocname = pg_escape_string($pocname);
       $query .= "pocname='$pocname'";
       $needComma = true;
     }
     if (isset($pocemail)) {
       if ($needComma) { $query .= ", "; }
+      $pocemail = pg_escape_string($pocemail);
       $query .= "pocemail='$pocemail'";
       $needComma = true;
     }
@@ -339,24 +362,28 @@ class PBTables {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
+      $programname = pg_escape_string($programname);
       $query .= "programname='$programname'";
     }
     if (isset($agency)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
+      $agency = pg_escape_string($agency);
       $query .= "agency='$agency'";
     }
     if (isset($pocname)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
+      $pocname = pg_escape_string($pocname);
       $query .= "pocname='$pocname'";
     }
     if (isset($pocemail)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
+      $pocemail = pg_escape_string($pocemail);
       $query .= "pocemail='$pocemail'";
     }
     if (isset($targetdate)) {
@@ -404,6 +431,10 @@ class PBTables {
       return "A PI and project name must be provided to create a proposal"; 
     }
 
+    $projectname = pg_escape_string($projectname);
+    $proposalnumber = pg_escape_string($proposalnumber);
+    $awardnumber = pg_escape_string($awardnumber);
+
     $query = "INSERT INTO proposals (peopleid, projectname, proposalnumber, awardnumber, " .
              "programid, perfperiodstart, perfperiodend, status) VALUES ($peopleid, '$projectname', " .
              "'$proposalnumber', '$awardnumber', $programid, ";
@@ -439,16 +470,19 @@ class PBTables {
     }
     if (isset($projectname)) {
       if ($needComma) { $query .= ", "; }
+      $projectname = pg_escape_string($projectname);
       $query .= "projectname='$projectname'";
       $needComma = true;
     }
     if (isset($proposalnumber)) {
       if ($needComma) { $query .= ", "; }
+      $proposalnumber = pg_escape_string($proposalnumber);
       $query .= "proposalnumber='$proposalnumber'";
       $needComma = true;
     }
     if (isset($awardnumber)) {
       if ($needComma) { $query .= ", "; }
+      $awardnumber = pg_escape_string($awardnumber);
       $query .= "awardnumber='$awardnumber'";
       $needComma = true;
     }
@@ -505,12 +539,14 @@ class PBTables {
     if (isset($awardnumber)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
+      $awardnumber = pg_escape_string($awardnumber);
       $query .= "awardnumber='$awardnumber'";
       $needAnd = true;
     }
     if (isset($proposalnumber)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
+      $proposalnumber = pg_escape_string($proposalnumber);
       $query .= "proposalnumber='$proposalnumber'";
       $needAnd = true;
     }
@@ -727,6 +763,8 @@ class PBTables {
   function addFBMSAccount ($accountno, $proposalid) {
     if (!(isset($accountno) and isset($proposalid))) { return "Both the account No and proposal ID are required"; }
 
+    $accountno = pg_escape_string($accountno);
+
     $query = "INSERT INTO fbmsaccounts (accountno, proposalid) VALUES ('$accountno', $proposalid)";
 
     $this->db->query($query);
@@ -738,6 +776,8 @@ class PBTables {
     if (!(isset($accountno) or isset($proposalid))) { 
       return "The Account No or proposal ID are required to update FBMS"; 
     }
+
+    $accountno = pg_escape_string($accountno);
 
     $query = "UPDATE fbmsaccounts SET";
     if (isset($accountno)) { $query .= " accountno='$accountno'"; }
@@ -762,6 +802,7 @@ class PBTables {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
+      $accountno = pg_escape_string($accountno);
       $query .= "accountno='$accountno'";
     }
     if (isset($proposalid)) {
@@ -794,6 +835,8 @@ class PBTables {
   function addConference ($meeting) {
     if (!isset($meeting)) { return "A meeting name must be provided"; }
 
+    $meeting = pg_escape_string($meeting);
+
     $query = "INSERT INTO conferences (meeting) VALUES ('$meeting')";
 
     $this->db->query($query);
@@ -821,6 +864,7 @@ class PBTables {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
       $needAnd = true;
+      $meeting = pg_escape_string($meeting);
       $query .= "meeting='$meeting'";
     }
 
@@ -848,6 +892,10 @@ class PBTables {
   function addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare,
                               $lodging, $city, $state, $country) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to add new conference rates"; }
+
+    $city = pg_escape_string($city);
+    $state = pg_escape_string($state);
+    $country = pg_escape_string($country);
 
     $query = "INSERT INTO conferencerates (conferenceid, effectivedate, perdiem, registration, " .
              "groundtransport, airfare, lodging, city, state, country) VALUES ($conferenceid, ";
@@ -904,16 +952,19 @@ class PBTables {
     }
     if (isset($city)) {
       if ($needComma) { $query .= ", "; }
+      $city = pg_escape_string($city);
       $query .= "city='$city'";
       $needComma = true;
     }
     if (isset($state)) {
       if ($needComma) { $query .= ", "; }
+      $state = pg_escape_string($state);
       $query .= "state='$state'";
       $needComma = true;
     }
     if (isset($country)) {
       if ($needComma) { $query .= ", "; }
+      $country = pg_escape_string($country);
       $query .= "country='$country'";
       $needComma = true;
     }
@@ -1104,6 +1155,8 @@ class PBTables {
   function addTask ($proposalid, $taskname) {
     if (!(isset($proposalid) and isset($taskname))) { return "Both a proposal ID and a task name are required"; }
 
+    $taskname = pg_escape_string($taskname);
+
     $query = "INSERT INTO tasks (proposalid, taskname) VALUES ($proposalid, '$taskname')";
 
     $this->db->query($query);
@@ -1124,6 +1177,7 @@ class PBTables {
     if (isset($proposalid)) { $query .= "proposalid=$proposalid"; }
     if (isset($taskname)) {
       if (isset($proposalid)) { $query .= ", "; }
+      $taskname = pg_escape_string($taskname);
       $query .= "taskname='$taskname'";
     }
 
@@ -1149,6 +1203,7 @@ class PBTables {
     if (isset($taskname)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
+      $taskname = pg_escape_string($taskname);
       $query .= "taskname='$taskname'";
       $needAnd = true;
     }
@@ -1361,6 +1416,8 @@ class PBTables {
   function addExpenseType ($description) {
     if (!isset($description)) { return "No description provided to add expense type"; }
 
+    $description = pg_escape_string($description);
+
     $query = "INSERT INTO expensetypes (description) VALUES ('$description')";
 
     $this->db->query($query);
@@ -1369,6 +1426,7 @@ class PBTables {
   function updateExpenseType ($expensetypeid, $description) {
     if (!(isset($expensetypeid) and isset($description))) { return "No ID or change provided to update expense types"; }
     
+    $description = pg_escape_string($description);
     $query = "UPDATE expensetypes SET description='$description' WHERE expensetypeid=$expensetypeid";
     
     $this->db->query($query);
@@ -1382,6 +1440,7 @@ class PBTables {
     if (isset($description)) {
       if (isset($expensetypeid)) { $query .= " AND "; }
       else { $query .= " WHERE "; }
+      $description = pg_escape_string($description);
       $query .= "description='$description'";
     }
 
@@ -1410,6 +1469,7 @@ class PBTables {
     }
 
     if (empty($description)) { $description = 'Expense'; }
+    $description = pg_escape_string($description);
 
     $query = "INSERT INTO expenses (proposalid, expensetypeid, description, amount, fiscalyear) VALUES " .
              "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", '" . 
@@ -1438,6 +1498,7 @@ class PBTables {
     if (isset($description)) {
       if ($needComma) { $query .= ", "; }
       $query .= "description='$description'";
+      $description = pg_escape_string($description);
       $needComma = true;
     }
     if (isset($amount)) {
@@ -1510,6 +1571,8 @@ class PBTables {
       return "Missing required information to add overhead rate";
     }
 
+    $description = pg_escape_string($description);
+
     $query = "INSERT INTO overheadrates (proposalid, rate, description, effectivedate) " .
              " VALUES ($proposalid, $rate, '$description', '" . $this->formatDate($effectivedate) . "')"; 
 
@@ -1537,6 +1600,7 @@ class PBTables {
     if (isset($description)) {
       if ($needComma) { $query .= ", "; }
       $needComma = true;
+      $description = pg_escape_string($description);
       $query .= "description='$description'";
     }
     if (isset($effectivedate)) {

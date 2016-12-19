@@ -1,6 +1,6 @@
 {"draw":0,"recordsTotal":{{ tasks|length }},"recordsFiltered":{{ tasks|length }},"data":[
 {% for task in proposals[0].tasks %}
 ["<a href='javascript:void(0)' onclick='editTaskDialog({{ task.taskid }}, {{ proposals[0].proposalid }})'>{{ task.taskname }}</a>", "{{ task.stafflist }}", {{ task.taskhourlist|number_format(2,'.','') }}, "${{ task.tasktotalcost|number_format(2,'.',',')}}", "{{ task.fylist }}",
-"<a href='javascript:void(0)' onclick='deleteTaskDialog({{ task.taskid }}, {{ proposals[0].proposalid }})'><span class='ui-icon ui-icon-trash'>&nbsp;</span></a>"]{% if loop.last !=true %},{% endif %}
+"<a href='javascript:void(0)' onclick='deleteTaskDialog({{ task.taskid }}, {{ proposals[0].proposalid }})'><img src='images/trash-2-32.png' title='Delete Task'></a>"]{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

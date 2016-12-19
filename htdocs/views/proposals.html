@@ -3,6 +3,7 @@
     <head>
         <title>Proposal Budget Listing</title>
         {% include 'menu-header.html' %}
+        <script src="js/date-tools.js"></script>
     </head>
     {% for error in debug %}
       <pre>error.msg</pre>
@@ -42,9 +43,19 @@
               <th>Award Number</th>
               <td><input type='text' name='awardnumber' value=''/></td></tr>
             <tr><th>Starting</th>
-              <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart' value=''/></td>
+              <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart' value=''
+                  onchange="updateDropDown('proposalperfperiodstart');"/>
+                {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodstart',
+                                                        'dropdown_id': 'proposalperfperiodstart',
+                                                        'selected_fy': '' } %}
+              </td>
               <th>Ending</th>
-              <td><input type='text' id='proposalperfperiodend' name='perfperiodend' value=''/></td></tr>
+              <td><input type='text' id='proposalperfperiodend' name='perfperiodend' value=''
+                  onchange="updateDropDown('proposalperfperiodend');"/>
+                {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodend',
+                                                        'dropdown_id': 'proposalperfperiodend',
+                                                        'selected_fy': '' } %}
+              </td></tr>
             </tr>
           </table>
           </form>
@@ -67,6 +78,9 @@
           $("#proposalperfperiodstart").datepicker();
           $("#proposalperfperiodend").datepicker();
 
+          updateDropdown ('proposalperfperiodstart');
+          updateDropdown ('proposalperfperiodend');
+
           loadProposalsTable(false);
         } );
 
@@ -88,8 +102,8 @@
         function editProjectDialog() {
           dialog = $("#editDialog").dialog({
             autoOpen: false,
-            height: 400,
-            width: 800,
+            height: 450,
+            width: 1000,
             modal: true,
             buttons: {
               "AddProject": saveProject,
@@ -113,29 +127,50 @@
 
         function deleteProposalDialog(proposalid) {
           var description;
+          // var dialog;
 
           $.getJSON( "index.php?view=proposal-list-json&proposalid=" + proposalid, function( data ) {
             var pattern = />(.+)<\/a>/i;
             description = pattern.exec(data.data[0][0])[1];
-            $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+            budgetstatus = data.data[0][4];
+            if ((budgetstatus == 'Active') || (budgetstatus == 'Save')) {
+              $("#editDialog").html("<html><head><title>Active or Saved Project</title></head>" +
+                                "<body><h2>The project <p/>'" + description + 
+                                "' <p/>has a status of Active or Save and cannot be deleted</h2></body></html>");
+              dialog = $("#editDialog").dialog({
+                autoOpen: false,
+                height: 300,
+                width: 500,
+                modal: true,
+                buttons: {
+                  Ok: function () {
+                    dialog.dialog("close");
+                  }
+                }
+              });
+              dialog.dialog("open");
+            }
+            else {
+              $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
                                 "<body><h2>Are you sure you want to delete the project <p/>'" + description + 
                                 "'?</h2></body></html>");
-          });
-        
-          dialog = $("#editDialog").dialog({
-            autoOpen: false,
-            height: 300,
-            width: 500,
-            modal: true,
-            buttons: {
-              "Delete Project": function () { deleteProposal(proposalid); },
-              Cancel: function () {
-                dialog.dialog("close");
-              }
+              dialog = $("#editDialog").dialog({
+                autoOpen: false,
+                height: 300,
+                width: 500,
+                modal: true,
+                buttons: {
+                  "Delete Project": function () { deleteProposal(proposalid); },
+                  Cancel: function () {
+                    dialog.dialog("close");
+                  }
+                }
+              });
+              dialog.dialog("open");
             }
           });
         
-          dialog.dialog("open");
+        
         }
 
         function deleteProposal(proposalid) {

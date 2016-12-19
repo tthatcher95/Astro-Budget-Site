@@ -5,6 +5,6 @@
   "{{ expense.type }}", 
   "${{ expense.amount|number_format(2,'.',',') }}", 
   "{{ expense.FY }}", 
-  "<a href='javascript:void(0)' onclick='deleteExpenseDialog({{ expense.expenseid}}, {{ proposals[0].proposalid }})'><span class='ui-icon ui-icon-trash'>&nbsp;</span></a>"]{% if loop.last !=true %},{% endif %}
+  "<a href='javascript:void(0)' onclick='deleteExpenseDialog({{ expense.expenseid}}, {{ proposals[0].proposalid }})'><img src='images/trash-2-32.png'></a>"]{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

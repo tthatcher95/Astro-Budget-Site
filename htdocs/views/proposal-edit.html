@@ -5,6 +5,7 @@
         {% include 'menu-header.html' %}
         {% include 'graphs-header.html' %}
         <script src="js/proposal-edit.js"></script>
+        <script src="js/date-tools.js"></script>
     </head>
     {% for error in debug %}
       <pre>error.msg</pre>
@@ -25,7 +26,7 @@
               <a href="index.php?view=proposal-nspires&proposalid={{ proposals[0].proposalid }}" 
                 target='report' id="nspiresButton">NSPIRES</a>
               <a href="index.php?view=proposal-roses&proposalid={{ proposals[0].proposalid }}" 
-                target='report' id="rosesButton">ROSES</a>
+                target='report' id="rosesButton">Redacted</a>
               <p/>
               <form id="proposalForm" action="index.php" method="GET">
               <input type='hidden' name='proposalid' value='{{ proposals[0].proposalid }}'/>
@@ -56,10 +57,19 @@
                   <td><input type='text' name='awardnumber' value='{{ proposals[0].awardnumber }}'/></td></tr>
                 <tr><th>Starting</th>
                   <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart' 
-                       value='{{ proposals[0].perfperiodstart }}'/></td>
+                       value='{{ proposals[0].perfperiodstart }}' onchange='updateDropdown("proposalperfperiodstart");'/>
+                {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodstart',
+                                                        'dropdown_id': 'proposalperfperiodstart',
+                                                        'selected_fy': proposals[0].perfperiodstart } %}
+                       </td>
                   <th>Ending</th>
                   <td><input type='text' id='proposalperfperiodend' name='perfperiodend' 
-                       value='{{ proposals[0].perfperiodend }}'/></td></tr>
+                       value='{{ proposals[0].perfperiodend }}' updateDropdown("proposalperfperiodend");'/>
+                {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodend',
+                                                        'dropdown_id': 'proposalperfperiodend',
+                                                        'selected_fy': proposals[0].perfperiodend } %}
+                  </td></tr>
+                       </td></tr>
                 </tr>
                 <tr><th></th>
                     <td><a href='javascript:void(0)' onClick='saveProposal()' id='saveProposalButton'>Save</a></td>
@@ -149,6 +159,9 @@
           loadTasksTable(false, {{ proposals[0].proposalid }});
           loadConferencesTable(false, {{ proposals[0].proposalid }});
           loadExpensesTable(false, {{ proposals[0].proposalid }});
+
+          updateDropdown('proposalperfperiodstart');
+          updateDropdown('proposalperfperiodend');
 
           $('#accordions').accordion( {heightStyle: 'content' });
 

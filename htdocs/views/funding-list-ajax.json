@@ -6,6 +6,6 @@
 ["{{ fund.FY }}",
   {% endif %}
 "${{ fund.newfunding|number_format(2,'.',',') }}", "${{ fund.carryover|number_format(2,'.',',') }}",
-"<a href='javascript:void(0)' onclick='deleteFundingDialog({{ fund.fundingid}}, {{ proposals[0].proposalid }})'><span class='ui-icon ui-icon-trash'>&nbsp;</span></a>"]{% if loop.last !=true %},{% endif %}
+"<a href='javascript:void(0)' onclick='deleteFundingDialog({{ fund.fundingid}}, {{ proposals[0].proposalid }})'><img src='images/trash-2-32.png' title='Delete funding'></a>"]{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

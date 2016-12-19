@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Editing {{ expenses[0].description }}</title>
-
+        <script src="js/date-tools.js"></script>
     </head>
     <body>
     <div id="expenseeditdiv">
@@ -27,7 +27,11 @@
             <tr><th>Amount</th>
             <td><input type="text" name="amount" id="amount" size="12" value="${{ proposals[0].expenses[0].amount|number_format(2,'.',',') }}"/></td></tr>
             <tr><th>Fiscal Year</th>
-            <td><input type="text" name="fiscalyear" id="fiscalyear" size="12" value="{{ proposals[0].expenses[0].fiscalyear }}"/></td></tr>
+            <td><input type="text" name="fiscalyear" id="fiscalyear" size="12" value="{{ proposals[0].expenses[0].fiscalyear }}"
+                 onchange="updateDropdown('fiscalyear');"/>
+                 {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'fiscalyear',
+                                                        'dropdown_id': 'fiscalyear',
+                                                        'selected_fy': proposals[0].expenses[0].fiscalyear } %}</td></tr>
             </table>
        </form>
     </div>
@@ -35,6 +39,8 @@
     <script type="text/javascript">
       $(document).ready(function() {
         $("#fiscalyear").datepicker();
+
+        updateDropdown('fiscalyear');
       });
     </script>
     </body>

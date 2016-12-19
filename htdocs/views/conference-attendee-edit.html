@@ -3,6 +3,7 @@
     <head>
         <title>Editing Conference Attendee</title>
 
+        <script src="js/date-tools.js"></script>
     </head>
     <body>
 
@@ -30,7 +31,12 @@
             <tr><th>Travel Days</th>
             <td><input type="text" name="traveldays" id="traveldays" size="4" value="{{ proposals[0].conferenceattendees[0].traveldays}}"/></td></tr>
             <tr><th>Trip Date</th>
-            <td><input type="text" name="startdate" id="startdate" size="12" value="{{ proposals[0].conferenceattendees[0].startdate }}"/></td></tr>
+            <td><input type="text" name="startdate" id="startdate" size="12" value="{{ proposals[0].conferenceattendees[0].startdate }}"
+                 onchange="updateDropdown('startdate')"/>
+                 {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'startdate',
+                                                        'dropdown_id': 'startdate',
+                                                        'selected_fy': proposals[0].conferenceattendees[0].startdate } %}</td></tr>
+
             <tr><th>How Many Rental Cars</th>
             <td><input type="text" name="rentalcars" id="rentalcars" size="12" value="{{ proposals[0].conferenceattendees[0].rentalcars }}"/></td></tr>
             </table>
@@ -40,6 +46,7 @@
     <script type="text/javascript">
       $(document).ready(function() {
         $("#startdate").datepicker();
+        updateDropdown('startdate');
       });
     </script>
     </body>

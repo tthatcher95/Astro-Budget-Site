@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Editing Conferences</title>
+        <script src="js/date-tools.js"></script>
     </head>
     <body>
     <div id="conferenceedittabs">
@@ -51,7 +52,12 @@
               <tr><th>City</th><td><input type="text" id="city" name="city" size="30"/></td>
                   <th>State</th><td><input type="text" id="state" name="state" size="12"/></td></tr>
               <tr><th>Country</th><td><input type="text" id="country" name="country" size="20"</td>
-                  <th>Effective Date</th><td><input type="text" id="effectivedate" name="effectivedate" size="12"/></td>
+                  <th>Effective Date</th><td><input type="text" id="effectivedate" name="effectivedate" size="12"
+                      onchange="updateDropdown('effectivedate');"/>
+                      {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'effectivedate',
+                                                        'dropdown_id': 'effectivedate',
+                                                        'selected_fy': '' } %}
+                      </td></tr>
               <tr><th></th><td></td>
                   <th></th><td><a href='javascript:void(0)' onClick="conferenceRateSave()" id='rateSaveButton'>Save Rate</a></td></tr>
             </table>
@@ -83,6 +89,7 @@
         $("#newRateButton").button();
 
         loadRateTable(false);
+         updateDropdown('effectivedate');
       });
 
       function rateEdit(conferencerateid) {
@@ -98,7 +105,7 @@
           $("#city").val('');
           $("#state").val('');
           $("#country").val('');
-          $("#effectivedate").val('');
+          $("#effectivedate").val(Date());
         }
         else {
           $.getJSON( "index.php?view=conference-rate-edit-json&conferenceid={{ conferences[0].conferenceid }}&conferencerateid=" + conferencerateid, function( data ) {

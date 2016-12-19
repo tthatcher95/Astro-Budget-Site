@@ -1,6 +1,6 @@
 <select name='{{ dropdown_name }}' id='{{ dropdown_id }}'>
-{% for person in people %}
+{% for person in people %}{% if person.title != 'No longer here' %}
   <option value='{{ person.peopleid }}' {% if person.peopleid == selected_peopleid %}selected {% endif %}>
-    {{ person.name }} {{ person.payplan }} {{ person.title }}</option>
+    {{ person.name }} {{ person.payplan }} {{ person.title }}</option>{% endif %}
 {% endfor %}
 </select>

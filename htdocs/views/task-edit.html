@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Editing {{ task.name }}</title>
-
+        <script src="js/date-tools.js"></script>
     </head>
     <body>
     <div id="taskedittabs">
@@ -47,7 +47,12 @@
               </td>
           </tr>
           <tr>
-          </td><th>Fiscal Year</th><td><input type="text" id="fiscalyear" name="fiscalyear" size="20"/></td></tr>
+          </td><th>Fiscal Year</th><td><input type="text" id="fiscalyear" name="fiscalyear" size="20"
+               value="{{ tasks[0].fiscalyear }}" onchange="updateDropdown('fiscalyear');"/>
+                {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'fiscalyear',
+                                                        'dropdown_id': 'fiscalyear',
+                                                        'selected_fy': 'tasks[0].fiscalyear' } %}
+          </td></tr>
         </table>
         <table>
           <tr><th>Q1 Hours</th><th>Q2 Hours</th><th>Q3 Hours</th><th>Q4 Hours</th><th>Flex Hours</th></tr>
@@ -91,6 +96,8 @@
         $("#fiscalyear").datepicker();
         $("#newStaffButton").button();
         $("#saveStaffingButton").button();
+
+        updateDropdown('fiscalyear');
       });
 
       function staffingEdit(taskid,staffingid) {
@@ -105,9 +112,10 @@
           $("#q3hours").val('0');
           $("#q4hours").val('0');
           $("#flexhours").val('0');
+          updateDropdown('fiscalyear');
         }
         else {
-          $.getJSON( "index.php?view=staffing-edit-json&taskid=" + taskid + "&staffingid=" + staffingid, function( data ) {
+          $.getJSON( "index.php?view=staffing-edit-json&proposalid={{ proposalid }}&taskid=" + taskid + "&staffingid=" + staffingid, function( data ) {
             $("#staffingid").val(data.data[0][0]);
             $("#staffingpeopleid").val(data.data[0][2]);
             $("#fiscalyear").val(data.data[0][3]);
@@ -116,6 +124,7 @@
             $("#q3hours").val(data.data[0][6]);
             $("#q4hours").val(data.data[0][7]);
             $("#flexhours").val(data.data[0][8]);
+            updateDropdown('fiscalyear');
           });
         }
       }

@@ -15,7 +15,7 @@
 ["{{ task.taskname }}",
    {% endif %}
 "{{ staff.name }}", {{ staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours }}, "${{ staff.staffcosts|number_format(2,'.',',') }}", "{{ staff.FY }}",
-"<a href='javascript:void(0)' onclick='deleteStaffing({{ staff.staffingid}}, {{ proposals[0].proposalid }})'><span class='ui-icon ui-icon-trash'>&nbsp;</span></a>"]{% if loop.last !=true %},{% endif %}
+"<a href='javascript:void(0)' onclick='deleteStaffing({{ staff.staffingid}}, {{ proposals[0].proposalid }})'><img src='images/trash-2-32.png' title='Delete staffing'></a>"]{% if loop.last !=true %},{% endif %}
   {% endfor %}{% if loop.last !=true %},{% endif %}
 {% endfor %}
 ]}

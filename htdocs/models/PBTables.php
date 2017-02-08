@@ -1286,6 +1286,12 @@ class PBTables {
       return "A task, person, and FY are required for staffing"; 
     }
 
+    if (empty($q1hours)) $q1hours = 0;
+    if (empty($q2hours)) $q2hours = 0;
+    if (empty($q3hours)) $q3hours = 0;
+    if (empty($q4hours)) $q4hours = 0;
+    if (empty($flexhours)) $flexhours = 0;
+
     $query = "INSERT INTO staffing (taskid, peopleid, fiscalyear, q1hours, q2hours, q3hours, q4hours, flexhours) " .
              "VALUES ($taskid, $peopleid, ";
     if (isset($fiscalyear)) { $query .= "'" . $this->formatDate($fiscalyear) . "', "; }

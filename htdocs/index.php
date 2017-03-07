@@ -119,6 +119,14 @@ if (true) {
       $templateArgs['view'] = 'proposal-budget-details.html';
       $view = $templateArgs['view'];
       break;
+    case 'proposal-basis':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
+      $templateArgs['view'] = 'proposal-basis.html';
+      $view = $templateArgs['view'];
+      break;
     case 'proposal-roses':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
@@ -755,6 +763,8 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['budgets'][$i]['FY'][$currFy]['fy'] = $currFy;
       $templateArgs['budgets'][$i]['FY'][$currFy]['expenses'] += $cost;
       $expensetype = $templateArgs['proposals'][$i]['expenses'][$j]['type'];
+      $description = $templateArgs['proposals'][$i]['expenses'][$j]['description'];
+
       if ($expensetype == 'Section C Equipment') {
         $description = $templateArgs['proposals'][$i]['expenses'][$j]['description'];
         array_push ($equipmentlist, $description);
@@ -764,6 +774,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
       else {
         $templateArgs['budgets'][$i]['ALL']['expensestotal'] += $cost;
         $templateArgs['budgets'][$i]['FY'][$currFy]['expensestotal'] += $cost;
+        $templateArgs['budgets'][$i]['basisexpenses'][$expensetype . " - " . $description]['type'] = 
+           $expensetype . " - " . $description;
+        $templateArgs['budgets'][$i]['basisexpenses'][$expensetype . " - " . $description]['FY'][$currFy] += $cost;
       }
       $templateArgs['budgets'][$i]['FY'][$currFy][$expensetype] += $cost;
       $templateArgs['budgets'][$i]['ALL'][$expensetype] += $cost;

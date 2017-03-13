@@ -64,7 +64,7 @@
          <a href='javascript:void(0)' onClick="editProjectDialog()" id='newProjectButton'>New</a><p/>
         <div id="proposalsTableDiv">
         <table id="proposalsTable" class="display" cellspacing="0" width="100%">
-          <thead><tr><th>Proposal</th><th>Reports</th><th>PI</th><th>Program</th><th>Status</th><th>Proposal #</th><th>Award #</th><th>Start</th><th>End</th><th></th></tr></thead>
+          <thead><tr><th>Proposal</th><th>Reports</th><th>PI</th><th>Program</th><th>Status</th><th>Start</th><th>End</th><th></th></tr></thead>
         </table>
         </div>
       </div>
@@ -89,7 +89,7 @@
             $('#proposalsTable').dataTable().fnDestroy();
           }
 
-          $('#proposalsTableDiv').html('<table id="proposalsTable" class="display" cellspacing="0" width="100%"><thead><tr><th>Proposal</th><th>Reports</th><th>PI</th><th>Program</th><th>Status</th><th>Proposal #</th><th>Award #</th><th>Start</th><th>End</th><th></th></tr></thead></table>');
+          $('#proposalsTableDiv').html('<table id="proposalsTable" class="display" cellspacing="0" width="100%"><thead><tr><th>Proposal</th><th>Reports</th><th>PI</th><th>Program</th><th>Status</th><th>Start</th><th>End</th><th></th></tr></thead></table>');
 
           $('#proposalsTable').dataTable( {
             "processing": true,

@@ -512,7 +512,7 @@ class PBTables {
     $this->db->query($query);
   }
 
-  function getProposals ($proposalid, $peopleid, $programid, $awardnumber, $proposalnumber, $perfperiod, $status) {
+  function getProposals ($proposalid, $peopleid, $programid, $match, $proposalnumber, $perfperiod, $statuses) {
     $query = "SELECT p.proposalid, p.projectname, p.peopleid, u.name, p.programid, f.programname, p.awardnumber, " .
              "p.proposalnumber, to_char(p.perfperiodstart, 'MM/DD/YYYY') as perfperiodstart, " .
              "to_char(p.perfperiodend, 'MM/DD/YYYY') as perfperiodend, p.status " .
@@ -521,7 +521,7 @@ class PBTables {
     $needAnd = false;
 
     if (isset($proposalid)) {
-      $query .= " WHERE proposalid=$proposalid";
+      $query .= " WHERE p.proposalid=$proposalid";
       $needAnd = true;
     }
     if (isset($peopleid)) {
@@ -533,21 +533,20 @@ class PBTables {
     if (isset($programid)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
-      $query .= "programid=$programid";
+      $query .= "p.programid=$programid";
       $needAnd = true;
     }
-    if (isset($awardnumber)) {
+    if (isset($match)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
-      $awardnumber = pg_escape_string($awardnumber);
-      $query .= "awardnumber='$awardnumber'";
+      $query .= "p.projectname LIKE '" . $match . "'";
       $needAnd = true;
     }
     if (isset($proposalnumber)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
       $proposalnumber = pg_escape_string($proposalnumber);
-      $query .= "proposalnumber='$proposalnumber'";
+      $query .= "p.proposalnumber='$proposalnumber'";
       $needAnd = true;
     }
     if (isset($perfperiod)) {
@@ -557,12 +556,15 @@ class PBTables {
                 $this->formatDate($perfperiod) . "'";
       $needAnd = true;
     }
-    if (isset($status)) {
+    if (isset($statuses)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
-      $query .= "status=$status";
+      $query .= "p.status in (";
+      $query .= implode(',', $statuses);
+      $query .= ")";
       $needAnd = true;
     }
+    error_log ($query);
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -1214,21 +1216,31 @@ class PBTables {
     return ($results);
   }
 
-  function getCsvTasks ($startdate, $enddate, $statuses) {
+  function getCsvTasks ($match, $startdate, $enddate, $statuses, $programid, $peopleid) {
 
     if (($startdate == null) or ($enddate == null) or ($statuses == null)) {
       return "Missing required inputs";
     }
 
-    $query = "SELECT u.name, u.username, p.projectname, f.programname, t.taskname, s.q1hours, s.q2hours, " .
+    $query = "SELECT u.name, u.username, a.statusname as status, p.projectname, f.programname, t.taskname, s.q1hours, s.q2hours, " .
     "s.q3hours, s.q4hours, s.flexhours FROM people u JOIN staffing s ON (s.peopleid=u.peopleid) JOIN tasks t ON " .
     "(t.taskid=s.taskid) JOIN proposals p ON (p.proposalid=t.proposalid) JOIN fundingprograms f ON " .
-    "(f.programid=p.programid) WHERE ";
+    "(f.programid=p.programid) JOIN statuses a ON (a.status=p.status) WHERE ";
     
     $query .= "s.fiscalyear >= '" . $this->formatDate($startdate) . "' AND s.fiscalyear < '" .
               $this->formatDate($enddate) . "' AND p.status in (";
     $query .= implode(',', $statuses);
     $query .= ")";
+
+    if (isset ($match)) {
+      $query .= " AND p.projectname LIKE '" . $match . "'";
+    }
+    if (isset ($programid)) {
+      if ($programid != 'ALL') $query .= " AND p.programid=" . $programid;
+    }
+    if (isset ($peopleid)) {
+      if ($peopleid != 'ALL') $query .= " AND s.peopleid=" . $peopleid;
+    }
     # "TO STDOUT WITH CSV HEADER";
 
     $this->db->query($query);
@@ -1254,6 +1266,7 @@ class PBTables {
   function encodeCsv ($row) {
     $csvRow = '"' . $row['name'] . '",';
     $csvRow .= '"' . $row['username'] . '",';
+    $csvRow .= '"' . $row['status'] . '",';
     $csvRow .= '"' . $row['projectname'] . '",';
     $csvRow .= '"' . $row['programname'] . '",';
     $csvRow .= '"' . $row['taskname'] . '",';
@@ -1262,7 +1275,7 @@ class PBTables {
     $csvRow .= $row['q3hours'] . ',';
     $csvRow .= $row['q4hours'] . ',';
     $csvRow .= $row['flexhours'] . ",";
-    $csvRow .= $row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'] . "\n";
+    $csvRow .= $row['total'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'] . "\n";
 
     return ($csvRow);
   }

@@ -8,8 +8,8 @@ $pbdb = new PBTables();
 $view = 'default.html'; # Change to default landing page
 
 $templateArgs = array('navigation' => array (
-  # array ('caption' => 'Home', 'href' => 'index.php'),
   array ('caption' => 'Projects', 'href' => 'index.php?view=proposals'),
+  array ('caption' => 'Reports', 'href' => 'index.php?view=reports'),
   array ('caption' => 'People', 'href' => 'index.php?view=people'),
   array ('caption' => 'Conferences/Travel', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Expense Categories', 'href' => 'index.php?view=expensetypes'),
@@ -165,6 +165,17 @@ if (true) {
       $templateArgs = overheadSave($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'reports':
+      $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
+      $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
+      # $templateArgs['startdate'] = date('Y-m-d');
+      # $templateArgs['enddate'] = date('Y-m-d',strtotime(date("Y-m-d", mktime()) . " + 365 day"));
+      $templateArgs['startdate'] = '2017-10-01';
+      $templateArgs['enddate'] = '2018-09-30';
+      $templateArgs['reportfile'] = "budget_report_" . date('Y-m-d') . ".csv";
+      $templateArgs['view'] = 'reports.html';
+      $view = $templateArgs['view'];
+      break;
     case 'programs':
       $templateArgs = programsView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
@@ -283,10 +294,14 @@ if (true) {
       $view = $templateArgs['view'];
       break;
     case 'tasks-list-csv':
-      $startdate = '10/01/2016';
-      $enddate = '09/30/2017';
-      $statuses = array(0, 1, 2, 4);
-      $templateArgs['csv'] = $pbdb->getCsvTasks ($startdate, $enddate, $statuses);
+      $templateArgs = staffingCsvView($pbdb, $templateArgs);
+      serveCsv ($templateArgs);
+      return;
+      break;
+    case 'budgets-list-csv':
+      $templateArgs = proposalView($pbdb, $templateArgs);
+      $templateArgs = costsSummaryView($pbdb, $templateArgs);
+      $templateArgs = budgetsCsvView($pbdb, $templateArgs);
       serveCsv ($templateArgs);
       return;
       break;
@@ -297,7 +312,6 @@ if (true) {
       $templateArgs = costsSummaryView($pbdb, $templateArgs);
       $templateArgs['view'] = 'task-edit.html';
       $view = $templateArgs['view'];
-    error_log('First FY:' . $templateArgs['budgets'][0]['ddFYs'][0]);
       break;
     case 'task-save':
       $templateArgs = peopleView($pbdb, $templateArgs);   # for dropdown
@@ -385,9 +399,69 @@ if (isset($_REQUEST['debug'])) {
 
 echo $template->render($templateArgs);
 
+function staffingCsvView($pbdb, $templateArgs) {
+  $startdate = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
+  if ($startdate == null) $startdate = date('Y-m-d');
+  $enddate = (isset($_REQUEST['enddate'])? $_REQUEST['enddate'] : null);
+  if ($enddate == null) $enddate = date('Y-m-d',strtotime(date("Y-m-d", mktime()) . " + 365 day")); 
+  $statuses = array(0, 1, 2, 4);
+  if (isset($_REQUEST['statuses'])) { $statuses = $_REQUEST['statuses']; }
+  $match = (isset($_REQUEST['match'])? $_REQUEST['match'] : '%'); 
+  if ($match == '') $match = '%';
+  $programid = (isset($_REQUEST['programid'])? $_REQUEST['programid'] : null); 
+  $peopleid = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+
+  $templateArgs['csv'] = $pbdb->getCsvTasks ($match, $startdate, $enddate, $statuses, $programid, $peopleid);
+
+  return $templateArgs;
+}
+
+function budgetsCsvView($pbdb, $templateArgs) {
+  $csv = '';
+  $fys = array();
+
+  # Build full list of FY's for all budgets
+  for ($i = 0; $i < count($templateArgs['budgets']); $i++) {
+    # var_dump($templateArgs['budgets'][$i]["FYs"]);
+    $fys = array_merge($fys, $templateArgs['budgets'][$i]["FYs"]);
+  }
+  $tempfys = $fys;
+  $fys = array_unique($tempfys);
+  sort($fys);
+
+  $columns = array('staffing', 'travel', 'expenses', 'overhead');
+
+  # create header line
+  $csv .= "project,PI,status,section";
+  for ($i = 0; $i < count($fys); $i++) {
+    $csv .= "," . $fys[$i];
+  }
+  $csv .= "\n";
+
+  # Loop through Budgets/cost lines
+  for ($i = 0; $i < count($templateArgs['budgets']); $i++) {
+    foreach ($columns as $currentColumn) {
+      $csv .= '"' . $templateArgs['budgets'][$i]['projectname'] . '","' . $templateArgs['proposals'][$i]['name'];
+      $status = $templateArgs['budgets'][$i]['status'];
+      $csv .= '","' . $templateArgs['statuscodes'][$status] . '","' . $currentColumn . '"';
+      foreach ($fys as $fy) {
+        $csv .= ",$" . number_format($templateArgs['budgets'][$i]['FY'][$fy][$currentColumn], 2, '.', '');
+      }
+      $csv .= "\n";
+    }
+  }
+
+  $templateArgs['csv'] = $csv;
+
+  return $templateArgs;
+}
+
 function  serveCsv ($templateArgs) {
+  $reportfile = 'tasks.csv';
+  if (isset($_REQUEST['reportfile'])) { $reportfile = $_REQUEST['reportfile']; }
+
   header("Content-type: text/csv");
-  header("Content-Disposition: attachment; filename=tasks.csv");
+  header("Content-Disposition: attachment; filename=" . $reportfile);
   header("Pragma: no-cache");
   header("Expires: 0");
 
@@ -462,13 +536,11 @@ function salarySave ($pbdb, $templateArgs) {
 
   $salaryid = (isset($_REQUEST['salaryid'])? $_REQUEST['salaryid'] : null);
   if ($salaryid == null) { 
-    error_log('salarySave: missing salary ID');
     $templateArgs['debug'] = array ('Missing salary ID');
     return ($templateArgs);
   }
   $peopleid = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
   if ($peopleid == null) { 
-    error_log('salarySave: missing people ID');
     $templateArgs['debug'] = array ('Missing person ID');
     return ($templateArgs);
   }
@@ -515,6 +587,7 @@ function salaryDelete ($pbdb, $templateArgs) {
 
 function proposalView ($pbdb, $templateArgs) {
   $peopleid   = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  # if ($peopleid == 'ALL') $peopleid = null;
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   if (isset($_REQUEST['proposalid'])) { 
     $templateArgs['view'] = 'proposals.html';
@@ -525,9 +598,14 @@ function proposalView ($pbdb, $templateArgs) {
       $peopleid = $templateArgs['remote_user'][0]['peopleid']; 
     }
   }
+  $statuses = (isset($_REQUEST['statuses'])? $_REQUEST['statuses'] : null);
+  $match = (isset($_REQUEST['match'])? $_REQUEST['match'] : null);
+  if ($match == '') $match = '%';
+  $programid = (isset($_REQUEST['programid'])? $_REQUEST['programid'] : null);
+  if ($programid == 'ALL') $programid=null;
   $expenseid = (isset($_REQUEST['expenseid'])? $_REQUEST['expenseid'] : null);
 
-  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, null, null, null, null, null);
+  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, $programid, $match, null, null, $statuses);
   $fundingid  = (isset($_REQUEST['fundingid'])? $_REQUEST['fundingid'] : null);
 
   $conferenceattendeeid = (isset($_REQUEST['conferenceattendeeid'])? $_REQUEST['conferenceattendeeid'] : null);

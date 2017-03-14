@@ -170,8 +170,8 @@ if (true) {
       $templateArgs = programsView($pbdb, $templateArgs); # for dropdown
       # $templateArgs['startdate'] = date('Y-m-d');
       # $templateArgs['enddate'] = date('Y-m-d',strtotime(date("Y-m-d", mktime()) . " + 365 day"));
-      $templateArgs['startdate'] = '2017-10-01';
-      $templateArgs['enddate'] = '2018-09-30';
+      $templateArgs['startdate'] = '2017-09-30';
+      $templateArgs['enddate'] = '2018-10-01';
       $templateArgs['reportfile'] = "budget_report_" . date('Y-m-d') . ".csv";
       $templateArgs['view'] = 'reports.html';
       $view = $templateArgs['view'];
@@ -588,6 +588,8 @@ function salaryDelete ($pbdb, $templateArgs) {
 function proposalView ($pbdb, $templateArgs) {
   $peopleid   = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
   # if ($peopleid == 'ALL') $peopleid = null;
+  $startdate   = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
+  $enddate     = (isset($_REQUEST['enddate'])? $_REQUEST['enddate'] : null);
   $proposalid = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   if (isset($_REQUEST['proposalid'])) { 
     $templateArgs['view'] = 'proposals.html';
@@ -605,7 +607,7 @@ function proposalView ($pbdb, $templateArgs) {
   if ($programid == 'ALL') $programid=null;
   $expenseid = (isset($_REQUEST['expenseid'])? $_REQUEST['expenseid'] : null);
 
-  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, $programid, $match, null, null, $statuses);
+  $templateArgs['proposals'] = $pbdb->getProposals ($proposalid, $peopleid, $programid, $match, null, $startdate, $enddate, $statuses);
   $fundingid  = (isset($_REQUEST['fundingid'])? $_REQUEST['fundingid'] : null);
 
   $conferenceattendeeid = (isset($_REQUEST['conferenceattendeeid'])? $_REQUEST['conferenceattendeeid'] : null);

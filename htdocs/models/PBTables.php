@@ -549,13 +549,15 @@ class PBTables {
       $query .= "p.proposalnumber='$proposalnumber'";
       $needAnd = true;
     }
-    if (isset($startdate)) {
+    if (false) {
+    # if (isset($startdate)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
       $query .= "perfperiodstart >= '" . $this->formatDate($startdate) . "'";
       $needAnd = true;
     }
-    if (isset($enddate)) {
+    if (false) {
+    # if (isset($enddate)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
       $query .= "perfperiodend <= '" . $this->formatDate($enddate) . "'";
@@ -1221,14 +1223,15 @@ class PBTables {
     return ($results);
   }
 
-  function getCsvTasks ($match, $startdate, $enddate, $statuses, $programid, $peopleid) {
+  function getCsvTasks ($match, $startdate, $enddate, $statuses, $programid, $peopleid, $authhours) {
 
     if (($startdate == null) or ($enddate == null) or ($statuses == null)) {
       return "Missing required inputs";
     }
 
-    $query = "SELECT u.name, u.username, a.statusname as status, q.name as pi, p.projectname, f.programname, t.taskname, s.q1hours, s.q2hours, " .
-    "s.q3hours, s.q4hours, s.flexhours FROM people u JOIN staffing s ON (s.peopleid=u.peopleid) JOIN tasks t ON " .
+    $query = "SELECT u.name, a.statusname as status, q.name as pi, p.projectname, f.programname, " .
+    "t.taskname, s.fiscalyear, s.q1hours, s.q2hours, s.q3hours, s.q4hours, s.flexhours " .
+    "FROM people u JOIN staffing s ON (s.peopleid=u.peopleid) JOIN tasks t ON " .
     "(t.taskid=s.taskid) JOIN proposals p ON (p.proposalid=t.proposalid) JOIN fundingprograms f ON " .
     "(f.programid=p.programid) JOIN statuses a ON (a.status=p.status) JOIN people q ON (p.peopleid=q.peopleid) WHERE ";
     
@@ -1257,10 +1260,11 @@ class PBTables {
     if ($firstRow != null) {
       $csv = implode (",", array_keys($firstRow));
       $csv .= ",total";
+      if ($authhours) $csv .= ",fte";
       $csv .= "\n";
-      $csv .= $this->encodeCsv ($firstRow);
+      $csv .= $this->encodeCsv ($firstRow, $authhours);
       while ($row = pg_fetch_assoc($this->db->result)) {
-        $csv .= $this->encodeCsv ($row);
+        $csv .= $this->encodeCsv ($row, $authhours);
       }
       $results = $csv;
     }
@@ -1268,20 +1272,24 @@ class PBTables {
     return ($results);
   }
 
-  function encodeCsv ($row) {
+  function encodeCsv ($row, $authhours) {
     $csvRow = '"' . $row['name'] . '",';
-    $csvRow .= '"' . $row['username'] . '",';
     $csvRow .= '"' . $row['status'] . '",';
     $csvRow .= '"' . $row['pi'] . '",';
     $csvRow .= '"' . $row['projectname'] . '",';
     $csvRow .= '"' . $row['programname'] . '",';
     $csvRow .= '"' . $row['taskname'] . '",';
+    $csvRow .= '"' . $this->fiscalYear($row['fiscalyear']) . '",';
     $csvRow .= $row['q1hours'] . ',';
     $csvRow .= $row['q2hours'] . ',';
     $csvRow .= $row['q3hours'] . ',';
     $csvRow .= $row['q4hours'] . ',';
     $csvRow .= $row['flexhours'] . ",";
-    $csvRow .= $row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'] . "\n";
+    $csvRow .= $row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'];
+    if ($authhours) 
+      $csvRow .= "," . number_format(($row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'])/$authhours, 2);
+
+    $csvRow .= "\n";
 
     return ($csvRow);
   }

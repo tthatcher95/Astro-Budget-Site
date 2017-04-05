@@ -381,8 +381,8 @@ if (true) {
   }
 }
 
-# $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-$basepath = '/var/www/budgetprops-dev/htdocs';
+$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+# $basepath = '/var/www/budgetprops-dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');
@@ -410,8 +410,10 @@ function staffingCsvView($pbdb, $templateArgs) {
   if ($match == '') $match = '%';
   $programid = (isset($_REQUEST['programid'])? $_REQUEST['programid'] : null); 
   $peopleid = (isset($_REQUEST['peopleid'])? $_REQUEST['peopleid'] : null);
+  $authhours = (isset($_REQUEST['authhours'])? $_REQUEST['authhours'] : null);
+  if ($authhours == '') $authhours = null;
 
-  $templateArgs['csv'] = $pbdb->getCsvTasks ($match, $startdate, $enddate, $statuses, $programid, $peopleid);
+  $templateArgs['csv'] = $pbdb->getCsvTasks ($match, $startdate, $enddate, $statuses, $programid, $peopleid, $authhours);
 
   return $templateArgs;
 }

@@ -193,7 +193,7 @@ class PBTables {
   function getAmount ($money) {
     $cleanString = preg_replace('/([^0-9\.])/i', '', $money);
 
-    error_log("Amount is $cleanString");
+    # error_log("Amount is $cleanString");
     return $cleanString;
     $onlyNumbersString = preg_replace('/([^0-9\.])/i', '', $money);
 
@@ -210,7 +210,7 @@ class PBTables {
   function getEffectiveSalary ($peopleid, $targetdate) {
     if (!isset($peopleid)) { return "No ID provided to lookup effective salary for"; }
 
-    $query = "SELECT salaryid, peopleid, effectivedate, payplan, title, appttype, " .
+    $query = "SELECT salaryid, peopleid, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate, payplan, title, appttype, " .
              "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries " .
              "WHERE peopleid=$peopleid";
 
@@ -245,7 +245,7 @@ class PBTables {
     if ($peopleid == 'new') { $peopleid=0; }
     if ($salaryid == 'new') { $salaryid=0; }
 
-    $query = "SELECT salaryid, peopleid, effectivedate, payplan, title, appttype, " .
+    $query = "SELECT salaryid, peopleid, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate, payplan, title, appttype, " .
              "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries WHERE ";
     if (isset($peopleid)) {
       $query .= "peopleid=$peopleid";
@@ -563,7 +563,7 @@ class PBTables {
       $query .= "perfperiodend <= '" . $this->formatDate($enddate) . "'";
       $needAnd = true;
     }
-    if (isset($statuses)) {
+    if (isset($statuses) && is_array($statuses)) {
       if ($needAnd) { $query .= " AND ";}
       else { $query .= " WHERE "; }
       $query .= "p.status in (";
@@ -571,7 +571,7 @@ class PBTables {
       $query .= ")";
       $needAnd = true;
     }
-    error_log ($query);
+    # error_log ($query);
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -599,6 +599,16 @@ class PBTables {
       $this->addConferenceAttendee ($conferences[$i]['conferenceid'], $newproposalid, $conferences[$i]['travelers'], 
                                     $conferences[$i]['meetingdays'], $conferences[$i]['traveldays'], 
                                     $conferences[$i]['startdate'], $conferences[$i]['rentalcars']);
+    }
+
+    # New Travel
+    $travel = $this->getTravel (null, $proposalid, null, null, null);
+    for ($i = 0; $i < count($travel); $i++) {
+      $this->addTravel ($newproposalid, $travel[$i]['meeting'], $travel[$i]['startdate'], 
+        $travel[$i]['meetingdays'], $travel[$i]['traveldays'], $travel[$i]['travelers'], 
+        $travel[$i]['rentalcars'], $travel[$i]['registration'], $travel[$i]['perdiem'], 
+        $travel[$i]['airfare'], $travel[$i]['groundtransport'], $travel[$i]['lodging'], 
+        $travel[$i]['city'], $travel[$i]['state'], $travel[$i]['country']);
     }
 
     # Expenses
@@ -641,6 +651,10 @@ class PBTables {
 
     # Conference Attendees
     $query = "DELETE FROM conferenceattendee WHERE proposalid=$proposalid";
+    $this->db->query($query);
+
+    # New Travel
+    $query = "DELETE FROM travel WHERE proposalid=$proposalid";
     $this->db->query($query);
 
     # Expenses
@@ -987,12 +1001,12 @@ class PBTables {
     if (!isset($conferenceid)) { return "A conference ID must be provided to list conference rates"; }
     if ($conferenceid == 'new') { $conferenceid=0; }
     if (!is_numeric($conferenceid)) { 
-     error_log("is_numeric says false for ($conferenceid)");
+     # error_log("is_numeric says false for ($conferenceid)");
      $conferenceid=0;
     }
 
-    $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, lodging, registration, " .
-             "groundtransport, airfare, city, state, country FROM conferencerates " .
+    $query = "SELECT conferencerateid, conferenceid, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate, perdiem, lodging, " .
+             "registration, groundtransport, airfare, city, state, country FROM conferencerates " .
              "WHERE conferenceid=$conferenceid";
     if (isset($conferencerateid)) {
       $query .= " AND conferencerateid=$conferencerateid";
@@ -1159,7 +1173,189 @@ class PBTables {
   #  meetingdays INTEGER,
   #  traveldays INTEGER,
   #  startdate TIMESTAMP,
+
+ # travelid        | integer                     | not null default nextval('travel_travelid_seq
+# '::regclass)
+ # proposalid      | integer                     |
+ # meeting         | character varying(256)      |
+ # startdate       | timestamp without time zone |
+ # meetingdays     | smallint                    |
+ # traveldays      | smallint                    |
+ # travelers       | smallint                    |
+ # rentalcars      | smallint                    |
+ # perdiem         | real                        |
+ # airfare         | real                        |
+ # groundtransport | real                        |
+ # lodging         | real                        |
+ # city            | character varying(80)       |
+ # state           | character varying(2)        |
+ # country         | character varying(32)       |
+ # registration    | real                        |
+
+
+  function addTravel ($proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers, $rentalcars, 
+    $registration, $perdiem, $airfare, $groundtransport, $lodging, $city, $state, $country) {
+    if (!(isset($proposalid) and isset($travelers))) {
+      return "Missing required information to add travel";
+    }
+
+    $query = "INSERT INTO travel (proposalid, meeting, startdate, meetingdays, traveldays, " .
+      "travelers, rentalcars, registration, perdiem, airfare, groundtransport, lodging, city, state, country) " .
+      "VALUES ($proposalid, '$meeting', '" . $this->formatDate($startdate) . "', $meetingdays, " .
+      "$traveldays, $travelers, $rentalcars, " . $this->getAmount($registration) . ", " . $this->getAmount($perdiem) .
+      ", " . $this->getAmount($airfare) . ", " . $this->getAmount($groundtransport) . ", " . 
+      $this->getAmount($lodging) . ", '$city', '$state', '$country')";
+
+    $this->db->query($query);
+  }
   
+  function updateTravel ($travelid, $proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers,
+    $rentalcars, $registration, $perdiem, $airfare, $groundtransport, $lodging, $city, $state, $country) {
+    if (!isset($travelid)) { return "A Travel ID must be provided for an update"; }
+    if (!(isset($meeting) or isset($proposalid) or isset($travelers) or isset($meetingdays)
+       or isset($rentalcars) or isset($perdiem) or isset($airfare) or isset($groundtransport)
+       or isset($lodging) or isset($city) or isset($state) or isset($country)
+       or isset($traveldays) or isset($startdate))) { return "No changes provided for travel update"; }
+
+    $query = "UPDATE travel SET ";
+
+    $needComma = false;
+    if (isset($proposalid)) {
+      $query .= "proposalid=$proposalid";
+      $needComma = true;
+    }
+    if (isset($meeting)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "meeting='$meeting'";
+      $needComma = true;
+    }
+    if (isset($startdate)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "startdate='" . $this->formatDate($startdate) . "'";
+      $needComma = true;
+    }
+    if (isset($meetingdays)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "meetingdays=$meetingdays";
+      $needComma = true;
+    }
+    if (isset($traveldays)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "traveldays=$traveldays";
+      $needComma = true;
+    }
+    if (isset($travelers)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "travelers=$travelers";
+      $needComma = true;
+    }
+    if (isset($rentalcars)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "rentalcars=$rentalcars";
+      $needComma = true;
+    }
+    if (isset($registration)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "registration=" . $this->getAmount($registration);
+      $needComma = true;
+    }
+    if (isset($perdiem)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "perdiem=" . $this->getAmount($perdiem);
+      $needComma = true;
+    }
+    if (isset($airfare)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "airfare=" . $this->getAmount($airfare);
+      $needComma = true;
+    }
+    if (isset($groundtransport)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "groundtransport=" . $this->getAmount($groundtransport);
+      $needComma = true;
+    }
+    if (isset($lodging)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "lodging=" . $this->getAmount($lodging);
+      $needComma = true;
+    }
+    if (isset($city)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "city='$city'";
+      $needComma = true;
+    }
+    if (isset($state)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "state='$state'";
+      $needComma = true;
+    }
+    if (isset($country)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "country='$country'";
+      $needComma = true;
+    }
+
+    $query .= " WHERE travelid=$travelid";
+
+    $this->db->query($query);
+  }
+
+  function getTravel ($travelid, $proposalid, $startdate, $enddate, $country) {
+    $query = "SELECT proposalid, travelid, meeting, to_char(startdate, 'MM/DD/YYYY') as startdate, meetingdays, traveldays, " .
+      "travelers, rentalcars, perdiem, airfare, groundtransport, lodging, registration, city, state, country " .
+      "FROM travel";
+
+    $needAnd = false;
+    if (isset($travelid)) {
+      if ($travelid == 'new') { $travelid=0; }
+      $query .= " WHERE travelid=$travelid";
+      $needAnd = true;
+    }
+    if (isset($proposalid)) {
+      if ($needAnd) { $query .= " AND "; }
+      else { $query .= " WHERE "; }
+      $query .= "proposalid=$proposalid";
+      $needAnd = true;
+    }
+    if (isset($startdate)) {
+      if ($needAnd) { $query .= " AND "; }
+      else { $query .= " WHERE "; }
+      $query .= "startdate>= '" . $this->getDate($startdate) . "'";
+      $needAnd = true;
+    }
+    if (isset($enddate)) {
+      if ($needAnd) { $query .= " AND "; }
+      else { $query .= " WHERE "; }
+      $query .= "startdate<= '" . $this->getDate($enddate) . "'";
+      $needAnd = true;
+    }
+    if (isset($country)) {
+      if ($needAnd) { $query .= " AND "; }
+      else { $query .= " WHERE "; }
+      $query .= "country='$country'";
+      $needAnd = true;
+    }
+
+    # error_log("getTravel query -> $query");
+
+    $this->db->query($query);
+    $results = $this->db->getResultArray();
+
+    for ($r = 0; $r < count($results); $r++) {
+      $results[$r]['FY'] = $this->fiscalYear($results[$r]['startdate']);
+    }
+
+    return ($results);
+  }
+
+  function deleteTravel ($travelid) {
+    if (!isset($travelid)) { return "A travel ID must be provided to delete"; }
+
+    $query = "DELETE FROM travel WHERE travelid=$travelid";
+
+    $this->db->query($query);
+  }
+
   # Tasks
   function addTask ($proposalid, $taskname) {
     if (!(isset($proposalid) and isset($taskname))) { return "Both a proposal ID and a task name are required"; }

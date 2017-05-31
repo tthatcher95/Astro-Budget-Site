@@ -382,18 +382,17 @@ function deleteTask(taskid, proposalid) {
     });
 }
 
-function editAttendeeDialog(proposalid, conferenceattendeeid) {
+function editAttendeeDialog(proposalid, travelid) {
   $("#editDialog").load(
-    "index.php?view=conference-attendee-edit&proposalid=" + proposalid + 
-    "&conferenceattendeeid=" + conferenceattendeeid);
+    "index.php?view=conference-attendee-edit&proposalid=" + proposalid + "&travelid=" + travelid);
 
   dialog = $("#editDialog").dialog({
     autoOpen: false,
-    height: 600,
-    width: 800,
+    height: 450,
+    width: 1000,
     modal: true,
     buttons: {
-      "Save Attendee": function () { saveAttendee(proposalid); },
+      "Save Travel": function () { saveAttendee(proposalid); },
       Cancel: function () {
         dialog.dialog("close");
       }
@@ -417,11 +416,11 @@ function saveAttendee(proposalid) {
     });
 }
 
-function deleteAttendeeDialog(conferenceattendeeid, proposalid) {
+function deleteAttendeeDialog(travelid, proposalid) {
   var description;
 
-  $.getJSON( "index.php?view=conference-attendee-list-json&proposalid=" + proposalid + 
-      "&conferenceattendeeid=" + conferenceattendeeid, function( data ) {
+  $.getJSON("index.php?view=conference-attendee-list-json&proposalid=" + proposalid + 
+      "&travelid=" + travelid, function( data ) {
     var pattern = />(.+)<\/a>/i;
     description = pattern.exec(data.data[0][0])[1];
     $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
@@ -431,10 +430,10 @@ function deleteAttendeeDialog(conferenceattendeeid, proposalid) {
   dialog = $("#editDialog").dialog({
     autoOpen: false,
     height: 200,
-    width: 400,
+    width: 500,
     modal: true,
     buttons: {
-      "Delete Trip": function () { deleteAttendee(conferenceattendeeid, proposalid); },
+      "Delete Trip": function () { deleteAttendee(travelid, proposalid); },
       Cancel: function () {
         dialog.dialog("close");
       }
@@ -445,16 +444,31 @@ function deleteAttendeeDialog(conferenceattendeeid, proposalid) {
 }
 
 
-function deleteAttendee(attendeeid, proposalid) {
-  $.get("index.php?view=conference-attendee-delete&conferenceattendeeid=" + attendeeid + "&proposalid=" + proposalid)
+function deleteAttendee(travelid, proposalid) {
+  $.get("index.php?view=conference-attendee-delete&travelid=" + travelid + "&proposalid=" + proposalid)
     .always (function() {
       dialog.dialog("close");
-      $("#warningDiv").html("<p>Deleted [" + attendeeid + "]</p>");
+      $("#warningDiv").html("<p>Deleted [" + travelid + "]</p>");
       $("#warningDiv").show();
 
       loadConferencesTable(true, proposalid);
       figureCosts(proposalid);
     });
+}
+
+function loadConferenceRate() {
+  $("#meeting").val($("#conferenceiddropdown option:selected").text());
+  $.getJSON("index.php?view=conference-rate-list-json&conferenceid=" + $("#conferenceiddropdown").val() + 
+      "&effectivedate=" + $("#tripstartdate").val(), function( data ) {
+    $("#perdiem").val(data.data[0][1]);
+    $("#lodging").val(data.data[0][2]);
+    $("#registration").val(data.data[0][3]);
+    $("#groundtransport").val(data.data[0][4]);
+    $("#airfare").val(data.data[0][5]);
+    $("#city").val(data.data[0][6]);
+    $("#state").val(data.data[0][7]);
+    $("#country").val(data.data[0][8]);
+  });
 }
 
 function editExpenseDialog(expenseid, proposalid) {

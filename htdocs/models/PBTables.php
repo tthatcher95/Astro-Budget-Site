@@ -194,6 +194,7 @@ class PBTables {
     $cleanString = preg_replace('/([^0-9\.])/i', '', $money);
 
     # error_log("Amount is $cleanString");
+    if (empty($cleanString)) { $cleanString = 0; }
     return $cleanString;
     $onlyNumbersString = preg_replace('/([^0-9\.])/i', '', $money);
 
@@ -202,6 +203,7 @@ class PBTables {
     $stringWithCommaOrDot = preg_replace('/([,\.])/', '', $cleanString, $separatorsCountToBeErased);
     $removedThousendSeparator = preg_replace('/(\.|,)(?=[0-9]{3,}$)/', '',  $stringWithCommaOrDot);
     # error_log("getAmount for $money returning " . (float) str_replace(',', '.', $removedThousendSeparator));
+    if (empty($cleanString)) { $cleanString = 0; }
 
     return (float) $cleanString;
     # return (float) str_replace(',', '.', $removedThousendSeparator);
@@ -607,8 +609,8 @@ class PBTables {
       $this->addTravel ($newproposalid, $travel[$i]['meeting'], $travel[$i]['startdate'], 
         $travel[$i]['meetingdays'], $travel[$i]['traveldays'], $travel[$i]['travelers'], 
         $travel[$i]['rentalcars'], $travel[$i]['registration'], $travel[$i]['perdiem'], 
-        $travel[$i]['airfare'], $travel[$i]['groundtransport'], $travel[$i]['lodging'], 
-        $travel[$i]['city'], $travel[$i]['state'], $travel[$i]['country']);
+        $travel[$i]['airfare'], $travel[$i]['groundtransport'], $travel[$i]['other'], 
+        $travel[$i]['lodging'], $travel[$i]['city'], $travel[$i]['state'], $travel[$i]['country']);
     }
 
     # Expenses
@@ -1191,26 +1193,28 @@ class PBTables {
  # state           | character varying(2)        |
  # country         | character varying(32)       |
  # registration    | real                        |
+ # other           | real                        |
 
 
   function addTravel ($proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers, $rentalcars, 
-    $registration, $perdiem, $airfare, $groundtransport, $lodging, $city, $state, $country) {
+    $registration, $perdiem, $airfare, $groundtransport, $other, $lodging, $city, $state, $country) {
     if (!(isset($proposalid) and isset($travelers))) {
       return "Missing required information to add travel";
     }
 
     $query = "INSERT INTO travel (proposalid, meeting, startdate, meetingdays, traveldays, " .
-      "travelers, rentalcars, registration, perdiem, airfare, groundtransport, lodging, city, state, country) " .
+      "travelers, rentalcars, registration, perdiem, airfare, groundtransport, other, lodging, city, state, country) " .
       "VALUES ($proposalid, '$meeting', '" . $this->formatDate($startdate) . "', $meetingdays, " .
       "$traveldays, $travelers, $rentalcars, " . $this->getAmount($registration) . ", " . $this->getAmount($perdiem) .
       ", " . $this->getAmount($airfare) . ", " . $this->getAmount($groundtransport) . ", " . 
-      $this->getAmount($lodging) . ", '$city', '$state', '$country')";
+      $this->getAmount($other) . ", " . $this->getAmount($lodging) . ", '$city', '$state', '$country')";
 
+    error_log("addTravel $other query -> $query");
     $this->db->query($query);
   }
   
   function updateTravel ($travelid, $proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers,
-    $rentalcars, $registration, $perdiem, $airfare, $groundtransport, $lodging, $city, $state, $country) {
+    $rentalcars, $registration, $perdiem, $airfare, $groundtransport, $other, $lodging, $city, $state, $country) {
     if (!isset($travelid)) { return "A Travel ID must be provided for an update"; }
     if (!(isset($meeting) or isset($proposalid) or isset($travelers) or isset($meetingdays)
        or isset($rentalcars) or isset($perdiem) or isset($airfare) or isset($groundtransport)
@@ -1252,6 +1256,11 @@ class PBTables {
     if (isset($rentalcars)) {
       if ($needComma) { $query .= ", "; }
       $query .= "rentalcars=$rentalcars";
+      $needComma = true;
+    }
+    if (isset($other)) {
+      if ($needComma) { $query .= ", "; }
+      $query .= "other=" . $this->getAmount($other);
       $needComma = true;
     }
     if (isset($registration)) {
@@ -1302,7 +1311,7 @@ class PBTables {
 
   function getTravel ($travelid, $proposalid, $startdate, $enddate, $country) {
     $query = "SELECT proposalid, travelid, meeting, to_char(startdate, 'MM/DD/YYYY') as startdate, meetingdays, traveldays, " .
-      "travelers, rentalcars, perdiem, airfare, groundtransport, lodging, registration, city, state, country " .
+      "travelers, rentalcars, perdiem, airfare, groundtransport, lodging, other, registration, city, state, country " .
       "FROM travel";
 
     $needAnd = false;

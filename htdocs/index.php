@@ -384,8 +384,8 @@ if (true) {
   }
 }
 
-$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-# $basepath = '/var/www/budgetprops-dev/htdocs';
+# $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+$basepath = '/var/www/budgetprops-dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');
@@ -789,11 +789,14 @@ function costsSummaryView ($pbdb, $templateArgs) {
         $templateArgs['proposals'][$i]['conferenceattendees'][$j]['registration']);
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['registrationcosts'] =
         $registration;
-      $cost = $perdiem + $lodging + $groundtransport + $airfare + $registration;
+      $other = ($templateArgs['proposals'][$i]['conferenceattendees'][$j]['travelers'] * 
+        $templateArgs['proposals'][$i]['conferenceattendees'][$j]['other']);
+      $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['othercosts'] = $other;
+      $cost = $perdiem + $lodging + $groundtransport + $airfare + $other + $registration;
       $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['totalcost'] = $cost;
 
       $meeting = $templateArgs['proposals'][$i]['conferenceattendees'][$j]['meeting'];
-      if (strcasecmp($templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'],
+      if (strcasecmp($templateArgs['proposals'][$i]['conferenceattendees'][$j]['country'],
           'USA') == 0) { $traveltype = 'D1'; }
       else { $traveltype = 'D2'; }
       $templateArgs['proposals'][$i]['conferences'][$meeting]['meeting'] = $meeting;
@@ -801,6 +804,7 @@ function costsSummaryView ($pbdb, $templateArgs) {
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['perdiem'] += $perdiem;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['lodging'] += $lodging;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['registration'] += $registration;
+      $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['other'] += $other;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['groundtransport'] += $groundtransport;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['airfare'] += $airfare;
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['travelers'] +=
@@ -817,9 +821,9 @@ function costsSummaryView ($pbdb, $templateArgs) {
          $templateArgs['proposals'][$i]['conferenceattendees'][$j]['conferencerate'][0]['country'];
       $templateArgs['proposals'][$i]['conferences'][$meeting][$currFy]['total'] += $cost;
       $templateArgs['proposals'][$i]['conferencetotals'][$traveltype][$currFy] += 
-        $perdiem + $lodging + $registration + $groundtransport + $airfare;
+        $perdiem + $lodging + $registration + $other + $groundtransport + $airfare;
       $templateArgs['proposals'][$i]['conferencetotals'][$traveltype]['ALL'] += 
-        $perdiem + $lodging + $registration + $groundtransport + $airfare;
+        $perdiem + $lodging + $registration + $other + $groundtransport + $airfare;
 
       $currOver = getOverhead ($pbdb, $templateArgs,
                     $templateArgs['proposals'][$i]['conferenceattendees'][$j]['startdate']);
@@ -1276,15 +1280,16 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
   $travelid        = (isset($_REQUEST['travelid'])? $_REQUEST['travelid'] : null);
   $proposalid      = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
   $meeting         = (isset($_REQUEST['meeting'])? $_REQUEST['meeting'] : null);
-  $travelers       = (isset($_REQUEST['travelers'])? $_REQUEST['travelers'] : null);
-  $meetingdays     = (isset($_REQUEST['meetingdays'])? $_REQUEST['meetingdays'] : null);
-  $traveldays      = (isset($_REQUEST['traveldays'])? $_REQUEST['traveldays'] : null);
+  $travelers       = (isset($_REQUEST['travelers'])? $_REQUEST['travelers'] : 0);
+  $meetingdays     = (isset($_REQUEST['meetingdays'])? $_REQUEST['meetingdays'] : 0);
+  $traveldays      = (isset($_REQUEST['traveldays'])? $_REQUEST['traveldays'] : 0);
   $startdate       = (isset($_REQUEST['startdate'])? $_REQUEST['startdate'] : null);
-  $rentalcars      = (isset($_REQUEST['rentalcars'])? $_REQUEST['rentalcars'] : null);
+  $rentalcars      = (isset($_REQUEST['rentalcars'])? $_REQUEST['rentalcars'] : 0);
   $registration    = (isset($_REQUEST['registration'])? $_REQUEST['registration'] : 0);
   $airfare         = (isset($_REQUEST['airfare'])? $_REQUEST['airfare'] : 0);
   $groundtransport = (isset($_REQUEST['groundtransport'])? $_REQUEST['groundtransport'] : 0);
   $perdiem         = (isset($_REQUEST['perdiem'])? $_REQUEST['perdiem'] : 0);
+  $other           = (isset($_REQUEST['other'])? $_REQUEST['other'] : 0);
   $lodging         = (isset($_REQUEST['lodging'])? $_REQUEST['lodging'] : 0);
   $city            = (isset($_REQUEST['city'])? $_REQUEST['city'] : null);
   $state           = (isset($_REQUEST['state'])? $_REQUEST['state'] : null);
@@ -1292,11 +1297,11 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
 
   if ($travelid == 'new') {
     $pbdb->addTravel ($proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers, $rentalcars, 
-      $registration, $perdiem, $airfare, $groundtransport, $lodging, $city, $state, $country);
+      $registration, $perdiem, $airfare, $groundtransport, $other, $lodging, $city, $state, $country);
   }
   else {
     $pbdb->updateTravel ($travelid, $proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers,
-      $rentalcars, $registration, $perdiem, $airfare, $groundtransport, $lodging, $city, $state, $country);
+      $rentalcars, $registration, $perdiem, $airfare, $groundtransport, $other, $lodging, $city, $state, $country);
 
   }
 
@@ -1307,6 +1312,7 @@ function conferenceAttendeeSave ($pbdb, $templateArgs) {
   $templateArgs['traveldays'] = $traveldays;
   $templateArgs['startdate'] = $startdate;
   $templateArgs['rentalcars'] = $rentalcars;
+  $templateArgs['other'] = $other;
 
   $templateArgs['view'] = 'conference-attendee-save-result.html';
 

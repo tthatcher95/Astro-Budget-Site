@@ -51,7 +51,7 @@
           {% set hascost = 0 %}
           {% for conference in proposals[0].conferences %}
           {% for year in budgets[0].FYs %}
-          {% set hascost = hascost + conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport + conference[year].airfare %}{% endfor %}{% endfor %}
+          {% set hascost = hascost + conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport + conference[year].airfare + conference[year].other %}{% endfor %}{% endfor %}
 
           {% if hascost > 0 %}
           <tr class="bordered"><td></td>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
@@ -60,7 +60,7 @@
           {% for year in budgets[0].FYs %}<th>${{ proposals[0].conferencetotals['D1'][year]|number_format(2,'.',',') }}</th>
           {% endfor %}<th>${{ proposals[0].conferencetotals['D1']['ALL']|number_format(2,'.',',') }}<th></tr>
           {% for conference in proposals[0].conferences %}
-          {% if conference.section == 'D1' %}{% set perdiem, lodging, registration, ground, air, travelers, total = 0,0,0,0,0,0,0 %}
+          {% if conference.section == 'D1' %}{% set perdiem, lodging, registration, ground, air, travelers, total, other = 0,0,0,0,0,0,0,0 %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th>Per Diem</th>{% for year in budgets[0].FYs %}
             <td align="right">${{ conference[year].perdiem|number_format(2, '.', ',') }}</td>
@@ -81,12 +81,15 @@
           <tr><th>Airfare</th>{% for year in budgets[0].FYs %}
             <td align="right">${{ conference[year].airfare|number_format(2, '.', ',') }}</td>
             {% set air = air + conference[year].airfare %}{% endfor %}<td>${{ air|number_format(2,'.',',') }}</td></tr>
+          <tr><th>Other</th>{% for year in budgets[0].FYs %}
+            <td align="right">${{ conference[year].other|number_format(2, '.', ',') }}</td>
+            {% set other = other + conference[year].other %}{% endfor %}<td>${{ other|number_format(2,'.',',') }}</td></tr>
           <tr><th>Number of travelers</th>{% for year in budgets[0].FYs %}
             <td align="right">{{ conference[year].travelers|number_format(0,'.',',') }}</td>
             {% set travelers = travelers + conference[year].travelers %}{% endfor %}<td>{{ travelers }}</td></tr>
           <tr><th>Trip Total</th>{% for year in budgets[0].FYs %}
-          <td>${{ (conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport + conference[year].airfare)|number_format(2,'.',',') }}</td>
-          {% set total = total + conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport + conference[year].airfare %}</td>{% endfor %}
+          <td>${{ (conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport + conference[year].other + conference[year].airfare)|number_format(2,'.',',') }}</td>
+          {% set total = total + conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].other + conference[year].groundtransport + conference[year].airfare %}</td>{% endfor %}
           <td>${{ total|number_format(2,'.',',') }}</td></tr>
           <tr class="blank"><th class="blank"></th>{% for year in budgets[0].FYs %}<td class="blank"></td>{% endfor %}<td class="blank"></td></tr>
           {% endif %}
@@ -98,7 +101,7 @@
           {% for year in budgets[0].FYs %}<th>${{ proposals[0].conferencetotals['D2'][year]|number_format(2,'.',',') }}</th>
           {% endfor %}<th>${{ proposals[0].conferencetotals['D2']['ALL']|number_format(2,'.',',') }}<th></tr>
           {% for conference in proposals[0].conferences %}
-          {% if conference.section == 'D2' %}{% set perdiem, lodging, registration, ground, air, travelers, total = 0,0,0,0,0,0,0 %}
+          {% if conference.section == 'D2' %}{% set perdiem, lodging, registration, ground, air, travelers, total, other = 0,0,0,0,0,0,0,0 %}
           <tr><th>{{ conference.meeting }}</th>{% for year in budgets[0].FYs %}<td></td>{% endfor %}<td></td></tr>
           <tr><th>Per Diem</th>{% for year in budgets[0].FYs %}
             <td align="right">${{ conference[year].perdiem|number_format(2, '.', ',') }}</td>
@@ -119,13 +122,16 @@
           <tr><th>Airfare</th>{% for year in budgets[0].FYs %}
             <td align="right">${{ conference[year].airfare|number_format(2, '.', ',') }}</td>
             {% set air = air + conference[year].airfare %}{% endfor %}<td>${{ air|number_format(2,'.',',') }}</td></tr>
+          <tr><th>Other</th>{% for year in budgets[0].FYs %}
+            <td align="right">${{ conference[year].other|number_format(2, '.', ',') }}</td>
+            {% set other = other + conference[year].other %}{% endfor %}<td>${{ other|number_format(2,'.',',') }}</td></tr>
           <tr><th>Number of travelers</th>{% for year in budgets[0].FYs %}
             <td align="right">{{ conference[year].travelers|number_format(0,'.',',') }}</td>
             {% set travelers = travelers + conference[year].travelers %}{% endfor %}<td>{{ travelers }}</td></tr>
           <tr><th>Trip Total</th>{% for year in budgets[0].FYs %}
-          <td>${{ (conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport +
+          <td>${{ (conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].other + conference[year].groundtransport +
           conference[year].airfare)|number_format(2,'.',',') }}</td>
-          {% set total = total + conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].groundtransport + conference[year].airfare %}</td>{% endfor %}
+          {% set total = total + conference[year].perdiem + conference[year].lodging + conference[year].registration + conference[year].other + conference[year].groundtransport + conference[year].airfare %}</td>{% endfor %}
           <td>${{ total|number_format(2,'.',',') }}</td></tr>
           <tr class="blank"><th class="blank"></th>{% for year in budgets[0].FYs %}<td class="blank"></td>{% endfor %}<td class="blank"></td></tr>
           {% endif %}

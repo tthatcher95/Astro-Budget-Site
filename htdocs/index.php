@@ -384,8 +384,8 @@ if (true) {
   }
 }
 
-# $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-$basepath = '/var/www/budgetprops-dev/htdocs';
+$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+# $basepath = '/var/www/budgetprops-dev/htdocs';
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');

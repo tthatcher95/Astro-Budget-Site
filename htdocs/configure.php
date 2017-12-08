@@ -14,6 +14,10 @@
     var $casPort         = 443;
     var $casContext      = '/cas';
 
+    # production
+    # var $basepath = '/var/www/html/budgets/budget-proposals/htdocs';
+    # development
+    var $basepath = '/var/www/budgetprops-dev/htdocs';
   }
 
 ?>

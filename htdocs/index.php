@@ -13,6 +13,7 @@ $templateArgs = array('navigation' => array (
   array ('caption' => 'People', 'href' => 'index.php?view=people'),
   array ('caption' => 'Conferences/Travel', 'href' => 'index.php?view=conferences'),
   array ('caption' => 'Expense Categories', 'href' => 'index.php?view=expensetypes'),
+  array ('caption' => 'Overhead Rates', 'href' => 'index.php?view=overhead'),
   array ('caption' => 'Programs', 'href' => 'index.php?view=programs')));
 $templateArgs['statuscodes'] = array ('Notional', 'Submitted', 'Selected', 'Rejected', 'Active', 'Completed', 'Scratch', 'Save');
 
@@ -155,17 +156,28 @@ if (true) {
       $templateArgs = fbmsDelete($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
+    case 'overhead':
+      $templateArgs = FYDefaults ($templateArgs);
+      $templateArgs['view'] = 'overheads.html';
+      $view = $templateArgs['view'];
+      break;
     case 'overhead-list-json':
+      $templateArgs = proposalView($pbdb, $templateArgs);
       $templateArgs = overheadView($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'overhead-edit':
       $templateArgs = overheadView($pbdb, $templateArgs);
+      $templateArgs = FYDefaults ($templateArgs);
       $templateArgs['view'] = 'overhead-edit.html';
       $view = $templateArgs['view'];
       break;
     case 'overhead-save':
       $templateArgs = overheadSave($pbdb, $templateArgs);
+      $view = $templateArgs['view'];
+      break;
+    case 'overhead-delete':
+      $templateArgs = overheadDelete($pbdb, $templateArgs);
       $view = $templateArgs['view'];
       break;
     case 'reports':
@@ -384,8 +396,8 @@ if (true) {
   }
 }
 
-$basepath = '/var/www/html/budgets/budget-proposals/htdocs';
-# $basepath = '/var/www/budgetprops-dev/htdocs';
+$config = new Config();
+$basepath = $config->basepath;
 
 Twig_Autoloader::register();
 $loader = new Twig_Loader_Filesystem ($basepath . '/views');
@@ -1184,6 +1196,48 @@ function overheadView ($pbdb, $templateArgs) {
   $templateArgs['view'] = 'overhead-list-ajax.json';
 
   return ($templateArgs);
+}
+
+function overheadSave ($pbdb, $templateArgs) {
+  if (!isset($_REQUEST['overheadid'])) { 
+    $templateArgs['debug'] = array ("Missing overhead ID to create or update overhead rates");
+    return ($templateArgs);
+  }
+
+  $overheadid    = $_REQUEST['overheadid'];
+  $proposalid    = (isset($_REQUEST['proposalid'])? $_REQUEST['proposalid'] : null);
+  $rate          = (isset($_REQUEST['rate'])? $_REQUEST['rate'] : null);
+  $description   = (isset($_REQUEST['description'])? $_REQUEST['description'] : null);
+  $effectivedate = (isset($_REQUEST['effectivedate'])? $_REQUEST['effectivedate'] : null);
+
+  if ($overheadid == 'new') {
+    $pbdb->addOverheadrate ($proposalid, $rate, $description, $effectivedate);
+  }
+  else {
+    $pbdb->updateOverheadrate ($overheadid, $proposalid, $rate, $description, $effectivedate);
+  }
+
+  $templateArgs['proposalid'] = $proposalid;
+  $templateArgs['overheadid'] = $overheadid;
+  $templateArgs['rate'] = $rate;
+  $templateArgs['description'] = $description;
+  $templateArgs['effectivedate'] = $effectivedate;
+  $templateArgs['view'] = 'overhead-save-result.html';
+
+  return ($templateArgs);
+}
+
+function overheadDelete ($pbdb, $templateArgs) {
+  if (!isset($_REQUEST['overheadid'])) { 
+    $templateArgs['debug'] = array ("Missing overhead ID to delete overhead rate");
+    return ($templateArgs);
+  }
+
+  $templateArgs['overheadid'] = $overheadid;
+  $templateArgs['deleteid'] = $overheadid;
+  $templateArgs['view'] = 'delete-result.html';
+
+  $pbdb->deleteOverheadrate ($_REQUEST['overheadid']);
 }
 
 function conferenceView ($pbdb, $templateArgs) {

@@ -1329,13 +1329,13 @@ class PBTables {
     if (isset($startdate)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "startdate>= '" . $this->getDate($startdate) . "'";
+      $query .= "startdate>= '" . $this->formatDate($startdate) . "'";
       $needAnd = true;
     }
     if (isset($enddate)) {
       if ($needAnd) { $query .= " AND "; }
       else { $query .= " WHERE "; }
-      $query .= "startdate<= '" . $this->getDate($enddate) . "'";
+      $query .= "startdate<= '" . $this->formatDate($enddate) . "'";
       $needAnd = true;
     }
     if (isset($country)) {
@@ -1861,22 +1861,42 @@ class PBTables {
     # If $proposalid isset, search first with that $proposalid, if no results, do the search again 
     # where the proposalid is null (default rate for everything) and return that instead.
     if (is_numeric($proposalid)) {
-      $proposalquery = $query . " WHERE proposalid=$proposalid order by effectivedate desc";
-      $this->db->query($proposalquery);
-      $results = $this->db->getResultArray();
+      $query = $query . " WHERE proposalid=$proposalid";
     }
+    else {
+      $query .= " WHERE proposalid is null";
+    }
+    if (is_numeric($overheadid)) {
+      $query .= " AND overheadid=$overheadid";
+    }
+    if (isset($targetdate)) {
+      $query .= "AND effectivedate < '" . $this->formatDate($targetdate) . "'";
+    }
+    $query .= " order by effectivedate desc";
+
+    $this->db->query($query);
+    $results = $this->db->getResultArray();
 
     if (count($results) < 1) {
-      $query .= " WHERE proposalid is null order by effectivedate desc";
-      $this->db->query($query);
-      $results = $this->db->getResultArray();
+      return $this->getOverheadrates (null, null, $targetdate);
     }
 
     for ($r = 0; $r < count($results); $r++) {
       $results[$r]['FY'] = $this->fiscalYear($results[$r]['effectivedate']);
+      if (is_null($results[$r]['proposalid'])) {
+        $results[$r]['proposalid'] = 'null';
+      }
     }
 
     return ($results);
+  }
+
+  function deleteOverheadrate ($overheadid) {
+    if (!isset($overheadid)) { return "No overhead rate ID provided to delete"; }
+
+    $query = "DELETE FROM overheadrates WHERE overheadid=$overheadid";
+
+    $this->db->query($query);
   }
 
   function formatDate ($effectivedate) {

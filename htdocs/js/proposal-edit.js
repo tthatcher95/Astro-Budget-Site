@@ -93,7 +93,7 @@ function loadOverheadTable (reload, proposalid) {
   }
 
   $('#overheadTableDiv').html("<table id='overheadTable' class='display' cellspacing='0' width='100%'>" +
-    "<thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th></tr></table>");
+    "<thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th><th></th></tr></table>");
 
   $('#overheadTable').dataTable( {
     'processing': true,
@@ -229,6 +229,73 @@ function deleteFunding(fundingid, proposalid) {
       $("#warningDiv").show();
 
       loadFundingTable(true, proposalid);
+    });
+}
+
+function editOverheadDialog(overheadid, proposalid) {
+  $("#editDialog").load(
+    "index.php?view=overhead-edit&proposalid=" + proposalid + "&overheadid=" + overheadid);
+
+  dialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 275,
+    width: 525,
+    modal: true,
+    buttons: {
+      "Save Overhead": function () { saveOverhead(proposalid); },
+      Cancel: function () {
+        dialog.dialog("close");
+      }
+    }
+  });
+
+  dialog.dialog("open");
+}
+
+function saveOverhead(proposalid) {
+  $.post("index.php", $("#overheadForm").serialize())
+    .always(function(){
+
+      loadOverheadTable(true, proposalid);
+
+      dialog.dialog("close");
+      $("#warningDiv").html("<p>Updated [" + $("#overheadid").val() + "] (" + $("#rate").val() + ")</p>");
+      $("#warningDiv").show();
+    });
+}
+
+function deleteOverheadDialog(overheadid, proposalid) {
+  var account;
+
+  $.getJSON( "index.php?view=overhead-list-json&proposalid=" + proposalid + "&overheadid=" + overheadid, function( data ) {
+    $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
+                        "<body><h2>Are you sure you want to delete the overhead rate?</h2></body></html>");
+  });
+
+  dialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 200,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Delete Overhead Rate": function () { deleteOverhead(overheadid, proposalid); },
+      Cancel: function () {
+        dialog.dialog("close");
+      }
+    }
+  });
+
+  dialog.dialog("open");
+}
+
+function deleteOverhead(overheadid, proposalid) {
+  $.get("index.php?view=overhead-delete&overheadid=" + overheadid + "&proposalid=" + proposalid)
+    .always (function() {
+      dialog.dialog("close");
+      $("#warningDiv").html("<p>Deleted [" + overheadid + "]</p>");
+      $("#warningDiv").show();
+
+      loadOverheadTable(true, proposalid);
     });
 }
 

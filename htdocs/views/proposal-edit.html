@@ -99,6 +99,7 @@
             </div>
           <h3 id='overheadTitle'>Overhead Rates</h3>
             <div id='overheadDiv' style='height: 400px;'>
+              <a href='javascript:void(0)' onClick="editOverheadDialog('new', {{ proposals[0].proposalid }})" id='newOverheadButton'>New</a><p/>
               <div id="overheadTableDiv">
               <table id='overheadTable' class='display' cellspacing='0' width='100%'>
                 <thead><tr><th>Rate</th><th>Description</th><th>Fiscal Year</th></tr>
@@ -149,6 +150,7 @@
           $('#newFundingButton').button();
           $('#newTaskButton').button();
           $('#newFBMSButton').button();
+          $('#newOverheadButton').button();
           $('#newConferenceButton').button();
           $('#newExpenseButton').button();
           $('#budgetDetailsButton').button();

@@ -17,7 +17,7 @@ class PBTables {
     if ($admin == 'f') { $admin = 'false'; }
 
     $name = pg_escape_string($name);
-    
+
     $query = "INSERT INTO people (name, username, admin) VALUES ('$name', '$username', $admin)";
 
     $this->db->query ($query);
@@ -26,8 +26,8 @@ class PBTables {
   function updatePerson ($peopleid, $name, $username, $admin) {
     if (!isset($peopleid)) { return "No people ID provided to update"; }
 
-    if ((!isset($name)) and (!isset($username)) and !(isset($admin))) { 
-      return "A name or username update must be provided"; 
+    if ((!isset($name)) and (!isset($username)) and !(isset($admin))) {
+      return "A name or username update must be provided";
     }
 
     $name = pg_escape_string($name);
@@ -61,8 +61,8 @@ class PBTables {
     $query = 'SELECT peopleid, name, username, admin FROM people';
 
     $needAnd = false;
-    if (isset($peopleid)) { 
-      $query .= " WHERE peopleid=$peopleid"; 
+    if (isset($peopleid)) {
+      $query .= " WHERE peopleid=$peopleid";
       $needAnd = true;
     }
     if (isset($name)) {
@@ -108,8 +108,8 @@ class PBTables {
              "$peopleid, ";
 
     if (!isset($effectivedate)) { $query .= "now(), "; }
-    else { 
-      $query .= "'" . $this->formatDate($effectivedate) . "', "; 
+    else {
+      $query .= "'" . $this->formatDate($effectivedate) . "', ";
     }
 
     $payplan = pg_escape_string($payplan);
@@ -121,7 +121,7 @@ class PBTables {
     $this->db->query($query);
   }
 
-  function updateSalary ($salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, $authhours, 
+  function updateSalary ($salaryid, $peopleid, $effectivedate, $payplan, $title, $appttype, $authhours,
                          $estsalary, $estbenefits, $leavecategory, $laf) {
     if (!isset($salaryid)) { return "A salary ID must be provided to update"; }
 
@@ -166,7 +166,7 @@ class PBTables {
     }
     if (isset($estsalary)) {
       if ($needComma) { $query .= ", "; }
-      $estsalary = 
+      $estsalary =
       $query .= "estsalary=" . $this->getAmount($estsalary);
       $needComma = true;
     }
@@ -304,7 +304,7 @@ class PBTables {
   function updateFundingProgram ($programid, $programname, $agency, $pocname, $pocemail, $startdate, $enddate) {
     if (!isset($programid)) { return "Must provide a program ID to update information"; }
 
-    if (!(isset($programname) or isset($agency) or isset($pocname) or isset($pocemail) or 
+    if (!(isset($programname) or isset($agency) or isset($pocname) or isset($pocemail) or
           isset($startdate) or isset($enddate))) {
       return "At least one field must be provided to update funding program";
     }
@@ -429,8 +429,8 @@ class PBTables {
   # Proposals
   function addProposal ($peopleid, $projectname, $proposalnumber, $awardnumber, $programid,
                         $perfperiodstart, $perfperiodend, $status) {
-    if (!(isset($peopleid) and isset($projectname))) { 
-      return "A PI and project name must be provided to create a proposal"; 
+    if (!(isset($peopleid) and isset($projectname))) {
+      return "A PI and project name must be provided to create a proposal";
     }
 
     $projectname = pg_escape_string($projectname);
@@ -590,33 +590,33 @@ class PBTables {
     # Get current proposal
     $proposals = $this->getProposals ($proposalid, null, null, null, null, null, null, null);
 
-    $newproposalid = $this->addProposal ($proposals[0]['peopleid'], 'Copy of ' . $proposals[0]['projectname'], 
-                                         $proposals[0]['proposalnumber'], $proposals[0]['awardnumber'], 
-                                         $proposals[0]['programid'], $proposals[0]['perfperiodstart'], 
+    $newproposalid = $this->addProposal ($proposals[0]['peopleid'], 'Copy of ' . $proposals[0]['projectname'],
+                                         $proposals[0]['proposalnumber'], $proposals[0]['awardnumber'],
+                                         $proposals[0]['programid'], $proposals[0]['perfperiodstart'],
                                          $proposals[0]['perfperiodend'], 6);
 
     # Conferences/travel
     $conferences = $this->getConferenceAttendees (null, null, $proposalid, null);
     for ($i = 0; $i < count($conferences); $i++) {
-      $this->addConferenceAttendee ($conferences[$i]['conferenceid'], $newproposalid, $conferences[$i]['travelers'], 
-                                    $conferences[$i]['meetingdays'], $conferences[$i]['traveldays'], 
+      $this->addConferenceAttendee ($conferences[$i]['conferenceid'], $newproposalid, $conferences[$i]['travelers'],
+                                    $conferences[$i]['meetingdays'], $conferences[$i]['traveldays'],
                                     $conferences[$i]['startdate'], $conferences[$i]['rentalcars']);
     }
 
     # New Travel
     $travel = $this->getTravel (null, $proposalid, null, null, null);
     for ($i = 0; $i < count($travel); $i++) {
-      $this->addTravel ($newproposalid, $travel[$i]['meeting'], $travel[$i]['startdate'], 
-        $travel[$i]['meetingdays'], $travel[$i]['traveldays'], $travel[$i]['travelers'], 
-        $travel[$i]['rentalcars'], $travel[$i]['registration'], $travel[$i]['perdiem'], 
-        $travel[$i]['airfare'], $travel[$i]['groundtransport'], $travel[$i]['other'], 
+      $this->addTravel ($newproposalid, $travel[$i]['meeting'], $travel[$i]['startdate'],
+        $travel[$i]['meetingdays'], $travel[$i]['traveldays'], $travel[$i]['travelers'],
+        $travel[$i]['rentalcars'], $travel[$i]['registration'], $travel[$i]['perdiem'],
+        $travel[$i]['airfare'], $travel[$i]['groundtransport'], $travel[$i]['other'],
         $travel[$i]['lodging'], $travel[$i]['city'], $travel[$i]['state'], $travel[$i]['country']);
     }
 
     # Expenses
     $expenses = $this->getExpenses (null, $proposalid, null, null);
     for ($i = 0; $i < count($expenses); $i++) {
-      $this->addExpense ($newproposalid, $expenses[$i]['expensetypeid'], $expenses[$i]['description'], 
+      $this->addExpense ($newproposalid, $expenses[$i]['expensetypeid'], $expenses[$i]['description'],
                          $expenses[$i]['amount'], $expenses[$i]['fiscalyear']);
     }
 
@@ -626,8 +626,8 @@ class PBTables {
       $newtaskid = $this->addTask ($newproposalid, $tasks[$i]['taskname']);
       $staffing = $this->getStaffing (null, $tasks[$i]['taskid'], null, null);
       for ($j = 0; $j < count($staffing); $j++) {
-        $this->addStaffing ($newtaskid, $staffing[$j]['peopleid'], $staffing[$j]['fiscalyear'], 
-                            $staffing[$j]['q1hours'], $staffing[$j]['q2hours'], $staffing[$j]['q3hours'], 
+        $this->addStaffing ($newtaskid, $staffing[$j]['peopleid'], $staffing[$j]['fiscalyear'],
+                            $staffing[$j]['q1hours'], $staffing[$j]['q2hours'], $staffing[$j]['q3hours'],
                             $staffing[$j]['q4hours'], $staffing[$j]['flexhours']);
       }
     }
@@ -635,7 +635,7 @@ class PBTables {
     # Funding
     $funding = $this->getFunding (null, $proposalid);
     for ($i = 0; $i < count($funding); $i++) {
-      $this->addFunding ($newproposalid, $funding[$i]['fiscalyear'], $funding[$i]['newfunding'], 
+      $this->addFunding ($newproposalid, $funding[$i]['fiscalyear'], $funding[$i]['newfunding'],
                          $funding[$i]['carryover']);
     }
 
@@ -794,12 +794,12 @@ class PBTables {
 
     $this->db->query($query);
   }
-  
+
   function updateFBMSAccount ($fbmsid, $accountno, $proposalid) {
     if (!isset($fbmsid)) { return "No FBMS account ID specified to update"; }
 
-    if (!(isset($accountno) or isset($proposalid))) { 
-      return "The Account No or proposal ID are required to update FBMS"; 
+    if (!(isset($accountno) or isset($proposalid))) {
+      return "The Account No or proposal ID are required to update FBMS";
     }
 
     $accountno = pg_escape_string($accountno);
@@ -813,8 +813,8 @@ class PBTables {
     $query .= " WHERE fbmsid=$fbmsid";
 
     $this->db->query($query);
-  }  
-  
+  }
+
   function getFBMSAccounts ($fbmsid, $accountno, $proposalid) {
     $query = "SELECT fbmsid, accountno, proposalid FROM fbmsaccounts";
     $needAnd = false;
@@ -836,7 +836,7 @@ class PBTables {
       $needAnd = true;
       $query .= "proposalid='$proposalid'";
     }
-    
+
     $this->db->query($query);
     $results = $this->db->getResultArray();
 
@@ -855,7 +855,7 @@ class PBTables {
   #  fbmsid SERIAL Primary Key,
   #  accountno VARCHAR(128),
   #  proposalid INTEGER,
-  
+
   # Conferences
   function addConference ($meeting) {
     if (!isset($meeting)) { return "A meeting name must be provided"; }
@@ -912,7 +912,7 @@ class PBTables {
   # CREATE TABLE conferences (
   #  conferenceid SERIAL Primary Key,
   #  meeting VARCHAR(256),
-  
+
   # ConferenceRates
   function addConferenceRate ($conferenceid, $effectivedate, $perdiem, $registration, $groundtransport, $airfare,
                               $lodging, $city, $state, $country) {
@@ -927,16 +927,16 @@ class PBTables {
     if (isset($effectivedate)) { $query .= "'" . $this->formatDate($effectivedate) . "', "; }
     else { $query .= "now(), "; }
     $query .= $this->getAmount($perdiem) . ", " . $this->getAmount($registration) . ", " .
-              $this->getAmount($groundtransport) . ", " . $this->getAmount($airfare) . 
+              $this->getAmount($groundtransport) . ", " . $this->getAmount($airfare) .
               ", " . $this->getAmount($lodging) . ", '$city', '$state', '$country')";
 
     $this->db->query($query);
   }
 
-  function updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem, 
+  function updateConferenceRate ($conferencerateid, $conferenceid, $effectivedate, $perdiem,
                                 $registration, $groundtransport, $airfare, $lodging, $city, $state, $country) {
     if (!isset($conferencerateid)) { return "A conference rate ID must be provided for an update"; }
-    if (!(isset($effectivedate) or isset($perdiem) or isset($registration) 
+    if (!(isset($effectivedate) or isset($perdiem) or isset($registration)
        or isset($groundtransport) or isset ($airfare))) { return "Nothing to change in conference rate update"; }
 
     $query = "UPDATE conferencerates SET ";
@@ -1002,7 +1002,7 @@ class PBTables {
   function getConferenceRates ($conferenceid, $conferencerateid, $effectivedate) {
     if (!isset($conferenceid)) { return "A conference ID must be provided to list conference rates"; }
     if ($conferenceid == 'new') { $conferenceid=0; }
-    if (!is_numeric($conferenceid)) { 
+    if (!is_numeric($conferenceid)) {
      # error_log("is_numeric says false for ($conferenceid)");
      $conferenceid=0;
     }
@@ -1013,8 +1013,8 @@ class PBTables {
     if (isset($conferencerateid)) {
       $query .= " AND conferencerateid=$conferencerateid";
     }
-    if (isset($effectivedate)) { 
-      $query .= " AND effectivedate < '" . $this->formatDate($effectivedate) . "'"; 
+    if (isset($effectivedate)) {
+      $query .= " AND effectivedate < '" . $this->formatDate($effectivedate) . "'";
       $query .= " ORDER BY effectivedate DESC LIMIT 1";
     }
     else { $query .= " ORDER BY effectivedate DESC"; }
@@ -1027,7 +1027,7 @@ class PBTables {
         $tgtDate = new DateTime($effectivedate);
         $effDate = new DateTime($results[$e]['effectivedate']);
         $dateDifference = $tgtDate->diff($effDate);
-  
+
         for ($i=0; $i < $dateDifference->y; $i++) {
           $results[$e]['perdiem'] = $results[$e]['perdiem'] * 1.04;
           $results[$e]['lodging'] = $results[$e]['lodging'] * 1.04;
@@ -1056,13 +1056,17 @@ class PBTables {
   #  registration REAL,
   #  groundtransport REAL,
   #  airfare REAL,
-  
+
   # ConferenceAttendee
   function addConferenceAttendee ($conferenceid, $proposalid, $travelers, $meetingdays, $traveldays, $startdate,
   $rentalcars) {
     if (!(isset($conferenceid) and isset($proposalid) and isset($travelers))) {
       return "Missing required information to add conference attendee";
     }
+
+    $meetingdays = $this->formatNumber ($meetingdays);
+    $traveldays = $this->formatNumber ($traveldays);
+    $rentalcars = $this->formatNumber ($rentalcars);
 
     $query = "INSERT INTO conferenceattendee (conferenceid, proposalid, travelers, meetingdays, traveldays, " .
              "startdate, rentalcars)".
@@ -1074,7 +1078,7 @@ class PBTables {
     $this->db->query($query);
   }
 
-  function updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $travelers, $meetingdays, 
+  function updateConferenceAttendee ($conferenceattendeeid, $conferenceid, $proposalid, $travelers, $meetingdays,
                                     $traveldays, $startdate, $rentalcars) {
     if (!isset($conferenceattendeeid)) { return "A conference attendee ID must be provided for an update"; }
     if (!(isset($conferenceid) or isset($proposalid) or isset($travelers) or isset($meetingdays)
@@ -1122,7 +1126,7 @@ class PBTables {
 
     $this->db->query($query);
   }
-    
+
   function getConferenceAttendees ($conferenceattendeeid, $conferenceid, $proposalid, $travelers) {
     $query = "SELECT c.conferenceattendeeid, c.conferenceid, c.proposalid, c.travelers, c.meetingdays, " .
              "c.traveldays, to_char(c.startdate, 'MM/DD/YYYY') as startdate, c.rentalcars, m.meeting " .
@@ -1166,7 +1170,7 @@ class PBTables {
 
     $this->db->query($query);
   }
-  
+
   # CREATE TABLE conferenceattendee (
   #  conferenceattendeeid SERIAL Primary Key,
   #  conferenceid INTEGER,
@@ -1196,23 +1200,28 @@ class PBTables {
  # other           | real                        |
 
 
-  function addTravel ($proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers, $rentalcars, 
+  function addTravel ($proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers, $rentalcars,
     $registration, $perdiem, $airfare, $groundtransport, $other, $lodging, $city, $state, $country) {
     if (!(isset($proposalid) and isset($travelers))) {
       return "Missing required information to add travel";
     }
 
+    $meetingdays = $this->formatNumber($meetingdays);
+    $traveldays  = $this->formatNumber($traveldays);
+    $travelers   = $this->formatNumber($travelers);
+    $rentalcars  = $this->formatNumber($rentalcars);
+
     $query = "INSERT INTO travel (proposalid, meeting, startdate, meetingdays, traveldays, " .
       "travelers, rentalcars, registration, perdiem, airfare, groundtransport, other, lodging, city, state, country) " .
       "VALUES ($proposalid, '$meeting', '" . $this->formatDate($startdate) . "', $meetingdays, " .
       "$traveldays, $travelers, $rentalcars, " . $this->getAmount($registration) . ", " . $this->getAmount($perdiem) .
-      ", " . $this->getAmount($airfare) . ", " . $this->getAmount($groundtransport) . ", " . 
+      ", " . $this->getAmount($airfare) . ", " . $this->getAmount($groundtransport) . ", " .
       $this->getAmount($other) . ", " . $this->getAmount($lodging) . ", '$city', '$state', '$country')";
 
     error_log("addTravel $other query -> $query");
     $this->db->query($query);
   }
-  
+
   function updateTravel ($travelid, $proposalid, $meeting, $startdate, $meetingdays, $traveldays, $travelers,
     $rentalcars, $registration, $perdiem, $airfare, $groundtransport, $other, $lodging, $city, $state, $country) {
     if (!isset($travelid)) { return "A Travel ID must be provided for an update"; }
@@ -1240,22 +1249,22 @@ class PBTables {
     }
     if (isset($meetingdays)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "meetingdays=$meetingdays";
+      $query .= "meetingdays=" . $this->formatNumber($meetingdays);
       $needComma = true;
     }
     if (isset($traveldays)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "traveldays=$traveldays";
+      $query .= "traveldays=" . $this->formatNumber($traveldays);
       $needComma = true;
     }
     if (isset($travelers)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "travelers=$travelers";
+      $query .= "travelers=" . $this->formatNumber($travelers);
       $needComma = true;
     }
     if (isset($rentalcars)) {
       if ($needComma) { $query .= ", "; }
-      $query .= "rentalcars=$rentalcars";
+      $query .= "rentalcars=" . $this->formatNumber($rentalcars);
       $needComma = true;
     }
     if (isset($other)) {
@@ -1382,7 +1391,7 @@ class PBTables {
     $results = $this->db->getResultArray();
     return ($results[0]['taskid']);
   }
-  
+
   function updateTask ($taskid, $proposalid, $taskname) {
     if (!isset($taskid)) { return "A task ID is required to update tasks"; }
     if (!(isset($proposalid) or isset($taskname))) { return "No changes provided to update tasks"; }
@@ -1399,7 +1408,7 @@ class PBTables {
 
     $this->db->query($query);
   }
-  
+
   function getTasks ($taskid, $proposalid, $taskname) {
     $query = "SELECT taskid, proposalid, taskname FROM tasks";
 
@@ -1439,7 +1448,7 @@ class PBTables {
     "FROM people u JOIN staffing s ON (s.peopleid=u.peopleid) JOIN tasks t ON " .
     "(t.taskid=s.taskid) JOIN proposals p ON (p.proposalid=t.proposalid) JOIN fundingprograms f ON " .
     "(f.programid=p.programid) JOIN statuses a ON (a.status=p.status) JOIN people q ON (p.peopleid=q.peopleid) WHERE ";
-    
+
     $query .= "s.fiscalyear >= '" . $this->formatDate($startdate) . "' AND s.fiscalyear < '" .
               $this->formatDate($enddate) . "' AND p.status in (";
     $query .= implode(',', $statuses);
@@ -1491,7 +1500,7 @@ class PBTables {
     $csvRow .= $row['q4hours'] . ',';
     $csvRow .= $row['flexhours'] . ",";
     $csvRow .= $row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'];
-    if ($authhours) 
+    if ($authhours)
       $csvRow .= "," . number_format(($row['flexhours'] + $row['q1hours'] + $row['q2hours'] + $row['q3hours'] + $row['q4hours'])/$authhours, 2);
 
     $csvRow .= "\n";
@@ -1503,7 +1512,7 @@ class PBTables {
     if (!isset($taskid)) { return "A task ID is required to delete a task"; }
 
     $query = "DELETE FROM tasks WHERE taskid=$taskid";
-    
+
     $this->db->query($query);
   }
 
@@ -1511,11 +1520,11 @@ class PBTables {
   #  taskid BIGSERIAL Primary Key,
   #  proposalid INTEGER,
   #  taskname VARCHAR(1024),
-  
+
   # Staffing
   function addStaffing ($taskid, $peopleid, $fiscalyear, $q1hours, $q2hours, $q3hours, $q4hours, $flexhours) {
-    if (!(isset($taskid) and isset($peopleid) and isset($fiscalyear))) { 
-      return "A task, person, and FY are required for staffing"; 
+    if (!(isset($taskid) and isset($peopleid) and isset($fiscalyear))) {
+      return "A task, person, and FY are required for staffing";
     }
 
     if (empty($q1hours)) $q1hours = 0;
@@ -1529,11 +1538,11 @@ class PBTables {
     if (isset($fiscalyear)) { $query .= "'" . $this->formatDate($fiscalyear) . "', "; }
     else { $query .= "now(), "; }
     $query .= "$q1hours, $q2hours, $q3hours, $q4hours, $flexhours)";
-    
+
     $this->db->query($query);
   }
 
-  function updateStaffing ($staffingid, $taskid, $peopleid, $fiscalyear, 
+  function updateStaffing ($staffingid, $taskid, $peopleid, $fiscalyear,
                           $q1hours, $q2hours, $q3hours, $q4hours, $flexhours) {
     if (!isset($staffingid)) { return "A staffing ID is required to make an update"; }
     if (!(isset($taskid) or isset($peopleid) or isset($fiscalyear) or isset($q1hours) or isset($q2hours) or
@@ -1649,7 +1658,7 @@ class PBTables {
   #  q3hours REAL,
   #  q4hours REAL,
   #  flexhours REAL,
-  
+
   # ExpenseTypes
   function addExpenseType ($description) {
     if (!isset($description)) { return "No description provided to add expense type"; }
@@ -1663,13 +1672,13 @@ class PBTables {
 
   function updateExpenseType ($expensetypeid, $description) {
     if (!(isset($expensetypeid) and isset($description))) { return "No ID or change provided to update expense types"; }
-    
+
     $description = pg_escape_string($description);
     $query = "UPDATE expensetypes SET description='$description' WHERE expensetypeid=$expensetypeid";
-    
+
     $this->db->query($query);
   }
-  
+
   function getExpenseTypes ($expensetypeid, $description) {
     $query = "SELECT expensetypeid, description FROM expensetypes";
 
@@ -1687,7 +1696,7 @@ class PBTables {
 
     return ($results);
   }
-  
+
   function deleteExpenseType ($expensetypeid) {
     if (!isset($expensetypeid)) { return "No expense type ID provided to delete"; }
 
@@ -1710,7 +1719,7 @@ class PBTables {
     $description = pg_escape_string($description);
 
     $query = "INSERT INTO expenses (proposalid, expensetypeid, description, amount, fiscalyear) VALUES " .
-             "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", '" . 
+             "($proposalid, $expensetypeid, '$description', " . $this->getAmount($amount) . ", '" .
               $this->formatDate($fiscalyear) . "')";
 
     $this->db->query($query);
@@ -1751,7 +1760,7 @@ class PBTables {
     }
 
     $query .= " WHERE expenseid=$expenseid";
-    
+
     $this->db->query($query);
   }
 
@@ -1812,15 +1821,15 @@ class PBTables {
     $description = pg_escape_string($description);
 
     $query = "INSERT INTO overheadrates (proposalid, rate, description, effectivedate) " .
-             " VALUES ($proposalid, $rate, '$description', '" . $this->formatDate($effectivedate) . "')"; 
+             " VALUES ($proposalid, $rate, '$description', '" . $this->formatDate($effectivedate) . "')";
 
     $this->db->query($query);
   }
 
   function updateOverheadrate ($overheadid, $proposalid, $rate, $description, $effectivedate) {
     if (!isset($overheadid)) { return "An overhead rate ID must be provided for an update"; }
-    if (!(isset($rate) or isset($proposalid) or isset($description) or isset($effectivedate))) { 
-      return "No changes provided for overhead rate update"; 
+    if (!(isset($rate) or isset($proposalid) or isset($description) or isset($effectivedate))) {
+      return "No changes provided for overhead rate update";
     }
 
     $query = "UPDATE overheadrates set ";
@@ -1851,14 +1860,14 @@ class PBTables {
 
     $this->db->query($query);
   }
-    
+
   function getOverheadrates ($proposalid, $overheadid, $targetdate) {
     $query = "SELECT overheadid, proposalid, rate, description, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate" .
              " FROM overheadrates";
 
     $results = array();
 
-    # If $proposalid isset, search first with that $proposalid, if no results, do the search again 
+    # If $proposalid isset, search first with that $proposalid, if no results, do the search again
     # where the proposalid is null (default rate for everything) and return that instead.
     if (is_numeric($proposalid)) {
       $query = $query . " WHERE proposalid=$proposalid";
@@ -1899,6 +1908,14 @@ class PBTables {
     $this->db->query($query);
   }
 
+  function formatNumber ($number) {
+    if (is_numeric ($number)) {
+      return $number;
+    }
+
+    return 0;
+  }
+
   function formatDate ($effectivedate) {
     if (!isset($effectivedate) or $effectivedate == '') {
       $effectivedate = date('Y-m-d H:i:s');
@@ -1921,9 +1938,9 @@ class PBTables {
     if ($month > 9) {
       $year = $year + 1;
     }
-    
+
     return "FY$year";
   }
 }
-  
+
 ?>

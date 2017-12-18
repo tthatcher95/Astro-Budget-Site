@@ -212,7 +212,7 @@ class PBTables {
   function getEffectiveSalary ($peopleid, $targetdate) {
     if (!isset($peopleid)) { return "No ID provided to lookup effective salary for"; }
 
-    $query = "SELECT salaryid, peopleid, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate, payplan, title, appttype, " .
+    $query = "SELECT salaryid, peopleid, effectivedate, payplan, title, appttype, " .
              "authhours, estsalary, estbenefits, leavecategory, laf FROM salaries " .
              "WHERE peopleid=$peopleid";
 
@@ -223,7 +223,7 @@ class PBTables {
       $query .= " AND effectivedate < now()";
     }
 
-    $query .= " ORDER BY effectivedate ASC LIMIT 1";
+    $query .= " ORDER BY effectivedate DESC LIMIT 1";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();
@@ -1007,7 +1007,7 @@ class PBTables {
      $conferenceid=0;
     }
 
-    $query = "SELECT conferencerateid, conferenceid, to_char(effectivedate, 'MM/DD/YYYY') as effectivedate, perdiem, lodging, " .
+    $query = "SELECT conferencerateid, conferenceid, effectivedate, perdiem, lodging, " .
              "registration, groundtransport, airfare, city, state, country FROM conferencerates " .
              "WHERE conferenceid=$conferenceid";
     if (isset($conferencerateid)) {
@@ -1015,9 +1015,9 @@ class PBTables {
     }
     if (isset($effectivedate)) {
       $query .= " AND effectivedate < '" . $this->formatDate($effectivedate) . "'";
-      $query .= " ORDER BY effectivedate ASC LIMIT 1";
+      $query .= " ORDER BY effectivedate DESC LIMIT 1";
     }
-    else { $query .= " ORDER BY effectivedate ASC"; }
+    else { $query .= " ORDER BY effectivedate DESC"; }
 
     $this->db->query($query);
     $results = $this->db->getResultArray();

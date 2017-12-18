@@ -223,7 +223,7 @@ class PBTables {
       $query .= " AND effectivedate < now()";
     }
 
-    $query .= " ORDER BY effectivedate DESC LIMIT 1";
+    $query .= " ORDER BY effectivedate ASC LIMIT 1";
 
     $this->db->query($query);
     $results = $this->db->getResultArray();

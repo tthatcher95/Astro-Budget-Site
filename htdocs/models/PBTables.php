@@ -1015,9 +1015,9 @@ class PBTables {
     }
     if (isset($effectivedate)) {
       $query .= " AND effectivedate < '" . $this->formatDate($effectivedate) . "'";
-      $query .= " ORDER BY effectivedate DESC LIMIT 1";
+      $query .= " ORDER BY effectivedate ASC LIMIT 1";
     }
-    else { $query .= " ORDER BY effectivedate DESC"; }
+    else { $query .= " ORDER BY effectivedate ASC"; }
 
     $this->db->query($query);
     $results = $this->db->getResultArray();

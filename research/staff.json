@@ -1,0 +1,27 @@
+var data = [
+
+   {"Task": "Mission Interface", "Staffing":"Garcia, Patricia A", "Hours": 540, "Est. Cost": "$39,135.10", "FY":"FY16"},
+   {"Task": "Mission Interface", "Staffing": "Garcia, Patricia A", "Hours": 300, "Est. Cost": "$21,048.30", "FY":"FY17"},
+   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Est. Cost":"$18,646.87", "FY":"FY16"},
+   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Est. Cost":"$19,943.84", "FY":"FY17"},
+   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Est. Cost":"$20,355.26", "FY":"FY18"},
+   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Est. Cost":"$20,355.26", "FY":"FY19"},
+   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Est. Cost":"$21,169.47", "FY":"FY20"},
+   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 200, "Est. Cost":"$15,577.73", "FY":"FY16"},
+   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 300, "Est. Cost":"$23,786.98", "FY":"FY17"},
+   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 300, "Est. Cost":"$24,227.78", "FY":"FY18"},
+   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 200, "Est. Cost":"$16,151.86", "FY":"FY19"},
+   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 200, "Est. Cost":"$16,797.93", "FY":"FY20"},
+   {"Task": "Pilot/PDS Annex Support",              "Staffing": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+   {"Task": "MAP2 Support",                         "Staffing": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+   {"Task": "Mission Archiving",                    "Staffing": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+   {"Task": "Mission Archiving",                    "Staffing": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+   {"Task": "Mission Interface Support",            "Staffing": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+   {"Task": "Web &amp; Tool Development",           "Staffing": "Akins, Scott W, Bailen, Mark S", "Hours": "1880.00", "Est. Cost": "$140,684.84", "FY": "FY16, FY17, FY18, FY19, FY20"}
+   {"Task": "Mission Interface",                    "Staffing": "Garcia, Patricia A, Geissler, Paul E, Isbell, Christopher E", "Hours": "2940.00", "Est. Cost": "$257,196.36", "FY": "FY16, FY17, FY18, FY19, FY20"}
+   {"Task": "Multi-Mission Services",               "Staffing": "Hare, Trent M, Isbell, Christopher E, Sucharski, Robert M, Takir, Driss", "Hours": "2960.00", "Est. Cost": "$226,590.08", "FY": "FY16, FY17, FY18, FY19, FY20"}
+   {"Task": "Data Integrity and Disaster Recovery", "Staffing": "Richie, Janet O, Sucharski, Robert M", "Hours": "5600.00", "Est. Cost": "$378,548.00", "FY": "FY16, FY17, FY18, FY19, FY20"}
+   {"Task": "PDS4 Support &amp; Implementation",    "Staffing": "Hare, Trent M, Isbell, Christopher E, Milazzo, Moses", "Hours": "3960.00", "Est. Cost": "$317,776.25", "FY": "FY16, FY17, FY18, FY19, FY20"}
+   {"Task": "Project Management, Science Oversight","Staffing": "Gaddis, Lisa R", "Hours": "2600.00", "Est. Cost": "$332,754.71", "FY": "FY16, FY17, FY18, FY19, FY20"}
+
+ ];

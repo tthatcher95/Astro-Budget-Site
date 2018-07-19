@@ -1,0 +1,15 @@
+
+var tasks = [
+{"Project Name": "Pilot/PDS Annex Support", "Staffing(s)": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+{"Project Name": "MAP2 Support", "Staffing(s)": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+{"Project Name": "Mission Archiving", "Staffing(s)": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+{"Project Name": "Mission Archiving", "Staffing(s)": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+{"Project Name": "Mission Interface Support", "Staffing(s)": "", "Hours": "", "Est. Cost": "", "FY(s)": ""}
+{"Project Name": "Web &amp; Tool Development", "Staffing(s)": "Akins, Scott W, Bailen, Mark S", "Hours": "1880.00", "Est. Cost": "$140,684.84", "FY(s)": "FY16, FY17, FY18, FY19, FY20"}
+{"Project Name": "Mission Interface", "Staffing(s)": "Garcia, Patricia A, Geissler, Paul E, Isbell, Christopher E", "Hours": "2940.00", "Est. Cost": "$257,196.36", "FY(s)": "FY16, FY17, FY18, FY19, FY20"}
+{"Project Name": "Multi-Mission Services", "Staffing(s)": "Hare, Trent M, Isbell, Christopher E, Sucharski, Robert M, Takir, Driss", "Hours": "2960.00", "Est. Cost": "$226,590.08", "FY(s)": "FY16, FY17, FY18, FY19, FY20"}
+{"Project Name": "Data Integrity and Disaster Recovery", "Staffing(s)": "Richie, Janet O, Sucharski, Robert M", "Hours": "5600.00", "Est. Cost": "$378,548.00", "FY(s)": "FY16, FY17, FY18, FY19, FY20"}
+{"Project Name": "PDS4 Support &amp; Implementation", "Staffing(s)": "Hare, Trent M, Isbell, Christopher E, Milazzo, Moses", "Hours": "3960.00", "Est. Cost": "$317,776.25", "FY(s)": "FY16, FY17, FY18, FY19, FY20"}
+{"Project Name": "Project Management, Science Oversight", "Staffing(s)": "Gaddis, Lisa R", "Hours": "2600.00", "Est. Cost": "$332,754.71", "FY(s)": "FY16, FY17, FY18, FY19, FY20"}
+
+];

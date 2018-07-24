@@ -105,6 +105,20 @@ function loadOverheadTable (reload, proposalid) {
 }
 
 function loadTasksTable (reload, proposalid) {
+
+  $.ajax({
+    async: true,
+    type: 'GET',
+    url: 'index.php?view=tasks-list-json&proposalid=' + proposalid,
+    dataType: "JSON", // data type expected from server
+    success: function (data) {
+      console.log(data);
+    },
+    error: function() {
+      console.log('Error: ' + data);
+    }
+  });
+
   if (reload) {
     $('#tasksTable').dataTable().fnDestroy();
   }
@@ -158,7 +172,7 @@ function loadExpensesTable (reload, proposalid) {
 
 function saveProposal() {
   $.post("index.php", $("#proposalForm").serialize());
-  
+
   $("#warningDiv").html("<p>Updated proposal details</p>");
   $("#warningDiv").show();
 }
@@ -405,7 +419,7 @@ function saveTask (proposalid) {
       dialog.dialog("close");
       $("#warningDiv").html("<p>Updated " + $("#taskname").val() + "</p>");
       $("#warningDiv").show();
-    
+
       figureCosts(proposalid);
    });
 }
@@ -417,7 +431,7 @@ function deleteTaskDialog(taskid, proposalid) {
     var pattern = />(.+)<\/a>/i;
     task = pattern.exec(data.data[0][0])[1];
     $("#editDialog").html("<html><head><title>Confirm Deletion</title></head>" +
-                        "<body><h2>Are you sure you want to delete task " + task + 
+                        "<body><h2>Are you sure you want to delete task " + task +
                         " and any staffing assigned to it?</h2></body></html>");
   });
 
@@ -486,7 +500,7 @@ function saveAttendee(proposalid) {
 function deleteAttendeeDialog(travelid, proposalid) {
   var description;
 
-  $.getJSON("index.php?view=conference-attendee-list-json&proposalid=" + proposalid + 
+  $.getJSON("index.php?view=conference-attendee-list-json&proposalid=" + proposalid +
       "&travelid=" + travelid, function( data ) {
     var pattern = />(.+)<\/a>/i;
     description = pattern.exec(data.data[0][0])[1];
@@ -525,7 +539,7 @@ function deleteAttendee(travelid, proposalid) {
 
 function loadConferenceRate() {
   $("#meeting").val($("#conferenceiddropdown option:selected").text());
-  $.getJSON("index.php?view=conference-rate-list-json&conferenceid=" + $("#conferenceiddropdown").val() + 
+  $.getJSON("index.php?view=conference-rate-list-json&conferenceid=" + $("#conferenceiddropdown").val() +
       "&effectivedate=" + $("#tripstartdate").val(), function( data ) {
     $("#perdiem").val(data.data[0][1]);
     $("#lodging").val(data.data[0][2]);

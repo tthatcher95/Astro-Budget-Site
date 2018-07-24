@@ -6,64 +6,104 @@
 
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
-
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 
 <script>
-var data = [
 
-   {"Task": "Mission Interface", "Staffing":"Garcia, Patricia A", "Hours": 540, "Cost": '39,135.10', "FY":"FY16"},
-   {"Task": "Mission Interface", "Staffing": "Garcia, Patricia A", "Hours": 300, "Cost": "21,048.30", "FY":"FY17"},
-   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Cost":"18,646.87", "FY":"FY16"},
-   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Cost":"19,943.84", "FY":"FY17"},
-   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Cost":"20,355.26", "FY":"FY18"},
-   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Cost":"20,355.26", "FY":"FY19"},
-   {"Task": "Mission Interface", "Staffing":"Geissler, Paul E", "Hours": 180, "Cost":"21,169.47", "FY":"FY20"},
-   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 200, "Cost":"15,577.73", "FY":"FY16"},
-   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 300, "Cost":"23,786.98", "FY":"FY17"},
-   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 300, "Cost":"24,227.78", "FY":"FY18"},
-   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 200, "Cost":"16,151.86", "FY":"FY19"},
-   {"Task": "Mission Interface", "Staffing":"Isbell, Christopher E", "Hours": 200, "Cost":"16,797.93", "FY":"FY20"},
-   {"Task": "Pilot/PDS Annex Support",              "Staffing": "", "Hours": "", "Cost": "", "FY(s)": ""},
-   {"Task": "MAP2 Support",                         "Staffing": "", "Hours": "", "Cost": "", "FY(s)": ""},
-   {"Task": "Mission Archiving",                    "Staffing": "", "Hours": "", "Cost": "", "FY(s)": ""},
-   {"Task": "Mission Archiving",                    "Staffing": "", "Hours": "", "Cost": "", "FY(s)": ""},
-   {"Task": "Mission Interface Support",            "Staffing": "", "Hours": "", "Cost": "", "FY(s)": ""},
-   {"Task": "Web &amp; Tool Development",           "Staffing": "Akins, Scott W, Bailen, Mark S", "Hours": "1880.00", "Cost": "140,684.84", "FY": "FY16, FY17, FY18, FY19, FY20"},
-   {"Task": "Mission Interface",                    "Staffing": "Garcia, Patricia A, Geissler, Paul E, Isbell, Christopher E", "Hours": "2940.00", "Cost": "257,196.36", "FY": "FY16, FY17, FY18, FY19, FY20"},
-   {"Task": "Multi-Mission Services",               "Staffing": "Hare, Trent M, Isbell, Christopher E, Sucharski, Robert M, Takir, Driss", "Hours": "2960.00", "Cost": "226,590.08", "FY": "FY16, FY17, FY18, FY19, FY20"},
-   {"Task": "Data Integrity and Disaster Recovery", "Staffing": "Richie, Janet O, Sucharski, Robert M", "Hours": "5600.00", "Cost": "378,548.00", "FY": "FY16, FY17, FY18, FY19, FY20"},
-   {"Task": "PDS4 Support &amp; Implementation",    "Staffing": "Hare, Trent M, Isbell, Christopher E, Milazzo, Moses", "Hours": "3960.00", "Cost": "317,776.25", "FY": "FY16, FY17, FY18, FY19, FY20"},
-   {"Task": "Project Management, Science Oversight","Staffing": "Gaddis, Lisa R", "Hours": "2600.00", "Cost": "332,754.71", "FY": "FY16, FY17, FY18, FY19, FY20"},
+var json_data = [
+
+   {"Task": "Mission Interface",
+    "Staffing": "Garcia, Patricia A",
+    "Cost": "",
+    "FY16": 540,
+    "FY17": 300,
+    "FY18": 0,
+    "FY19": 0,
+    "FY20": 0,
+    "FY21": 0},
+
+   {"Task": "Mission Interface", "Staffing": "Geissler, Paul E", "Cost": "5",  "FY16": 180, "FY17": 180, "FY18": 180, "FY19": 180, "FY20":180 },
+
+   {"Task": "Mission Interface", "Staffing": "Isbell, Christopher E", "Cost":"6", "FY16": 200, "FY17": 300, "FY18": 300, "FY19": 200, "FY20": 200 },
+
+   {"Task": "Pilot/PDS Annex Support",              "Staffing": "", "Cost": "", "FY16": 5, "FY17": "", "FY18": "", "FY19": "", "FY20":"" },
+   {"Task": "MAP2 Support",                         "Staffing": "", "Cost": "", "FY16": "", "FY17": "", "FY18": "", "FY19": "", "FY20":"" },
+   {"Task": "Mission Archiving",                    "Staffing": "", "Cost": "", "FY16": "", "FY17": "", "FY18": "", "FY19": "", "FY20":"" },
+   {"Task": "Mission Archiving",                    "Staffing": "", "Cost": "", "FY16": "", "FY17": "", "FY18": "", "FY19": "", "FY20":"" },
+   {"Task": "Mission Interface Support",            "Staffing": "", "Cost": "", "FY16": "", "FY17": "", "FY18": "", "FY19": "", "FY20":"" },
+
+   {"Task": "Web &amp; Tool Development",           "Staffing": "Akins, Scott W, Bailen, Mark S", "Cost": "140,684.84", "FY16": 1880/5, "FY17": 1880/5, "FY18": 1880/5, "FY19": 1880/5, "FY20": 1880/5},
+
+   {"Task": "Mission Interface",                    "Staffing": "Garcia, Patricia A, Geissler, Paul E, Isbell, Christopher E", "Cost": "257,196.36", "FY16": 2940/5, "FY17": 2940/5, "FY18": 2940/5, "FY19": 2940/5, "FY20": 2940/5},
+
+   {"Task": "Multi-Mission Services",               "Staffing": "Hare, Trent M, Isbell, Christopher E, Sucharski, Robert M, Takir, Driss", "Cost": "226,590.08", "FY16": 2960/5, "FY17": 2960/5, "FY18": 2960/5, "FY19": 2960/5, "FY20": 2960/5},
+
+   {"Task": "Data Integrity and Disaster Recovery", "Staffing": "Richie, Janet O, Sucharski, Robert M", "Cost": "378,548.00", "FY16": 5600/5, "FY17": 5600/5, "FY18": 5600/5, "FY19": 5600/5, "FY20": 5600/5},
+
+   {"Task": "PDS4 Support &amp; Implementation",    "Staffing": "Hare, Trent M, Isbell, Christopher E, Milazzo, Moses", "Cost": "317,776.25", "FY16": 3960/5, "FY17": 3960/5, "FY18": 3960/5, "FY19": 3960/5, "FY20": 3960/5},
+
+   {"Task": "Project Management, Science Oversight","Staffing": "Gaddis, Lisa R", "Cost": "332,754.71", "FY16": 2600/5, "FY17": 2600/5, "FY18": 2600/5, "FY19": 2600/5, "FY20": 2600/5, "FY21": 2600/5, "FY22": 2600/5},
 
  ];
 
- var FYs = [
-   { Name: "FY16", Id: 0 },
-   { Name: "FY17", Id: 1 },
-   { Name: "FY18", Id: 2 },
-   { Name: "FY19", Id: 3 },
-   { Name: "FY20", Id: 4 }
- ]
+
+ var fields = [];
+
+ var new_array = [];
+
+json_data.forEach(function(element){
+  new_array = new_array.concat(Object.keys(element));
+
+});
+
+ var new_fields = new Set(new_array);
+
+ fields.push({
+   name: "Task",
+   type: "text",
+   width: 100
+ });
+
+ fields.push({
+   name: "Staffing",
+   type: "text",
+   width: 150
+ });
+
+ fields.push({
+   name: "Cost",
+   type: "text",
+   width: 100
+ });
+
+ new_fields.forEach(function(element){
+   if (element != "Task" || element != "Staffing" || element != "Cost") {
+     fields.push({
+       name: element,
+       type: "number",
+       width: 75
+     });
+   };
+
+
+
+ });
+
+ fields.push({
+   type: "control" });
 
     $("#jsGrid").jsGrid({
         width: "100%",
         height: "400px",
-
         inserting: true,
         editing: true,
         sorting: true,
         paging: true,
 
-        data: data,
+        data: json_data,
 
-        fields: [
-            { name: "Task", type: "text", width: 150, validate: "required" },
-            { name: "Staffing", type: "text", width: 200 },
-            { name: "Hours", type: "number", width: 50 },
-            { name: "Cost", type: "text", width: 150},
-            { name: "FY", type: "select", items: FYs, valueField: "Id", textField: "Name" },
-            { type: "control" }
-        ]
+        fields: fields,
+
     });
+
 </script>

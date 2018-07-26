@@ -105,20 +105,6 @@ function loadOverheadTable (reload, proposalid) {
 }
 
 function loadTasksTable (reload, proposalid) {
-
-  $.ajax({
-    async: true,
-    type: 'GET',
-    url: 'index.php?view=tasks-list-json&proposalid=' + proposalid,
-    dataType: "JSON", // data type expected from server
-    success: function (data) {
-      console.log(data);
-    },
-    error: function() {
-      console.log('Error: ' + data);
-    }
-  });
-
   if (reload) {
     $('#tasksTable').dataTable().fnDestroy();
   }

@@ -53,20 +53,7 @@ var json_data = [
 
  var new_array = [];
 
-   $('#AddColumn').click(function AddColumn(){
-     var name = document.getElementById("column_id").value
-     console.log(name)
-     var temp = fields.pop()
 
-     fields.push({
-       name: name,
-       type: "number",
-       width: 75
-     });
-
-     $("#jsGrid").jsGrid("option", "fields", fields);
-
-   });
 
 json_data.forEach(function(element){
   new_array = new_array.concat(Object.keys(element));
@@ -102,8 +89,6 @@ json_data.forEach(function(element){
      });
    };
 
-
-
  });
 
  fields.push({
@@ -120,6 +105,38 @@ json_data.forEach(function(element){
         data: json_data,
 
         fields: fields,
+
+    });
+
+    $('#AddColumn').click(function AddColumn(){
+      var name = document.getElementById("column_id").value
+      console.log(name)
+      var temp = fields.pop()
+
+      fields.push({
+        name: name,
+        type: "number",
+        width: 75
+      });
+
+      fields.push({
+        type: "control" });
+
+        $("#jsGrid").jsGrid({
+            width: "100%",
+            height: "400px",
+            inserting: true,
+            editing: true,
+            sorting: true,
+            paging: true,
+
+            data: json_data,
+
+            fields: fields,
+
+        });
+
+
 
     });
 

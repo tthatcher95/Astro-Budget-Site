@@ -1,11 +1,8 @@
-
-
 <div id="jsGrid"></div>
 <input type="button" value="Add Column" id="AddColumn" >
 <input type="text" value="" id="column_id" >
 
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
@@ -50,11 +47,9 @@ var json_data = [
 
 
  var fields = [];
-
  var new_array = [];
 
-
-
+// Iterates through the JSON data
 json_data.forEach(function(element){
   new_array = new_array.concat(Object.keys(element));
 
@@ -62,6 +57,7 @@ json_data.forEach(function(element){
 
  var new_fields = new Set(new_array);
 
+// Pushes static values for Task, Staffing, and Cost
  fields.push({
    name: "Task",
    type: "text",
@@ -80,6 +76,7 @@ json_data.forEach(function(element){
    width: 100
  });
 
+// Iterates through parsed JSON data and inserts them into the fields array
  new_fields.forEach(function(element){
    if (element != "Task" && element != "Staffing" && element != "Cost") {
      fields.push({
@@ -91,9 +88,42 @@ json_data.forEach(function(element){
 
  });
 
+// jsGrid static value pushed on the fields array last
  fields.push({
    type: "control" });
 
+// Intializes the grid using the fields array and JSON data
+  $("#jsGrid").jsGrid({
+      width: "100%",
+      height: "400px",
+      inserting: true,
+      editing: true,
+      sorting: true,
+      paging: true,
+
+      data: json_data,
+
+      fields: fields,
+
+  });
+
+    // Custom method for adding columns to jsGrid
+  $('#AddColumn').click(function AddColumn(){
+    var name = document.getElementById("column_id").value
+    var temp = fields.pop()
+
+    // Pushes user defined column
+    fields.push({
+      name: name,
+      type: "number",
+      width: 75
+    });
+
+    // Pushes static jsGrid value back onto the array
+    fields.push({
+      type: "control" });
+
+    // Retintializes the grid to allow for row and column editing
     $("#jsGrid").jsGrid({
         width: "100%",
         height: "400px",
@@ -107,34 +137,6 @@ json_data.forEach(function(element){
         fields: fields,
 
     });
-
-    $('#AddColumn').click(function AddColumn(){
-      var name = document.getElementById("column_id").value
-      console.log(name)
-      var temp = fields.pop()
-
-      fields.push({
-        name: name,
-        type: "number",
-        width: 75
-      });
-
-      fields.push({
-        type: "control" });
-
-        $("#jsGrid").jsGrid({
-            width: "100%",
-            height: "400px",
-            inserting: true,
-            editing: true,
-            sorting: true,
-            paging: true,
-
-            data: json_data,
-
-            fields: fields,
-
-        });
 
 
 

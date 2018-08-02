@@ -21,13 +21,13 @@
         <div id="accordions">
           <h3 id='proposalTitle'>Proposal Details - {{ proposals[0].projectname }}</h3>
             <div>
-              <a href="index.php?view=proposal-budget-details&proposalid={{ proposals[0].proposalid }}" 
+              <a href="index.php?view=proposal-budget-details&proposalid={{ proposals[0].proposalid }}"
                 target='report' id="budgetDetailsButton">Budget Details</a>
-              <a href="index.php?view=proposal-nspires&proposalid={{ proposals[0].proposalid }}" 
+              <a href="index.php?view=proposal-nspires&proposalid={{ proposals[0].proposalid }}"
                 target='report' id="nspiresButton">NSPIRES</a>
-              <a href="index.php?view=proposal-roses&proposalid={{ proposals[0].proposalid }}" 
+              <a href="index.php?view=proposal-roses&proposalid={{ proposals[0].proposalid }}"
                 target='report' id="rosesButton">Redacted</a>
-              <a href="index.php?view=proposal-basis&proposalid={{ proposals[0].proposalid }}" 
+              <a href="index.php?view=proposal-basis&proposalid={{ proposals[0].proposalid }}"
                 target='report' id="basisButton">BASIS+</a>
               <p/>
               <form id="proposalForm" action="index.php" method="GET">
@@ -58,14 +58,14 @@
                   <th>Award Number</th>
                   <td><input type='text' name='awardnumber' value='{{ proposals[0].awardnumber }}'/></td></tr>
                 <tr><th>Starting</th>
-                  <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart' 
+                  <td><input type='text' id='proposalperfperiodstart' name='perfperiodstart'
                        value='{{ proposals[0].perfperiodstart }}' onchange='updateDropdown("proposalperfperiodstart");'/>
                 {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodstart',
                                                         'dropdown_id': 'proposalperfperiodstart',
                                                         'selected_fy': proposals[0].perfperiodstart } %}
                        </td>
                   <th>Ending</th>
-                  <td><input type='text' id='proposalperfperiodend' name='perfperiodend' 
+                  <td><input type='text' id='proposalperfperiodend' name='perfperiodend'
                        value='{{ proposals[0].perfperiodend }}' updateDropdown("proposalperfperiodend");'/>
                 {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodend',
                                                         'dropdown_id': 'proposalperfperiodend',
@@ -108,18 +108,10 @@
             </div>
           <h3 id='tasksTitle' >Tasks</h3>
             <div id='tasksdiv'>
-              <form id="newTaskForm" action="index.php" method="GET">
-              <input type='hidden' name='proposalid' value='{{ proposals[0].proposalid }}'/></td>
-              <input type='hidden' name='view' value='task-save'/></td>
-              <input type='hidden' name='taskid' value='new'/></td>
-              <input type='text' name='taskname' value='New Task'/></td>
-              <a href='javascript:void(0)' onClick="editTaskDialog('new', {{ proposals[0].proposalid }})" id='newTaskButton'>New</a><p/>
-              </form>
               <div id="tasksTableDiv">
-              <table id='tasksTable' class='display' cellspacing='0' width='100%'>
-                <thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Salary/Hr</th><th>Benefits/Hr</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th><th>FY</th></tr></thead>
-              </table>
               </div>
+              <input type="button" value="Add Column" id="AddColumn" onclick="AddColumn({{ proposalid }})" >
+              <input type="text" value="" id="column_id" >
             </div>
 
           <h3 id='conferencesTitle'>Conferences/Meetings/Travel</h3>

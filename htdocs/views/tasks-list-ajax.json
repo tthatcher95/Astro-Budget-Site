@@ -11,7 +11,8 @@
 
   {% set current_staff = task.staffing[0].peopleid %}
   {% set cost_total = 0 %}
-  { "Task": "{{task.taskname}}", "taskid": {{ task.taskid }}, "Staffing": {{ task.staffing[0].peopleid }},
+  { "Task": "{{task.taskname}}", "taskid": {{ task.taskid }},
+  "Staffing": {{ task.staffing[0].peopleid }},
 
   {% for staff in task.staffing %}
     {% if staff.peopleid != current_staff%}
@@ -20,6 +21,7 @@
       {% set current_staff = staff.peopleid %}
       {% set cost_total = 0 %}
     {% endif %}
+    "{{staff.FY}}staffingid": {{ staff.staffingid }},
     "{{staff.FY}}": {{ staff.q1hours + staff.q2hours + staff.q3hours + staff.q4hours + staff.flexhours }},
     {% set cost_total = cost_total + staff.staffcosts%}
     {% if loop.last %}

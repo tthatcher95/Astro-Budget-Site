@@ -109,6 +109,17 @@ function loadTasksTable (reload, proposalid) {
     $('#tasksTableDiv').jsGrid("destroy");
   }
 
+  var CopyField = function(config) {
+      jsGrid.Field.call(this, config);
+  };
+
+  CopyField.prototype = new jsGrid.Field({
+
+      css: "copy-field",           // redefine general property 'css'
+      align: "center",              // redefine general property 'align'
+
+  });
+
   $task_res = $.ajax('index.php?view=tasks-list-json&proposalid=' + proposalid, {dataType: "json", async: false});
   $people_res = $.ajax('index.php?view=people-dropdown-list-json', {dataType: "json", async: false});
   $task_json = $task_res.responseJSON['data'];
@@ -161,8 +172,22 @@ function loadTasksTable (reload, proposalid) {
   });
   // jsGrid static value pushed on the fields array last
   $fields.push({
-    type: "control"
-  });
+    type: "control", width: 100,
+            	itemTemplate: function(value, item) {
+                    var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
+
+                    var $customButton = $("<button>")
+                    	.text("Duplicate")
+                    	.click(function(e) {
+                          var copy = $.extend({}, item, {Task: item.Task + "(Duplicate)"});
+                          console.log(copy)
+                          $("#tasksTableDiv").jsGrid("insertItem", copy);
+                          e.stopPropagation();
+                        });
+
+                    return $result.add($customButton);
+                }
+            });
 
   // Intializes the grid using the fields array and JSON data
   $("#tasksTableDiv").jsGrid({
@@ -322,8 +347,22 @@ function AddColumn(proposalid) {
 
   // Pushes static jsGrid value back onto the array
   $fields.push({
-    type: "control"
-  });
+    type: "control", width: 100,
+            	itemTemplate: function(value, item) {
+                    var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
+
+                    var $customButton = $("<button>")
+                    	.text("Duplicate")
+                    	.click(function(e) {
+                          var copy = $.extend({}, item, {Name: item.name+" (Duplicate)"});
+                          console.log(copy)
+                          $("#tasksTableDiv").jsGrid("insertItem", copy);
+                          e.stopPropagation();
+                        });
+
+                    return $result.add($customButton);
+                }
+            });
 
   // Retintializes the grid to allow for row and column editing
   $("#tasksTableDiv").jsGrid({

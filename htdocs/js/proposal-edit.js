@@ -106,18 +106,237 @@ function loadOverheadTable (reload, proposalid) {
 
 function loadTasksTable (reload, proposalid) {
   if (reload) {
-    $('#tasksTable').dataTable().fnDestroy();
+    $('#tasksTableDiv').jsGrid("destroy");
   }
 
-  $('#tasksTableDiv').html("<table id='tasksTable' class='display' cellspacing='0' width='100%'>" +
-    "<thead><tr><th>Task</th><th>Staffing</th><th>Hours</th><th>Est. Cost<br/>(Est Sal + Ben w/ LAF)</th>" +
-    "<th>FYs</th><th>&nbsp;</th></tr></thead></table>");
-  $('#tasksTable').dataTable( {
-    'processing': true,
-    'serverSide': false,
-    'autoWidth': false,
-    'ajax': 'index.php?view=tasks-list-json&proposalid=' + proposalid,
-  } );
+  $task_res = $.ajax('index.php?view=tasks-list-json&proposalid=' + proposalid, {dataType: "json", async: false});
+  $people_res = $.ajax('index.php?view=people-dropdown-list-json', {dataType: "json", async: false});
+  $task_json = $task_res.responseJSON['data'];
+
+  $fields = [];
+  $new_array = [];
+
+  // Iterates through the JSON data
+  $task_json.forEach(function(element) {
+    $new_array = $new_array.concat(Object.keys(element));
+  });
+
+  $new_fields = Array.from(new Set($new_array)).sort();
+
+  // Pushes static values for Task, Staffing, and Cost
+  $fields.push({
+    name: "Task",
+    type: "text",
+    width: 100
+  });
+  $fields.push({
+    name: "Staffing",
+    type: "select",
+    width: 150,
+    valueType: "number",
+
+    items: $people_res.responseJSON['data'],
+    valueField: "peopleid",
+    textField: "name",
+
+    selectedIndex: 0
+  });
+  $fields.push({
+    name: "Cost",
+    type: "text",
+    width: 100,
+
+    editing: false,
+    inserting: false
+  });
+  // Iterates through parsed JSON data and inserts them into the fields array
+  $new_fields.forEach(function(element){
+    if (element.includes("FY") && !element.includes("id")) {
+      $fields.push({
+        name: element,
+        type: "number",
+        width: 75
+      });
+    };
+  });
+  // jsGrid static value pushed on the fields array last
+  $fields.push({
+    type: "control"
+  });
+
+  // Intializes the grid using the fields array and JSON data
+  $("#tasksTableDiv").jsGrid({
+    width: "100%",
+    height: "400px",
+    inserting: true,
+    editing: true,
+    sorting: true,
+    paging: true,
+
+    data: $task_json,
+    fields: $fields,
+
+    onItemInserted: function(args) {
+      $entry = args.item;
+      $keys = Object.keys($entry);
+
+      $task_res = $.ajax({
+        type:'post',
+        url: 'index.php?',
+        data: {
+          view: 'task-save',
+          taskid: 'new',
+          proposalid: proposalid,
+          peopleid: $entry['Staffing'],
+          taskname: $entry['Task']
+        },
+        async: false,
+        cache: false
+      });
+
+      $keys.forEach( function(key) {
+        if (key.includes("FY") && !key.includes("id")) {
+          fiscalyear = "10/01/20" + (parseInt(key.substring(2, )) - 1);
+
+          $.ajax({
+            type:'post',
+            url: 'index.php?',
+            success: function() {
+              loadTasksTable(true, proposalid);
+            },
+            data: {
+              view: 'staffing-save',
+              taskid: $task_res.responseText,
+              staffingid: 'new',
+              staffingpeopleid: $entry['Staffing'],
+              fiscalyear: fiscalyear,
+              flexhours: $entry[key]
+            },
+            async: true,
+            cache: false
+          });
+        }
+      });
+    },
+    onItemUpdated: function(args) {
+      $entry = args.item;
+      $keys = Object.keys($entry);
+
+      $.ajax({
+        type:'post',
+        url: 'index.php?',
+        success: function() {
+          loadTasksTable(true, proposalid);
+        },
+        data: {
+          view: 'task-save',
+          taskid: $entry['taskid'],
+          proposalid: proposalid,
+          peopleid: $entry['Staffing'],
+          taskname: $entry['Task']
+        },
+        async: true,
+        cache: false
+      });
+
+      $keys.forEach( function(key) {
+        if (key.includes("FY") && !key.includes("id")) {
+          fiscalyear = "10/01/20" + (parseInt(key.substring(2, )) - 1);
+
+          if ($entry[key + 'staffingid']) {
+            staffingid = $entry[key + 'staffingid'];
+          }
+          else {
+            staffingid = 'new';
+          }
+
+          $.ajax({
+            type:'post',
+            url: 'index.php?',
+            success: function() {
+              loadTasksTable(true, proposalid);
+            },
+            data: {
+              view: 'staffing-save',
+              taskid: $entry['taskid'],
+              staffingid: staffingid,
+              staffingpeopleid: $entry['Staffing'],
+              fiscalyear: fiscalyear,
+              flexhours: $entry[key]
+            },
+            async: true,
+            cache: false
+          });
+        }
+      });
+    },
+    onItemDeleted: function(args) {
+      $entry = args.item;
+      $keys = Object.keys($entry);
+
+      $.ajax({
+        type:'post',
+        url: 'index.php?',
+        success: function() {
+          loadTasksTable(true, proposalid);
+        },
+        data: {
+          view: 'task-delete',
+          taskid: $entry['taskid'],
+          proposalid: proposalid
+        },
+        async: true,
+        cache: false
+      });
+    }
+  });
+}
+
+// Custom method for adding columns to jsGrid
+function AddColumn(proposalid) {
+  $task_res = $.ajax('index.php?view=tasks-list-json&proposalid=' + proposalid, {dataType: "json", async: false});
+  $people_res = $.ajax('index.php?view=people-dropdown-list-json', {dataType: "json", async: false});
+  $task_json = $task_res.responseJSON['data'];
+
+  $fields = $("#tasksTableDiv").jsGrid("option", "fields");
+
+  let field_names = [];
+  $fields.forEach(function(field) {
+    field_names.push(field['name']);
+  });
+
+  let name = document.getElementById("column_id").value;
+
+  if (field_names.includes(name)) {
+    return;
+  }
+
+  let temp = $fields.pop()
+
+  // Pushes user defined column
+  $fields.push({
+    name: name,
+    type: "number",
+    width: 75
+  });
+
+  // Pushes static jsGrid value back onto the array
+  $fields.push({
+    type: "control"
+  });
+
+  // Retintializes the grid to allow for row and column editing
+  $("#tasksTableDiv").jsGrid({
+    width: "100%",
+    height: "400px",
+    inserting: true,
+    editing: true,
+    sorting: true,
+    paging: true,
+
+    data: $task_json,
+    fields: $fields,
+  });
 }
 
 function loadConferencesTable (reload, proposalid) {

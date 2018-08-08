@@ -330,17 +330,19 @@ function AddColumn(proposalid) {
     field_names.push(field['name']);
   });
 
-  let name = document.getElementById("column_id").value;
+  let name = document.getElementById("validfiscalyearsdd");
+  let name_text = name.selectedOptions[0].text;
+
 
   if (field_names.includes(name)) {
     return;
   }
 
   let temp = $fields.pop()
-
+  console.log(name_text)
   // Pushes user defined column
   $fields.push({
-    name: name,
+    name: name_text,
     type: "number",
     width: 75
   });

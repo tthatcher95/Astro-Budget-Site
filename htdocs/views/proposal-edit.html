@@ -111,7 +111,9 @@
               <div id="tasksTableDiv">
               </div>
               <input type="button" value="Add Column" id="AddColumn" onclick="AddColumn({{ proposalid }})" >
-              <input type="text" value="" id="column_id" >
+              {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodstart',
+                                                      'dropdown_id': 'validfiscalyears',
+                                                      'selected_fy': proposals[0].perfperiodstart } %}
             </div>
 
           <h3 id='conferencesTitle'>Conferences/Meetings/Travel</h3>

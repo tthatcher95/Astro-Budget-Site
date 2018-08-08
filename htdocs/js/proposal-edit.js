@@ -339,7 +339,6 @@ function AddColumn(proposalid) {
   }
 
   let temp = $fields.pop()
-  console.log(name_text)
   // Pushes user defined column
   $fields.push({
     name: name_text,
@@ -353,10 +352,10 @@ function AddColumn(proposalid) {
             	itemTemplate: function(value, item) {
                     var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
 
-                    var $customButton = $("<button>")
+                    var $customButton = $("<button style=\"background: url('images/copy-32.png')\">")
                     	.text("Duplicate")
                     	.click(function(e) {
-                          var copy = $.extend({}, item, {Name: item.name+" (Duplicate)"});
+                          var copy = $.extend({}, item, {Name: item.name});
                           console.log(copy)
                           $("#tasksTableDiv").jsGrid("insertItem", copy);
                           e.stopPropagation();

@@ -110,10 +110,12 @@
             <div id='tasksdiv'>
               <div id="tasksTableDiv">
               </div>
-              <input type="button" value="Add Column" id="AddColumn" onclick="AddColumn({{ proposalid }})" >
               {% include 'fiscalyear-dropdown.html' with {'dropdown_name': 'perfperiodstart',
                                                       'dropdown_id': 'validfiscalyears',
+                                                      'class': 'my-css-class',
                                                       'selected_fy': proposals[0].perfperiodstart } %}
+              <button class="button button1" value="Add Column" id="AddColumn" onclick="AddColumn({{ proposalid }})" >Add Column </button>
+
             </div>
 
           <h3 id='conferencesTitle'>Conferences/Meetings/Travel</h3>
@@ -169,4 +171,23 @@
 
       </script>
     </body>
+
+    <style>
+
+      .button {
+    background-color: DodgerBlue;
+    border: none;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+  }
+
+
+    .button1 {border-radius: 50%;}
+    </style>
 </html>

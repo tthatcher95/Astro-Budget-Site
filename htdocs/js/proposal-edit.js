@@ -176,7 +176,7 @@ function loadTasksTable (reload, proposalid) {
     width: 100,
     itemTemplate: function(value, item) {
       $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
-      $customButton = $("<button id=\"dupeButton\" class=\"jsgrid-button\">" + "</button>").click(function(e) {
+      $customButton = $("<button id=\"dupeButton\" class=\"jsgrid-button\" title=\"Duplicate\">" + "</button>").click(function(e) {
         var copy = $.extend({}, item, {Task: item.Task});
         $("#tasksTableDiv").jsGrid("insertItem", copy);
         e.stopPropagation();

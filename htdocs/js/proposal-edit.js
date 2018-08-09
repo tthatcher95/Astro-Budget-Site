@@ -335,6 +335,7 @@ function AddColumn(proposalid) {
   }
 
   let temp = $fields.pop();
+
   // Pushes user defined column
   $fields.push({
     name: name_text,
@@ -349,7 +350,7 @@ function AddColumn(proposalid) {
   $("#tasksTableDiv").jsGrid({
     width: "100%",
     height: "400px",
-    inserting: true,
+    inserting: false,
     editing: true,
     sorting: true,
     paging: true,
